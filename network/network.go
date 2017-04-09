@@ -1,11 +1,17 @@
 package network;
 
-import "errors"
+import (
+    "errors"
+    "bytes"
+    "encoding/binary"
+)
 
 var key = []byte {0xa6, 0x77, 0x95, 0x7c}
 
-type header struct {
-
+type Header struct {
+    unknown1 int16;
+    size int16;
+    unknown2 [20]byte;
 }
 
 type Message struct {
@@ -23,10 +29,16 @@ func decodeChunk(data []byte) ([] byte) {
 	return decoded;
 }
 
-func Decode(data []byte) (Message, error) {
+func Decode(data []byte) (Header, error) {
 	if len(data) < 24 {
-		return Message{}, errors.New("No header found");
+		return Header{}, errors.New("No header found");
 	}
-	header := decodeChunk(data[0:23]);
-    return Message{header,nil}, nil;
+	decoded := decodeChunk(data[0:23]);
+    buf := bytes.NewBuffer(decoded);
+    header := Header{};
+    err := binary.Read(buf, binary.BigEndian, &header);
+    if err != nil {
+        panic(err);
+    }
+    return header, nil;
 }
