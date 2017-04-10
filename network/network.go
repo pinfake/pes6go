@@ -13,8 +13,9 @@ var key = []byte{0xa6, 0x77, 0x95, 0x7c}
 type Header struct {
     Query    uint16;
     Size     uint16;
-    Sequence uint32;
-    Unknown  [16]byte;
+    Unknown1 uint16;
+    Sequence uint16;
+    Unknown2 [16]byte;
 }
 
 type Message struct {
@@ -44,7 +45,7 @@ func Read(data []byte) (Message, error) {
     decoded := Mutate(data[0:headerSize]);
     buf := bytes.NewBuffer(decoded);
     header := Header{};
-    err := binary.Read(buf, binary.BigEndian, &header);
+    err := binary.Read(buf, binary.LittleEndian, &header);
     if err != nil {
         panic(err);
     }
