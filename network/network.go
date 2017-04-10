@@ -4,7 +4,6 @@ import (
     "errors"
     "bytes"
     "encoding/binary"
-    "fmt"
 )
 
 const headerSize = 24;
