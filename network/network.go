@@ -10,19 +10,6 @@ const headerSize = 24;
 
 var key = []byte{0xa6, 0x77, 0x95, 0x7c}
 
-type Header struct {
-    Query    uint16;
-    Size     uint16;
-    Unknown1 uint16;
-    Sequence uint16;
-    Unknown2 [16]byte;
-}
-
-type Message struct {
-    header Header;
-    body   []byte;
-}
-
 func Mutate(data []byte) ([] byte) {
     decoded := []byte{};
     i := 0;
@@ -38,9 +25,9 @@ func Mutate(data []byte) ([] byte) {
     return decoded;
 }
 
-func Read(data []byte) (Message, error) {
+func Read(data []byte) (Block, error) {
     if len(data) < headerSize {
-        return Message{}, errors.New("No header found");
+        return Block{}, errors.New("No header found");
     }
     decoded := Mutate(data[0:headerSize]);
     buf := bytes.NewBuffer(decoded);
@@ -49,5 +36,5 @@ func Read(data []byte) (Message, error) {
     if err != nil {
         panic(err);
     }
-    return Message{header, []byte{}}, nil;
+    return Block{header, []byte{}}, nil;
 }
