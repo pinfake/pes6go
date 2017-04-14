@@ -22,14 +22,13 @@ type internal struct {
 }
 
 func buildInternal(info Info) internal {
-    // TODO: Hohoho, no luck on the conversion; will have to work on this...
-    return internal{
-        header: [6]byte{0x00, 0x00, 0x03, 0x10, 0x01, 0x00},
-        time:   [20]byte([]byte(info.time.Format(dtLayout))),
-        title:  [64]byte(info.title),
-        text:   [128]byte(info.text),
-    }
+    var internal internal;
+    copy(internal.header[:], []byte{0x00, 0x00, 0x03, 0x10, 0x01, 0x00});
+    copy(internal.time[:], info.time.Format(dtLayout));
+    copy(internal.title[:], info.title);
+    copy(internal.text[:], info.text);
 
+    return internal;
 }
 
 func (info Info) getData() []byte {
