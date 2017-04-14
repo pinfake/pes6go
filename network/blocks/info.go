@@ -25,7 +25,7 @@ func buildInternal(info Info) internal {
     // TODO: Hohoho, no luck on the conversion; will have to work on this...
     return internal{
         header: [6]byte{0x00, 0x00, 0x03, 0x10, 0x01, 0x00},
-        time:   [20]byte(info.time.Format(dtLayout)),
+        time:   [20]byte([]byte(info.time.Format(dtLayout))),
         title:  [64]byte(info.title),
         text:   [128]byte(info.text),
     }

@@ -4,7 +4,6 @@ import (
     "errors"
     "bytes"
     "encoding/binary"
-    "unsafe"
     "github.com/pinfake/pes6go/network"
 )
 
