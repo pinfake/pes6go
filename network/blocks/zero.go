@@ -12,7 +12,3 @@ func (zero Zero) getData() []byte {
     binary.LittleEndian.PutUint32(ret, uint32(0))
     return ret;
 }
-
-func a() {
-    zeroBlock = NewBlock(0x0001, Zero{});
-}
