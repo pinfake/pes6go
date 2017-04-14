@@ -1,5 +1,15 @@
 package blocks;
 
+import (
+    "errors"
+    "bytes"
+    "encoding/binary"
+    "unsafe"
+    "github.com/pinfake/pes6go/network"
+)
+
+const headerSize = 24;
+
 type Header struct {
     Query    uint16;
     Size     uint16;
@@ -17,10 +27,33 @@ type Block struct {
     body Body;
 }
 
+type GenericBody struct {
+    data []byte;
+}
+
+func (body GenericBody) getData() []byte {
+    return body.data;
+}
+
 func NewHeader(query uint16, size uint16) Header {
     return Header{Query:query, Size:size};
 }
 
 func NewBlock(query uint16, body Body) Block {
     return Block{NewHeader(query, uint16(len(body.getData()))), body};
+}
+
+func ReadBlock(data []byte) (Block, error){
+    if len(data) < headerSize {
+        return Block{}, errors.New("No header found");
+    }
+    decoded := network.Mutate(data);
+    var buf bytes.Buffer;
+    buf.Write(decoded[0:headerSize]);
+    header := Header{};
+    err := binary.Read(buf, binary.LittleEndian, &header);
+    if err != nil {
+        panic(err);
+    }
+    return Block{header, GenericBody{decoded[headerSize:header.Size]}}, nil
 }

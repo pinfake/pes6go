@@ -4,6 +4,8 @@ import (
     "errors"
     "bytes"
     "encoding/binary"
+    "github.com/pinfake/pes6go/network/messages"
+    "github.com/pinfake/pes6go/network/blocks"
 )
 
 const headerSize = 24;
@@ -23,18 +25,4 @@ func Mutate(data []byte) ([] byte) {
         }
     }
     return decoded;
-}
-
-func Read(data []byte) (Block, error) {
-    if len(data) < headerSize {
-        return Block{}, errors.New("No header found");
-    }
-    decoded := Mutate(data[0:headerSize]);
-    buf := bytes.NewBuffer(decoded);
-    header := Header{};
-    err := binary.Read(buf, binary.LittleEndian, &header);
-    if err != nil {
-        panic(err);
-    }
-    return Block{header, []byte{}}, nil;
 }
