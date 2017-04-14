@@ -34,6 +34,6 @@ func buildInternal(info Info) internal {
 
 func (info Info) getData() []byte {
     buf := bytes.Buffer{};
-    binary.Write(buf, binary.LittleEndian, buildInternal(info));
+    binary.Write(&buf, binary.LittleEndian, buildInternal(info));
     return buf.Bytes();
 }
