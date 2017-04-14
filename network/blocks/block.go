@@ -48,8 +48,7 @@ func ReadBlock(data []byte) (Block, error){
         return Block{}, errors.New("No header found");
     }
     decoded := network.Mutate(data);
-    var buf bytes.Buffer;
-    buf.Write(decoded[0:headerSize]);
+    var buf = bytes.NewBuffer(decoded[0:headerSize]);
     header := Header{};
     err := binary.Read(buf, binary.LittleEndian, &header);
     if err != nil {

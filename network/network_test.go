@@ -19,33 +19,33 @@ var mutated = []byte{
     0xa6, 0x77, 0x95, 0x7c, 0xa6, 0x77, 0x95, 0x7c, 0xa6 ,0x77, 0x95, 0x7c,
 }
 
-func TestRead(t *testing.T) {
-    t.Run("Must return an error on short buffer", func(t *testing.T) {
-        b := [] byte{};
-        _, err := Read(b);
-        if err == nil {
-            t.Error("No error on short byte slice")
-        }
-    })
-    t.Run("Must return mutated header", func(t *testing.T) {
-        message, _ := Read(mutated);
-        t.Run("Must return appropiate query", func(t *testing.T) {
-            if message.header.Query != 0x5084 {
-                t.Error("Unexpected query!")
-            }
-        })
-        t.Run("Must return appropiate size", func(t *testing.T) {
-            if message.header.Size != 0x0104 {
-                t.Error( "Unexpected size!")
-            }
-        })
-        t.Run("Must return appropiate sequence", func(t *testing.T) {
-            if message.header.Sequence != 0x0286 {
-                t.Error( "Unexpected sequence!")
-            }
-        })
-    })
-}
+//func TestRead(t *testing.T) {
+//    t.Run("Must return an error on short buffer", func(t *testing.T) {
+//        b := [] byte{};
+//        _, err := Read(b);
+//        if err == nil {
+//            t.Error("No error on short byte slice")
+//        }
+//    })
+//    t.Run("Must return mutated header", func(t *testing.T) {
+//        message, _ := Read(mutated);
+//        t.Run("Must return appropiate query", func(t *testing.T) {
+//            if message.header.Query != 0x5084 {
+//                t.Error("Unexpected query!")
+//            }
+//        })
+//        t.Run("Must return appropiate size", func(t *testing.T) {
+//            if message.header.Size != 0x0104 {
+//                t.Error( "Unexpected size!")
+//            }
+//        })
+//        t.Run("Must return appropiate sequence", func(t *testing.T) {
+//            if message.header.Sequence != 0x0286 {
+//                t.Error( "Unexpected sequence!")
+//            }
+//        })
+//    })
+//}
 
 func TestMutate(t *testing.T) {
     t.Run("Should return a mutated byte slice", func(t *testing.T) {
