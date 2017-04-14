@@ -9,9 +9,9 @@ import (
 const dtLayout = "2006-01-02 15:04:05"
 
 type Info struct {
-    time time.Time;
-    title string;
-    text string;
+    Time time.Time;
+    Title string;
+    Text string;
 }
 
 type internal struct {
@@ -24,9 +24,9 @@ type internal struct {
 func buildInternal(info Info) internal {
     var internal internal;
     copy(internal.header[:], []byte{0x00, 0x00, 0x03, 0x10, 0x01, 0x00});
-    copy(internal.time[:], info.time.Format(dtLayout));
-    copy(internal.title[:], info.title);
-    copy(internal.text[:], info.text);
+    copy(internal.time[:], info.Time.Format(dtLayout));
+    copy(internal.title[:], info.Title);
+    copy(internal.text[:], info.Text);
 
     return internal;
 }

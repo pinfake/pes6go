@@ -6,9 +6,9 @@ import (
     "time"
 )
 type Response struct {
-    title string;
-    time time.Time;
-    text string;
+    Title string;
+    Time time.Time;
+    Text string;
     messages.Message
 }
 
@@ -16,7 +16,7 @@ func (r Response) getBlocks() []blocks.Block {
     return []blocks.Block{
         blocks.NewBlock(0x0001, blocks.Zero{}),
         blocks.NewBlock(0x0002, blocks.Info{
-            r.time, r.title, r.text,
+            Time: r.Time, Title: r.Title, Text: r.Text,
         }),
         blocks.NewBlock(0x0003, blocks.Zero{}),
     }
