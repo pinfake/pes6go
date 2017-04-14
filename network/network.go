@@ -1,14 +1,4 @@
-package network;
-
-import (
-    "errors"
-    "bytes"
-    "encoding/binary"
-    "github.com/pinfake/pes6go/network/messages"
-    "github.com/pinfake/pes6go/network/blocks"
-)
-
-const headerSize = 24;
+package network
 
 var key = []byte{0xa6, 0x77, 0x95, 0x7c}
 
