@@ -1,5 +1,5 @@
-package in;
+package in
 
 type MessageToGroup struct {
-    unknown [260]byte;
+	unknown [260]byte
 }
