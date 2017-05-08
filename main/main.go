@@ -3,7 +3,9 @@ package main
 import "fmt"
 import (
 	"flag"
-	"github.com/pinfake/pes6go/servers/discovery"
+	"github.com/pinfake/pes6go/server/accounting"
+	"github.com/pinfake/pes6go/server/discovery"
+	"github.com/pinfake/pes6go/server/game"
 	"os"
 )
 
@@ -31,6 +33,10 @@ func main() {
 	switch args[0] {
 	case "discovery":
 		discovery.Start()
+	case "accounting":
+		accounting.Start()
+	case "game":
+		game.Start()
 	default:
 		flag.Usage()
 	}
