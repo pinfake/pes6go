@@ -4,32 +4,28 @@ import (
 	"net"
 	"fmt"
 	"os"
-	"time"
+	"strconv"
 )
 
 const host = "0.0.0.0"
-const port = "10881"
 
-func handleConnection(conn net.Conn) {
+type Handler interface {
+	handleConnection(conn net.Conn)
+}
+
+func handleConnection(conn net.Conn, handler Handler) {
+	defer conn.Close()
 	fmt.Println("Hey!, a connection!")
-	for i := 1; i < 6; i++ {
-		conn.Write([]byte(fmt.Sprintf("%d\n",i)))
-		time.Sleep(1 * time.Second)
-	}
-	conn.Close()
+	handler.handleConnection(conn)
 	fmt.Println("It's over!")
 }
 
-func Run() {
-	l,err := net.Listen("tcp", host+":"+port)
+func Serve(port int, handler Handler) {
+	l,err := net.Listen("tcp", host+":"+strconv.Itoa(port))
 	if err != nil {
 		fmt.Println("Error listening:", err.Error())
 		os.Exit(1)
 	}
-
-//	if l, ok := l.(*net.TCPListener); ok {
-//		l.SetDeadline(time.Now().Add(1*time.Second))
-//	}
 
 	defer l.Close()
 	for {
@@ -38,7 +34,7 @@ func Run() {
 			fmt.Println("Error accepting: ", err)
 			os.Exit(1)
 		}
-		go handleConnection(conn)
+		go handleConnection(conn, handler)
 	}
 }
 
