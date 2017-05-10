@@ -10,13 +10,13 @@ import (
 const host = "0.0.0.0"
 
 type Handler interface {
-	handleConnection(conn net.Conn)
+	HandleConnection(conn net.Conn)
 }
 
 func handleConnection(conn net.Conn, handler Handler) {
 	defer conn.Close()
 	fmt.Println("Hey!, a connection!")
-	handler.handleConnection(conn)
+	handler.HandleConnection(conn)
 	fmt.Println("It's over!")
 }
 
