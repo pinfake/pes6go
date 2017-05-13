@@ -8,7 +8,7 @@ type Zero struct {
 
 func (zero Zero) getData() []byte {
 	// TODO: reserve space for the byte array?
-	ret := []byte{}
-	binary.LittleEndian.PutUint32(ret, uint32(0))
-	return ret
+	ret := [4]byte{}
+	binary.BigEndian.PutUint32(ret[:], uint32(0))
+	return ret[:]
 }

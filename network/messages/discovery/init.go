@@ -1,9 +1,10 @@
 package discovery
 
 import (
+	"time"
+
 	"github.com/pinfake/pes6go/network/blocks"
 	"github.com/pinfake/pes6go/network/messages"
-	"time"
 )
 
 const (
@@ -19,7 +20,7 @@ type Response struct {
 	messages.Message
 }
 
-func (r Response) getBlocks() []blocks.Block {
+func (r Response) GetBlocks() []blocks.Block {
 	return []blocks.Block{
 		blocks.NewBlock(responseQuery1, blocks.Zero{}),
 		blocks.NewBlock(responseQuery2, blocks.Info{
