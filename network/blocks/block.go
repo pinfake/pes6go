@@ -4,6 +4,8 @@ import (
 	"bytes"
 	"encoding/binary"
 	"errors"
+	"fmt"
+
 	"github.com/pinfake/pes6go/network"
 )
 
@@ -22,7 +24,7 @@ type Body interface {
 }
 
 type Block struct {
-	header Header
+	Header Header
 	body   Body
 }
 
@@ -44,14 +46,19 @@ func NewBlock(query uint16, body Body) Block {
 
 func ReadBlock(data []byte) (Block, error) {
 	if len(data) < headerSize {
-		return Block{}, errors.New("No header found")
+		return Block{}, errors.New("No Header found")
 	}
 	decoded := network.Mutate(data)
 	var buf = bytes.NewBuffer(decoded[0:headerSize])
 	header := Header{}
-	err := binary.Read(buf, binary.LittleEndian, &header)
+	err := binary.Read(buf, binary.BigEndian, &header)
 	if err != nil {
 		panic(err)
 	}
-	return Block{header, GenericBody{decoded[headerSize:header.Size]}}, nil
+
+	if len(decoded) < int(headerSize+header.Size) {
+		fmt.Printf("%d headersize % x", header.Size, decoded)
+		panic("hostion")
+	}
+	return Block{header, GenericBody{decoded[headerSize : headerSize+header.Size]}}, nil
 }
