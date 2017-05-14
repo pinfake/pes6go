@@ -16,7 +16,7 @@ type Info struct {
 
 type infoInternal struct {
 	header [6]byte
-	time   [20]byte
+	time   [19]byte
 	title  [64]byte
 	text   [128]byte
 }

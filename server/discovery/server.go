@@ -33,7 +33,7 @@ func HandleDiscoveryInit(_ blocks.Block) messages.Message {
 	return discovery.Init{
 		Time:  time.Date(2017, 1, 1, 12, 0, 0, 0, time.UTC),
 		Title: "Hey, this is a title!",
-		Text:  "Hey, this is the text, not so long!",
+		Text:  "Hey, this is the text, not so long!\nEsto es español amigo.",
 	}
 }
 

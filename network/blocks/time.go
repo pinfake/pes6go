@@ -16,7 +16,7 @@ type timeInternal struct {
 
 func (m ServerTime) buildInternal() timeInternal {
 	internal := timeInternal{
-		time: uint32(m.Time.Unix() / 1000),
+		time: uint32(m.Time.Unix()),
 	}
 	return internal
 }
