@@ -20,7 +20,7 @@ type Header struct {
 }
 
 type Body interface {
-	getData() []byte
+	GetBytes() []byte
 }
 
 type Block struct {
@@ -32,7 +32,7 @@ type GenericBody struct {
 	data []byte
 }
 
-func (body GenericBody) getData() []byte {
+func (body GenericBody) GetBytes() []byte {
 	return body.data
 }
 
@@ -41,7 +41,19 @@ func NewHeader(query uint16, size uint16) Header {
 }
 
 func NewBlock(query uint16, body Body) Block {
-	return Block{NewHeader(query, uint16(len(body.getData()))), body}
+	return Block{NewHeader(query, uint16(len(body.GetBytes()))), body}
+}
+
+func (b Block) GetBytes() []byte {
+	buf := new(bytes.Buffer)
+	binary.Write(buf, binary.BigEndian, b.Header)
+	buf.Write(b.body.GetBytes())
+	return buf.Bytes()
+	//retb := [headerSize + b.Header.Size]byte{}
+	//var buf = bytes.NewBuffer(retb[:])
+	//binary.Write(buf, binary.BigEndian, &b.Header)
+	//buf.Write(b.body.GetBytes())
+	//return retb[:]
 }
 
 func ReadBlock(data []byte) (Block, error) {

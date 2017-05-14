@@ -6,6 +6,7 @@ import (
 	"os"
 	"strconv"
 
+	"github.com/pinfake/pes6go/network"
 	"github.com/pinfake/pes6go/network/blocks"
 	"github.com/pinfake/pes6go/network/messages"
 )
@@ -13,11 +14,12 @@ import (
 const host = "0.0.0.0"
 
 type Handler interface {
-	HandleBlock(block blocks.Block) messages.Message
+	HandleBlock(block blocks.Block) (messages.Message, error)
 }
 
 type Connection struct {
 	conn net.Conn
+	seq  uint16
 }
 
 func (c Connection) readBlock() (blocks.Block, error) {
@@ -32,27 +34,43 @@ func (c Connection) readBlock() (blocks.Block, error) {
 	if err != nil {
 		return blocks.Block{}, err
 	}
+	//c.seq = got.Header.Sequence
 	//got := network.Mutate(slice[:n])
 	fmt.Printf("% x\n", got)
 	return got, nil
 }
 
-func (c Connection) writeMessage(message messages.Message) {
+func (c *Connection) writeMessage(message messages.Message) {
 	fmt.Println("I should write something here")
+	for _, block := range message.GetBlocks() {
+		fmt.Printf("Seq vale %d\n", c.seq)
+		c.seq++
+		block.Header.Sequence = c.seq
+		fmt.Printf("% x\n", block.GetBytes())
+		c.conn.Write(network.Mutate(block.GetBytes()))
+	}
 }
 
 func handleConnection(conn net.Conn, handler Handler) {
 	defer conn.Close()
-	c := Connection{conn: conn}
-	fmt.Println("Hey!, a connection!")
-	block, err := c.readBlock()
-	if err != nil {
-		panic("Couldn't properly read")
+	c := Connection{
+		conn: conn,
+		seq:  0,
 	}
-	message := handler.HandleBlock(block)
-	bs := message.GetBlocks()
-	fmt.Printf("Going to write: % x", bs)
-	c.writeMessage(message)
+	fmt.Println("Hey!, a connection!")
+	for {
+		block, err := c.readBlock()
+		if err != nil {
+			panic("Couldn't properly read")
+		}
+		message, err := handler.HandleBlock(block)
+		if err != nil {
+			panic(err)
+		}
+		bs := message.GetBlocks()
+		fmt.Printf("Going to write: % x", bs)
+		c.writeMessage(message)
+	}
 	//handler.HandleConnection(conn)
 	fmt.Println("It's over!")
 }
