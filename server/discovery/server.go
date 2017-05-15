@@ -2,7 +2,6 @@ package discovery
 
 import (
 	"fmt"
-	"net"
 	"time"
 
 	"github.com/pinfake/pes6go/data"
@@ -105,15 +104,8 @@ func (s Server) HandleBlock(block blocks.Block, c *server.Connection) (messages.
 	return method(block, c), nil
 }
 
-func (s Server) HandleConnection(conn net.Conn) {
-	for i := 1; i < 6; i++ {
-		conn.Write([]byte(fmt.Sprintf("%d\n", i)))
-		time.Sleep(1 * time.Second)
-	}
-}
-
 func Start() {
-	fmt.Println("Here i am the s server!")
+	fmt.Println("Here i am the discovery server!")
 	s := Server{}
 	server.Serve(10881, s)
 }

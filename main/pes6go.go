@@ -3,10 +3,11 @@ package main
 import "fmt"
 import (
 	"flag"
+	"os"
+
 	"github.com/pinfake/pes6go/server/accounting"
 	"github.com/pinfake/pes6go/server/discovery"
 	"github.com/pinfake/pes6go/server/game"
-	"os"
 )
 
 func main() {
