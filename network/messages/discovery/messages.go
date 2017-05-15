@@ -21,8 +21,34 @@ type ServerMessage struct {
 	Message data.ServerMessage
 }
 
+type ServerListMessage struct {
+	Servers data.Servers
+}
+
 type ServerTime struct {
 	Time time.Time
+}
+
+type RankUrlListMessage struct {
+	RankUrls data.RankUrls
+}
+
+func (r RankUrlListMessage) GetBlocks() []blocks.Block {
+	return []blocks.Block{
+		blocks.NewBlock(0x2201, blocks.GenericBody{
+			Data: []byte{0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x55},
+		}),
+		r.RankUrls.GetBlock(0x2202),
+		blocks.NewBlock(0x2203, blocks.Zero{}),
+	}
+}
+
+func (r ServerListMessage) GetBlocks() []blocks.Block {
+	return []blocks.Block{
+		blocks.NewBlock(0x2002, blocks.Void{}),
+		r.Servers.GetBlock(0x2003),
+		blocks.NewBlock(0x2004, blocks.Void{}),
+	}
 }
 
 func (r ServerTime) GetBlocks() []blocks.Block {

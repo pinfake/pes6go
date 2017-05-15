@@ -29,11 +29,11 @@ type Block struct {
 }
 
 type GenericBody struct {
-	data []byte
+	Data []byte
 }
 
 func (body GenericBody) GetBytes() []byte {
-	return body.data
+	return body.Data
 }
 
 func NewHeader(query uint16, size uint16) Header {
