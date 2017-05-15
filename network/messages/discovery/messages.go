@@ -3,8 +3,8 @@ package discovery
 import (
 	"time"
 
+	"github.com/pinfake/pes6go/data"
 	"github.com/pinfake/pes6go/network/blocks"
-	"github.com/pinfake/pes6go/network/messages"
 )
 
 const (
@@ -17,11 +17,8 @@ const (
 	serverTimeResponseQuery1 = 0x00002007
 )
 
-type Init struct {
-	Title string
-	Time  time.Time
-	Text  string
-	messages.Message
+type ServerMessage struct {
+	Message data.ServerMessage
 }
 
 type ServerTime struct {
@@ -36,12 +33,10 @@ func (r ServerTime) GetBlocks() []blocks.Block {
 	}
 }
 
-func (r Init) GetBlocks() []blocks.Block {
+func (r ServerMessage) GetBlocks() []blocks.Block {
 	return []blocks.Block{
 		blocks.NewBlock(initResponseQuery1, blocks.Zero{}),
-		blocks.NewBlock(initResponseQuery2, blocks.Info{
-			Time: r.Time, Title: r.Title, Text: r.Text,
-		}),
+		r.Message.GetBlock(initResponseQuery2),
 		blocks.NewBlock(initResponseQuery3, blocks.Zero{}),
 	}
 }

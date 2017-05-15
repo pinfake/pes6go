@@ -14,7 +14,7 @@ import (
 const host = "0.0.0.0"
 
 type Handler interface {
-	HandleBlock(block blocks.Block) (messages.Message, error)
+	HandleBlock(block blocks.Block, c *Connection) (messages.Message, error)
 }
 
 type Connection struct {
@@ -63,9 +63,12 @@ func handleConnection(conn net.Conn, handler Handler) {
 		if err != nil {
 			panic("Couldn't properly read")
 		}
-		message, err := handler.HandleBlock(block)
+		message, err := handler.HandleBlock(block, &c)
 		if err != nil {
 			panic(err)
+		}
+		if message == nil {
+			break
 		}
 		bs := message.GetBlocks()
 		fmt.Printf("Going to write: % x", bs)
