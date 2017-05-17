@@ -17,8 +17,9 @@ type RankUrls struct {
 }
 
 type RankUrlInternal struct {
-	rtype uint16
-	url   [128]byte
+	rtype   byte
+	unknown byte
+	url     [128]byte
 }
 
 type RankUrlBlock struct {
@@ -27,7 +28,8 @@ type RankUrlBlock struct {
 
 func (info RankUrl) buildInternal() RankUrlInternal {
 	var internal RankUrlInternal
-	internal.rtype = uint16(info.Rtype)
+	internal.rtype = byte(info.Rtype)
+	internal.unknown = 0
 	copy(internal.url[:], info.Url)
 
 	return internal

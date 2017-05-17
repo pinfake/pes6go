@@ -38,8 +38,9 @@ func HandleDiscoveryInit(_ blocks.Block, _ *server.Connection) messages.Message 
 	return discovery.ServerMessage{
 		Message: data.ServerMessage{
 			Time:  time.Date(2017, 1, 1, 12, 0, 0, 0, time.UTC),
-			Title: "Hey, this is a title!",
-			Text:  "Hey, this is the text, not so long!\nEsto es español amigo.",
+			Title: "Mariano Powered:",
+			Text: "Es el vecino el que elige al alcalde y es el alcalde el que quiere " +
+				"que sean los vecinos el alcalde",
 		},
 	}
 }
@@ -67,13 +68,13 @@ func HandleRankUrlsQuery(_ blocks.Block, _ *server.Connection) messages.Message 
 	return discovery.RankUrlListMessage{
 		RankUrls: data.RankUrls{
 			RankUrls: []data.RankUrl{
-				{0x0000, "http://pes6web.winning-eleven.net/pes6e2/ranking/we10getrank.html"},
-				{0x0100, "https://pes6web.winning-eleven.net/pes6e2/ranking/we10getgrprank.html"},
-				{0x0200, "http://pes6web.winning-eleven.net/pes6e2/ranking/we10RankingWeek.html"},
-				{0x0300, "https://pes6web.winning-eleven.net/pes6e2/ranking/we10GrpRankingWeek.html"},
-				{0x0400, "https://pes6web.winning-eleven.net/pes6e2/ranking/we10RankingCup.html"},
-				{0x0500, "http://www.pes6j.net/server/we10getgrpboard.html"},
-				{0x0600, "http://www.pes6j.net/server/we10getgrpinvitelist.html"},
+				{0, "http://pes6web.winning-eleven.net/pes6e2/ranking/we10getrank.html"},
+				{1, "https://pes6web.winning-eleven.net/pes6e2/ranking/we10getgrprank.html"},
+				{2, "http://pes6web.winning-eleven.net/pes6e2/ranking/we10RankingWeek.html"},
+				{3, "https://pes6web.winning-eleven.net/pes6e2/ranking/we10GrpRankingWeek.html"},
+				{4, "https://pes6web.winning-eleven.net/pes6e2/ranking/we10RankingCup.html"},
+				{5, "http://www.pes6j.net/server/we10getgrpboard.html"},
+				{6, "http://www.pes6j.net/server/we10getgrpinvitelist.html"},
 			},
 		},
 	}
