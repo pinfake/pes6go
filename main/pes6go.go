@@ -18,7 +18,8 @@ func main() {
 		fmt.Fprint(os.Stderr, "The commands are:\n\n")
 		fmt.Fprint(os.Stderr, "\tdiscovery      Run a discovery server\n")
 		fmt.Fprint(os.Stderr, "\taccounting     Run an accounting server\n")
-		fmt.Fprint(os.Stderr, "\tgame           Run a game server\n\n")
+		fmt.Fprint(os.Stderr, "\tgame           Run a game server\n")
+		fmt.Fprint(os.Stderr, "\tallinone       Run all servers at once\n\n")
 		fmt.Fprint(os.Stderr, "The arguments are:\n\n")
 		flag.PrintDefaults()
 	}

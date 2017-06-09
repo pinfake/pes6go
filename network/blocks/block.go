@@ -49,11 +49,6 @@ func (b Block) GetBytes() []byte {
 	binary.Write(buf, binary.BigEndian, b.Header)
 	buf.Write(b.body.GetBytes())
 	return buf.Bytes()
-	//retb := [headerSize + b.Header.Size]byte{}
-	//var buf = bytes.NewBuffer(retb[:])
-	//binary.Write(buf, binary.BigEndian, &b.Header)
-	//buf.Write(b.body.GetBytes())
-	//return retb[:]
 }
 
 func ReadBlock(data []byte) (Block, error) {
