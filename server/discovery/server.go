@@ -4,15 +4,12 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/pinfake/pes6go/data"
-	"github.com/pinfake/pes6go/network/blocks"
-	"github.com/pinfake/pes6go/network/messages"
-	"github.com/pinfake/pes6go/network/messages/common"
-	"github.com/pinfake/pes6go/network/messages/discovery"
+	"github.com/pinfake/pes6go/data/block"
+	"github.com/pinfake/pes6go/data/message"
 	"github.com/pinfake/pes6go/server"
 )
 
-var handleMap = map[uint16]func(blocks.Block, *server.Connection) messages.Message{
+var handleMap = map[uint16]func(block.Block, *server.Connection) message.Message{
 	0x2008: HandleDiscoveryInit,
 	0x2006: HandleServerTime,
 	0x2005: HandleQueryServers,
@@ -21,22 +18,10 @@ var handleMap = map[uint16]func(blocks.Block, *server.Connection) messages.Messa
 	0x0003: HandleDisconnect,
 }
 
-type Server struct {
-	server.Handler
-}
-
-type VoidMessage struct {
-	messages.Message
-}
-
-func (m VoidMessage) getBlocks() []blocks.Block {
-	return []blocks.Block{}
-}
-
-func HandleDiscoveryInit(_ blocks.Block, _ *server.Connection) messages.Message {
+func HandleDiscoveryInit(_ block.Block, _ *server.Connection) message.Message {
 	fmt.Println("I am handling discovery init")
-	return discovery.ServerMessage{
-		Message: data.ServerMessage{
+	return message.Motd{
+		Message: block.ServerMessage{
 			Time:  time.Date(2017, 1, 1, 12, 0, 0, 0, time.UTC),
 			Title: "Mariano Powered:",
 			Text: "Es el vecino el que elige al alcalde y es el alcalde el que quiere " +
@@ -45,11 +30,11 @@ func HandleDiscoveryInit(_ blocks.Block, _ *server.Connection) messages.Message 
 	}
 }
 
-func HandleQueryServers(_ blocks.Block, _ *server.Connection) messages.Message {
+func HandleQueryServers(_ block.Block, _ *server.Connection) message.Message {
 	fmt.Println("I am handling query servers")
-	return discovery.ServerListMessage{
-		Servers: data.Servers{
-			Servers: []data.Server{
+	return message.ServerList{
+		Servers: block.Servers{
+			Servers: []block.Server{
 				{7, "GROUP-SP/", "127.0.0.1", 10887, 0},
 				{6, "SCHE-SP/", "127.0.0.1", 10887, 0},
 				{4, "QUICK0-SP/", "127.0.0.1", 10887, 0},
@@ -63,11 +48,11 @@ func HandleQueryServers(_ blocks.Block, _ *server.Connection) messages.Message {
 	}
 }
 
-func HandleRankUrlsQuery(_ blocks.Block, _ *server.Connection) messages.Message {
+func HandleRankUrlsQuery(_ block.Block, _ *server.Connection) message.Message {
 	fmt.Println("I am handling rank urls")
-	return discovery.RankUrlListMessage{
-		RankUrls: data.RankUrls{
-			RankUrls: []data.RankUrl{
+	return message.RankUrlList{
+		RankUrls: block.RankUrls{
+			RankUrls: []block.RankUrl{
 				{0, "http://pes6web.winning-eleven.net/pes6e2/ranking/we10getrank.html"},
 				{1, "https://pes6web.winning-eleven.net/pes6e2/ranking/we10getgrprank.html"},
 				{2, "http://pes6web.winning-eleven.net/pes6e2/ranking/we10RankingWeek.html"},
@@ -80,33 +65,25 @@ func HandleRankUrlsQuery(_ blocks.Block, _ *server.Connection) messages.Message 
 	}
 }
 
-func HandleServerTime(_ blocks.Block, _ *server.Connection) messages.Message {
+func HandleServerTime(_ block.Block, _ *server.Connection) message.Message {
 	fmt.Println("I am handling server time")
-	return discovery.ServerTime{
-		Time: time.Now(),
-	}
+	return message.ServerTime{ServerTime: block.ServerTime{Time: time.Now()}}
 }
 
-func HandleKeepAlive(_ blocks.Block, _ *server.Connection) messages.Message {
+func HandleKeepAlive(_ block.Block, _ *server.Connection) message.Message {
 	fmt.Println("I am handling a keep alive")
-	return common.KeepAlive{}
+	return message.KeepAlive{}
 }
 
-func HandleDisconnect(_ blocks.Block, _ *server.Connection) messages.Message {
+func HandleDisconnect(_ block.Block, _ *server.Connection) message.Message {
 	fmt.Println("Handling disconnect")
 	return nil
 }
 
-func (s Server) HandleBlock(block blocks.Block, c *server.Connection) (messages.Message, error) {
-	method, ok := handleMap[block.Header.Query]
-	if !ok {
-		return nil, fmt.Errorf("Unknown query!")
-	}
-	return method(block, c), nil
-}
-
 func Start() {
 	fmt.Println("Here i am the discovery server!")
-	s := Server{}
-	server.Serve(10881, s)
+	s := server.Server{
+		FunctionMap: handleMap,
+	}
+	s.Serve(10881)
 }

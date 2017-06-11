@@ -1,4 +1,4 @@
-package blocks
+package block
 
 type Void struct {
 	Body

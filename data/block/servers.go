@@ -1,10 +1,8 @@
-package data
+package block
 
 import (
 	"bytes"
 	"encoding/binary"
-
-	"github.com/pinfake/pes6go/network/blocks"
 )
 
 type Server struct {
@@ -29,7 +27,7 @@ type ServerInternal struct {
 	unknown2   [2]byte
 }
 
-type ServerBlock struct {
+type ServerBody struct {
 	servers []ServerInternal
 }
 
@@ -48,20 +46,20 @@ func (info Server) buildInternal() ServerInternal {
 	return internal
 }
 
-func (info ServerBlock) GetBytes() []byte {
+func (body ServerBody) GetBytes() []byte {
 	buf := bytes.Buffer{}
-	for _, server := range info.servers {
+	for _, server := range body.servers {
 		binary.Write(&buf, binary.BigEndian, server)
 	}
 	return buf.Bytes()
 }
 
-func (info Servers) GetBlock(query uint16) blocks.Block {
-	block := ServerBlock{}
+func (info Servers) GetBlock(query uint16) Block {
+	body := ServerBody{}
 	for _, server := range info.Servers {
-		block.servers = append(block.servers, server.buildInternal())
+		body.servers = append(body.servers, server.buildInternal())
 	}
-	return blocks.NewBlock(
-		query, block,
+	return NewBlock(
+		query, body,
 	)
 }

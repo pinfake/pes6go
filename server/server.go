@@ -5,17 +5,23 @@ import (
 	"net"
 	"os"
 	"strconv"
-	"github.com/pinfake/pes6go/network/blocks"
-	"github.com/pinfake/pes6go/network/messages"
+
+	"github.com/pinfake/pes6go/data/block"
+	"github.com/pinfake/pes6go/data/message"
 )
 
 const host = "0.0.0.0"
 
-type Handler interface {
-	HandleBlock(block blocks.Block, c *Connection) (messages.Message, error)
+type Server struct {
+	Handler
+	FunctionMap map[uint16]func(block.Block, *Connection) message.Message
 }
 
-func handleConnection(conn net.Conn, handler Handler) {
+type Handler interface {
+	HandleBlock(block block.Block, c *Connection) (message.Message, error)
+}
+
+func (s Server) handleConnection(conn net.Conn) {
 	defer conn.Close()
 	c := Connection{
 		conn: conn,
@@ -23,26 +29,37 @@ func handleConnection(conn net.Conn, handler Handler) {
 	}
 	fmt.Println("Hey!, a connection!")
 	for {
-		block, err := c.readBlock()
+		b, err := c.readBlock()
 		if err != nil {
 			panic("Couldn't properly read")
 		}
-		message, err := handler.HandleBlock(block, &c)
+		m, err := s.HandleBlock(b, &c)
 		if err != nil {
 			panic(err)
 		}
-		if message == nil {
+		if m == nil {
 			break
 		}
-		bs := message.GetBlocks()
+		bs := m.GetBlocks()
 		fmt.Printf("Going to write: % x", bs)
-		c.writeMessage(message)
+		c.writeMessage(m)
 	}
-	//handler.HandleConnection(conn)
 	fmt.Println("It's over!")
 }
 
-func Serve(port int, handler Handler) {
+func (s Server) HandleBlock(block block.Block, c *Connection) (message.Message, error) {
+	method, ok := s.FunctionMap[block.Header.Query]
+	if !ok {
+		return nil, fmt.Errorf("Unknown query!")
+	}
+	return method(block, c), nil
+}
+
+func (s Server) Initialize(f map[uint16]func(block.Block, *Connection) message.Message) {
+	s.FunctionMap = f
+}
+
+func (s Server) Serve(port int) {
 	l, err := net.Listen("tcp", host+":"+strconv.Itoa(port))
 	if err != nil {
 		fmt.Println("Error listening:", err.Error())
@@ -56,6 +73,6 @@ func Serve(port int, handler Handler) {
 			fmt.Println("Error accepting: ", err)
 			os.Exit(1)
 		}
-		go handleConnection(conn, handler)
+		go s.handleConnection(conn)
 	}
 }

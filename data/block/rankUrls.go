@@ -1,10 +1,8 @@
-package data
+package block
 
 import (
 	"bytes"
 	"encoding/binary"
-
-	"github.com/pinfake/pes6go/network/blocks"
 )
 
 type RankUrl struct {
@@ -22,7 +20,7 @@ type RankUrlInternal struct {
 	url     [128]byte
 }
 
-type RankUrlBlock struct {
+type RankUrlsBody struct {
 	rankUrls []RankUrlInternal
 }
 
@@ -35,7 +33,7 @@ func (info RankUrl) buildInternal() RankUrlInternal {
 	return internal
 }
 
-func (info RankUrlBlock) GetBytes() []byte {
+func (info RankUrlsBody) GetBytes() []byte {
 	buf := bytes.Buffer{}
 	for _, rankUrl := range info.rankUrls {
 		binary.Write(&buf, binary.BigEndian, rankUrl)
@@ -43,12 +41,12 @@ func (info RankUrlBlock) GetBytes() []byte {
 	return buf.Bytes()
 }
 
-func (info RankUrls) GetBlock(query uint16) blocks.Block {
-	block := RankUrlBlock{}
+func (info RankUrls) GetBlock(query uint16) Block {
+	body := RankUrlsBody{}
 	for _, rankUrl := range info.RankUrls {
-		block.rankUrls = append(block.rankUrls, rankUrl.buildInternal())
+		body.rankUrls = append(body.rankUrls, rankUrl.buildInternal())
 	}
-	return blocks.NewBlock(
-		query, block,
+	return NewBlock(
+		query, body,
 	)
 }
