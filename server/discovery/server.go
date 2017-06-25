@@ -21,11 +21,13 @@ var handleMap = map[uint16]func(block.Block, *server.Connection) message.Message
 func HandleDiscoveryInit(_ block.Block, _ *server.Connection) message.Message {
 	fmt.Println("I am handling discovery init")
 	return message.Motd{
-		Message: block.ServerMessage{
-			Time:  time.Date(2017, 1, 1, 12, 0, 0, 0, time.UTC),
-			Title: "Mariano Powered:",
-			Text: "Es el vecino el que elige al alcalde y es el alcalde el que quiere " +
-				"que sean los vecinos el alcalde",
+		Messages: []block.Piece{
+			block.ServerMessage{
+				Time:  time.Date(2016, 1, 1, 12, 0, 0, 0, time.UTC),
+				Title: "Mariano Powered:",
+				Text: "Es el vecino el que elige al alcalde y es el alcalde el que quiere " +
+					"que sean los vecinos el alcalde",
+			},
 		},
 	}
 }

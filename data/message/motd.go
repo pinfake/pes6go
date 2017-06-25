@@ -2,20 +2,15 @@ package message
 
 import "github.com/pinfake/pes6go/data/block"
 
-const (
-	initResponseQuery1 = 0x00002009 + iota
-	initResponseQuery2
-	initResponseQuery3
-)
-
 type Motd struct {
-	Message block.ServerMessage
+	Messages []block.Piece
 }
 
 func (r Motd) GetBlocks() []block.Block {
-	return []block.Block{
-		block.NewBlock(initResponseQuery1, block.Zero{}),
-		r.Message.GetBlock(initResponseQuery2),
-		block.NewBlock(initResponseQuery3, block.Zero{}),
-	}
+	var blocks []block.Block
+	blocks = append(blocks, block.NewBlock(0x2009, block.Zero{}))
+	blocks = append(blocks, block.GetBlocks(0x200a, r.Messages)...)
+	blocks = append(blocks, block.NewBlock(0x200b, block.Zero{}))
+
+	return blocks
 }
