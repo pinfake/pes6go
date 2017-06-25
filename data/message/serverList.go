@@ -9,9 +9,13 @@ type ServerList struct {
 }
 
 func (r ServerList) GetBlocks() []block.Block {
-	return []block.Block{
-		block.NewBlock(0x2002, block.Void{}),
-		r.Servers.GetBlock(0x2003),
-		block.NewBlock(0x2004, block.Void{}),
+	var blocks []block.Block
+
+	blocks = append(blocks, block.NewBlock(0x2002, block.Void{}))
+	for _, bitBlock := range r.Servers.GetBlocks(0x2003) {
+		blocks = append(blocks, bitBlock)
 	}
+	blocks = append(blocks, block.NewBlock(0x2004, block.Void{}))
+
+	return blocks
 }

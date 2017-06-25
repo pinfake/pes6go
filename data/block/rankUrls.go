@@ -20,10 +20,6 @@ type RankUrlInternal struct {
 	url     [128]byte
 }
 
-type RankUrlsBody struct {
-	rankUrls []RankUrlInternal
-}
-
 func (info RankUrl) buildInternal() RankUrlInternal {
 	var internal RankUrlInternal
 	internal.rtype = byte(info.Rtype)
@@ -33,20 +29,16 @@ func (info RankUrl) buildInternal() RankUrlInternal {
 	return internal
 }
 
-func (info RankUrlsBody) GetBytes() []byte {
+func (info RankUrlInternal) getBytes() []byte {
 	buf := bytes.Buffer{}
-	for _, rankUrl := range info.rankUrls {
-		binary.Write(&buf, binary.BigEndian, rankUrl)
-	}
+	binary.Write(&buf, binary.BigEndian, info)
 	return buf.Bytes()
 }
 
-func (info RankUrls) GetBlock(query uint16) Block {
-	body := RankUrlsBody{}
+func (info RankUrls) GetBlocks(query uint16) []Block {
+	bits := []BlockBit{}
 	for _, rankUrl := range info.RankUrls {
-		body.rankUrls = append(body.rankUrls, rankUrl.buildInternal())
+		bits = append(bits, rankUrl.buildInternal())
 	}
-	return NewBlock(
-		query, body,
-	)
+	return GetBlocks(query, bits)
 }

@@ -12,7 +12,6 @@ type ServerMessage struct {
 	Time  time.Time
 	Title string
 	Text  string
-	dataBlock
 }
 
 type ServerMessageBody struct {

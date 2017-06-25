@@ -11,13 +11,23 @@ import (
 var handleMap = map[uint16]func(block.Block, *server.Connection) message.Message{
 	0x3001: HandleInit,
 	0x3003: HandleLogin,
+	0x3010: HandleProfiles,
 	0x0005: HandleKeepAlive,
 	0x0003: HandleDisconnect,
 }
 
-func HandleLogin(_ block.Block, _ *server.Connection) message.Message {
-	fmt.Println("I am handling login")
+func HandleProfiles(_ block.Block, _ *server.Connection) message.Message {
 	return nil
+}
+
+func HandleLogin(b block.Block, _ *server.Connection) message.Message {
+	auth := block.NewAthentication(b)
+	fmt.Println("I am handling login")
+	fmt.Printf("key: % x\n", auth.Key)
+	fmt.Printf("password: % x\n", auth.Password)
+	fmt.Printf("unknown: % x\n", auth.Unknown)
+	fmt.Printf("roster: % x\n", auth.RosterHash)
+	return message.LoginResponse{}
 }
 
 func HandleInit(_ block.Block, _ *server.Connection) message.Message {

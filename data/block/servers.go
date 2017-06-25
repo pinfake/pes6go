@@ -27,10 +27,6 @@ type ServerInternal struct {
 	unknown2   [2]byte
 }
 
-type ServerBody struct {
-	servers []ServerInternal
-}
-
 func (info Server) buildInternal() ServerInternal {
 	var internal ServerInternal
 	copy(internal.unknown1[:], []byte{
@@ -46,20 +42,16 @@ func (info Server) buildInternal() ServerInternal {
 	return internal
 }
 
-func (body ServerBody) GetBytes() []byte {
+func (info ServerInternal) getBytes() []byte {
 	buf := bytes.Buffer{}
-	for _, server := range body.servers {
-		binary.Write(&buf, binary.BigEndian, server)
-	}
+	binary.Write(&buf, binary.BigEndian, info)
 	return buf.Bytes()
 }
 
-func (info Servers) GetBlock(query uint16) Block {
-	body := ServerBody{}
+func (info Servers) GetBlocks(query uint16) []Block {
+	bits := []BlockBit{}
 	for _, server := range info.Servers {
-		body.servers = append(body.servers, server.buildInternal())
+		bits = append(bits, server.buildInternal())
 	}
-	return NewBlock(
-		query, body,
-	)
+	return GetBlocks(query, bits)
 }
