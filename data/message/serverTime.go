@@ -9,11 +9,14 @@ const (
 )
 
 type ServerTime struct {
-	ServerTime block.ServerTime
+	ServerTime block.Piece
 }
 
 func (r ServerTime) GetBlocks() []block.Block {
-	return []block.Block{
-		r.ServerTime.GetBlock(serverTimeResponseQuery1),
+	var blocks []block.Block
+
+	for _, pieceBlock := range block.GetBlocks(serverTimeResponseQuery1, []block.Piece{r.ServerTime}) {
+		blocks = append(blocks, pieceBlock)
 	}
+	return blocks
 }

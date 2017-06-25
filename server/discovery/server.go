@@ -33,17 +33,15 @@ func HandleDiscoveryInit(_ block.Block, _ *server.Connection) message.Message {
 func HandleQueryServers(_ block.Block, _ *server.Connection) message.Message {
 	fmt.Println("I am handling query servers")
 	return message.ServerList{
-		Servers: block.Servers{
-			Servers: []block.Server{
-				{7, "GROUP-SP/", "127.0.0.1", 10887, 0},
-				{6, "SCHE-SP/", "127.0.0.1", 10887, 0},
-				{4, "QUICK0-SP/", "127.0.0.1", 10887, 0},
-				{4, "QUICK1-SP/", "127.0.0.1", 10887, 0},
-				{8, "MENU03-SP/", "127.0.0.1", 12881, 0},
-				{3, "TurboLobas Inc.", "127.0.0.1", 10900, 50},
-				{2, "ACCT03-SP/", "127.0.0.1", 12881, 0},
-				{1, "GATE-SP/", "127.0.0.1", 10887, 0},
-			},
+		Servers: []block.Piece{
+			block.Server{7, "GROUP-SP/", "127.0.0.1", 10887, 0},
+			block.Server{6, "SCHE-SP/", "127.0.0.1", 10887, 0},
+			block.Server{4, "QUICK0-SP/", "127.0.0.1", 10887, 0},
+			block.Server{4, "QUICK1-SP/", "127.0.0.1", 10887, 0},
+			block.Server{8, "MENU03-SP/", "127.0.0.1", 12881, 0},
+			block.Server{3, "TurboLobas Inc.", "127.0.0.1", 10900, 50},
+			block.Server{2, "ACCT03-SP/", "127.0.0.1", 12881, 0},
+			block.Server{1, "GATE-SP/", "127.0.0.1", 10887, 0},
 		},
 	}
 }
@@ -51,23 +49,23 @@ func HandleQueryServers(_ block.Block, _ *server.Connection) message.Message {
 func HandleRankUrlsQuery(_ block.Block, _ *server.Connection) message.Message {
 	fmt.Println("I am handling rank urls")
 	return message.RankUrlList{
-		RankUrls: block.RankUrls{
-			RankUrls: []block.RankUrl{
-				{0, "http://pes6web.winning-eleven.net/pes6e2/ranking/we10getrank.html"},
-				{1, "https://pes6web.winning-eleven.net/pes6e2/ranking/we10getgrprank.html"},
-				{2, "http://pes6web.winning-eleven.net/pes6e2/ranking/we10RankingWeek.html"},
-				{3, "https://pes6web.winning-eleven.net/pes6e2/ranking/we10GrpRankingWeek.html"},
-				{4, "https://pes6web.winning-eleven.net/pes6e2/ranking/we10RankingCup.html"},
-				{5, "http://www.pes6j.net/server/we10getgrpboard.html"},
-				{6, "http://www.pes6j.net/server/we10getgrpinvitelist.html"},
-			},
+		RankUrls: []block.Piece{
+			block.RankUrl{0, "http://pes6web.winning-eleven.net/pes6e2/ranking/we10getrank.html"},
+			block.RankUrl{1, "https://pes6web.winning-eleven.net/pes6e2/ranking/we10getgrprank.html"},
+			block.RankUrl{2, "http://pes6web.winning-eleven.net/pes6e2/ranking/we10RankingWeek.html"},
+			block.RankUrl{3, "https://pes6web.winning-eleven.net/pes6e2/ranking/we10GrpRankingWeek.html"},
+			block.RankUrl{4, "https://pes6web.winning-eleven.net/pes6e2/ranking/we10RankingCup.html"},
+			block.RankUrl{5, "http://www.pes6j.net/server/we10getgrpboard.html"},
+			block.RankUrl{6, "http://www.pes6j.net/server/we10getgrpinvitelist.html"},
 		},
 	}
 }
 
 func HandleServerTime(_ block.Block, _ *server.Connection) message.Message {
 	fmt.Println("I am handling server time")
-	return message.ServerTime{ServerTime: block.ServerTime{Time: time.Now()}}
+	return message.ServerTime{
+		ServerTime: block.ServerTime{Time: time.Now()},
+	}
 }
 
 func HandleKeepAlive(_ block.Block, _ *server.Connection) message.Message {
