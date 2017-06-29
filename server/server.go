@@ -18,10 +18,6 @@ type Server interface {
 	GetHandlers() map[uint16]Handler
 }
 
-type ServerHandler interface {
-	HandleBlock(block block.Block, c *Connection) (message.Message, error)
-}
-
 func handleConnection(s Server, conn net.Conn) {
 	defer conn.Close()
 	c := Connection{
@@ -34,7 +30,7 @@ func handleConnection(s Server, conn net.Conn) {
 		if err != nil {
 			panic("Couldn't properly read")
 		}
-		m, err := HandleBlock(s, b, &c)
+		m, err := handleBlock(s, b, &c)
 		if err != nil {
 			panic(err)
 		}
@@ -48,7 +44,7 @@ func handleConnection(s Server, conn net.Conn) {
 	fmt.Println("It's over!")
 }
 
-func HandleBlock(s Server, block block.Block, c *Connection) (message.Message, error) {
+func handleBlock(s Server, block block.Block, c *Connection) (message.Message, error) {
 	method, ok := s.GetHandlers()[block.Header.Query]
 	if !ok {
 		return nil, fmt.Errorf("Unknown query!")
