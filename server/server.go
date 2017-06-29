@@ -12,16 +12,17 @@ import (
 
 const host = "0.0.0.0"
 
-type Server struct {
-	Handler
-	FunctionMap map[uint16]func(block.Block, *Connection) message.Message
+type Handler func(block.Block, *Connection) message.Message
+
+type Server interface {
+	GetHandlers() map[uint16]Handler
 }
 
-type Handler interface {
+type ServerHandler interface {
 	HandleBlock(block block.Block, c *Connection) (message.Message, error)
 }
 
-func (s Server) handleConnection(conn net.Conn) {
+func handleConnection(s Server, conn net.Conn) {
 	defer conn.Close()
 	c := Connection{
 		conn: conn,
@@ -33,7 +34,7 @@ func (s Server) handleConnection(conn net.Conn) {
 		if err != nil {
 			panic("Couldn't properly read")
 		}
-		m, err := s.HandleBlock(b, &c)
+		m, err := HandleBlock(s, b, &c)
 		if err != nil {
 			panic(err)
 		}
@@ -47,19 +48,15 @@ func (s Server) handleConnection(conn net.Conn) {
 	fmt.Println("It's over!")
 }
 
-func (s Server) HandleBlock(block block.Block, c *Connection) (message.Message, error) {
-	method, ok := s.FunctionMap[block.Header.Query]
+func HandleBlock(s Server, block block.Block, c *Connection) (message.Message, error) {
+	method, ok := s.GetHandlers()[block.Header.Query]
 	if !ok {
 		return nil, fmt.Errorf("Unknown query!")
 	}
 	return method(block, c), nil
 }
 
-func (s Server) Initialize(f map[uint16]func(block.Block, *Connection) message.Message) {
-	s.FunctionMap = f
-}
-
-func (s Server) Serve(port int) {
+func Serve(s Server, port int) {
 	l, err := net.Listen("tcp", host+":"+strconv.Itoa(port))
 	if err != nil {
 		fmt.Println("Error listening:", err.Error())
@@ -73,6 +70,6 @@ func (s Server) Serve(port int) {
 			fmt.Println("Error accepting: ", err)
 			os.Exit(1)
 		}
-		go s.handleConnection(conn)
+		go handleConnection(s, conn)
 	}
 }

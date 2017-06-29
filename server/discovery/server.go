@@ -9,16 +9,23 @@ import (
 	"github.com/pinfake/pes6go/server"
 )
 
-var handleMap = map[uint16]func(block.Block, *server.Connection) message.Message{
-	0x2008: HandleDiscoveryInit,
-	0x2006: HandleServerTime,
-	0x2005: HandleQueryServers,
-	0x2200: HandleRankUrlsQuery,
-	0x0005: HandleKeepAlive,
-	0x0003: HandleDisconnect,
+type DiscoveryServer struct {
 }
 
-func HandleDiscoveryInit(_ block.Block, _ *server.Connection) message.Message {
+var handlers = map[uint16]server.Handler{
+	0x2008: Init,
+	0x2006: ServerTime,
+	0x2005: Servers,
+	0x2200: RankUrls,
+	0x0005: KeepAlive,
+	0x0003: Disconnect,
+}
+
+func (s DiscoveryServer) GetHandlers() map[uint16]server.Handler {
+	return handlers
+}
+
+func Init(_ block.Block, _ *server.Connection) message.Message {
 	fmt.Println("I am handling discovery init")
 	return message.Motd{
 		Messages: []block.Piece{
@@ -32,7 +39,7 @@ func HandleDiscoveryInit(_ block.Block, _ *server.Connection) message.Message {
 	}
 }
 
-func HandleQueryServers(_ block.Block, _ *server.Connection) message.Message {
+func Servers(_ block.Block, _ *server.Connection) message.Message {
 	fmt.Println("I am handling query servers")
 	return message.ServerList{
 		Servers: []block.Piece{
@@ -48,7 +55,7 @@ func HandleQueryServers(_ block.Block, _ *server.Connection) message.Message {
 	}
 }
 
-func HandleRankUrlsQuery(_ block.Block, _ *server.Connection) message.Message {
+func RankUrls(_ block.Block, _ *server.Connection) message.Message {
 	fmt.Println("I am handling rank urls")
 	return message.RankUrlList{
 		RankUrls: []block.Piece{
@@ -63,27 +70,24 @@ func HandleRankUrlsQuery(_ block.Block, _ *server.Connection) message.Message {
 	}
 }
 
-func HandleServerTime(_ block.Block, _ *server.Connection) message.Message {
+func ServerTime(_ block.Block, _ *server.Connection) message.Message {
 	fmt.Println("I am handling server time")
 	return message.ServerTime{
 		ServerTime: block.ServerTime{Time: time.Now()},
 	}
 }
 
-func HandleKeepAlive(_ block.Block, _ *server.Connection) message.Message {
+func KeepAlive(_ block.Block, _ *server.Connection) message.Message {
 	fmt.Println("I am handling a keep alive")
 	return message.KeepAlive{}
 }
 
-func HandleDisconnect(_ block.Block, _ *server.Connection) message.Message {
+func Disconnect(_ block.Block, _ *server.Connection) message.Message {
 	fmt.Println("Handling disconnect")
 	return nil
 }
 
 func Start() {
 	fmt.Println("Here i am the discovery server!")
-	s := server.Server{
-		FunctionMap: handleMap,
-	}
-	s.Serve(10881)
+	server.Serve(DiscoveryServer{}, 10881)
 }
