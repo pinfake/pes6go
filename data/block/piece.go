@@ -3,9 +3,10 @@ package block
 import (
 	"bytes"
 	"encoding/binary"
+	"fmt"
 )
 
-const MAX_BLOCK_DATA_SIZE = 512
+const MAX_BLOCK_DATA_SIZE = 1024
 
 type PieceInternal interface {
 }
@@ -38,6 +39,7 @@ func getBlocksFromInternals(query uint16, internals []PieceInternal) []Block {
 }
 
 func GetBytes(b PieceInternal) []byte {
+	fmt.Printf("piece: %0x\n", b)
 	buf := new(bytes.Buffer)
 	binary.Write(buf, binary.BigEndian, b)
 	return buf.Bytes()

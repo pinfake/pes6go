@@ -15,6 +15,7 @@ var handlers = map[uint16]server.Handler{
 	0x3001: Init,
 	0x3003: Login,
 	0x3010: Profiles,
+	0x3060: QueryPlayerId,
 	0x0005: KeepAlive,
 	0x0003: Disconnect,
 }
@@ -23,8 +24,55 @@ func (s AccountingServer) GetHandlers() map[uint16]server.Handler {
 	return handlers
 }
 
+func QueryPlayerId(_ block.Block, _ *server.Connection) message.Message {
+	return message.PlayerIdResponse{
+		PlayerIdResponse: []block.Piece{
+			block.PlayerIdResponse{
+				Code: 0xffff,
+			},
+		},
+	}
+}
+
 func Profiles(_ block.Block, _ *server.Connection) message.Message {
-	return nil
+	return message.AccountPlayers{
+		AccountPlayers: []block.Piece{
+			block.AccountPlayers{
+				Players: [3]block.AccountPlayer{
+					{
+						Position:      0,
+						Id:            12345,
+						Name:          "PadreJohn",
+						TimePlayed:    1000,
+						Division:      2,
+						Points:        0,
+						Category:      500,
+						MatchesPlayed: 20,
+					},
+					{
+						Position:      1,
+						Id:            0,
+						Name:          "",
+						TimePlayed:    0,
+						Division:      2,
+						Points:        0,
+						Category:      500,
+						MatchesPlayed: 0,
+					},
+					{
+						Position:      2,
+						Id:            0,
+						Name:          "",
+						TimePlayed:    0,
+						Division:      2,
+						Points:        0,
+						Category:      500,
+						MatchesPlayed: 0,
+					},
+				},
+			},
+		},
+	}
 }
 
 func Login(b block.Block, _ *server.Connection) message.Message {
