@@ -13,3 +13,11 @@ func (r AccountPlayers) GetBlocks() []block.Block {
 
 	return blocks
 }
+
+func NewAccountPlayersMessage(players block.AccountPlayers) AccountPlayers {
+	return AccountPlayers{
+		AccountPlayers: []block.Piece{
+			players,
+		},
+	}
+}

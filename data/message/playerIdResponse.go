@@ -13,3 +13,13 @@ func (m PlayerIdResponse) GetBlocks() []block.Block {
 		m.PlayerIdResponse)...)
 	return blocks
 }
+
+func NewPlayerIdResponseMessage(code uint16) PlayerIdResponse {
+	return PlayerIdResponse{
+		PlayerIdResponse: []block.Piece{
+			block.PlayerIdResponse{
+				Code: code,
+			},
+		},
+	}
+}
