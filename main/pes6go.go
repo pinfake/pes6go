@@ -19,7 +19,7 @@ func main() {
 		fmt.Fprint(os.Stderr, "\tdiscovery      Run a discovery server\n")
 		fmt.Fprint(os.Stderr, "\taccounting     Run an accounting server\n")
 		fmt.Fprint(os.Stderr, "\tgame           Run a game server\n")
-		fmt.Fprint(os.Stderr, "\tallinone       Run all servers at once\n\n")
+		fmt.Fprint(os.Stderr, "\tfullhouse      Run all servers at once\n\n")
 		fmt.Fprint(os.Stderr, "The arguments are:\n\n")
 		flag.PrintDefaults()
 	}
@@ -33,6 +33,11 @@ func main() {
 	}
 
 	switch args[0] {
+	case "fullhouse":
+		go discovery.Start()
+		go accounting.Start()
+		go game.Start()
+		select {}
 	case "discovery":
 		discovery.Start()
 	case "accounting":
