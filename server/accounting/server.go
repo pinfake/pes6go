@@ -24,11 +24,11 @@ func (s AccountingServer) GetHandlers() map[uint16]server.Handler {
 	return handlers
 }
 
-func QueryPlayerId(_ block.Block, _ *server.Connection) message.Message {
+func QueryPlayerId(_ server.Server, _ block.Block, _ *server.Connection) message.Message {
 	return message.NewPlayerIdResponseMessage(block.PlayerIdOk)
 }
 
-func Profiles(_ block.Block, _ *server.Connection) message.Message {
+func Profiles(_ server.Server, _ block.Block, _ *server.Connection) message.Message {
 
 	return message.NewAccountPlayersMessage(
 		block.AccountPlayers{
@@ -67,7 +67,7 @@ func Profiles(_ block.Block, _ *server.Connection) message.Message {
 		})
 }
 
-func Login(b block.Block, _ *server.Connection) message.Message {
+func Login(_ server.Server, b block.Block, _ *server.Connection) message.Message {
 	auth := block.NewAthentication(b)
 	fmt.Println("I am handling login")
 	fmt.Printf("key: % x\n", auth.Key)
@@ -77,17 +77,17 @@ func Login(b block.Block, _ *server.Connection) message.Message {
 	return message.LoginResponse{}
 }
 
-func Init(_ block.Block, _ *server.Connection) message.Message {
+func Init(_ server.Server, _ block.Block, _ *server.Connection) message.Message {
 	fmt.Println("I am handling init")
 	return message.AccountingInit{}
 }
 
-func KeepAlive(_ block.Block, _ *server.Connection) message.Message {
+func KeepAlive(_ server.Server, _ block.Block, _ *server.Connection) message.Message {
 	fmt.Println("I am handling a keep alive")
 	return message.KeepAlive{}
 }
 
-func Disconnect(_ block.Block, _ *server.Connection) message.Message {
+func Disconnect(_ server.Server, _ block.Block, _ *server.Connection) message.Message {
 	fmt.Println("Handling disconnect")
 	return nil
 }

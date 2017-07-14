@@ -12,7 +12,7 @@ import (
 
 const host = "0.0.0.0"
 
-type Handler func(block.Block, *Connection) message.Message
+type Handler func(Server, block.Block, *Connection) message.Message
 
 type Server interface {
 	GetHandlers() map[uint16]Handler
@@ -49,7 +49,7 @@ func handleBlock(s Server, block block.Block, c *Connection) (message.Message, e
 	if !ok {
 		return nil, fmt.Errorf("Unknown query!")
 	}
-	return method(block, c), nil
+	return method(s, block, c), nil
 }
 
 func Serve(s Server, port int) {

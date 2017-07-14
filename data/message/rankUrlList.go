@@ -1,6 +1,10 @@
 package message
 
-import "github.com/pinfake/pes6go/data/block"
+import (
+	"reflect"
+
+	"github.com/pinfake/pes6go/data/block"
+)
 
 type RankUrlList struct {
 	RankUrls []block.Piece
@@ -16,4 +20,10 @@ func (r RankUrlList) GetBlocks() []block.Block {
 	blocks = append(blocks, block.NewBlock(0x2203, block.Zero{}))
 
 	return blocks
+}
+
+func NewRankUrlListMessage(urls []block.RankUrl) RankUrlList {
+	return RankUrlList{
+		RankUrls: block.GetPieces(reflect.ValueOf(urls)),
+	}
 }

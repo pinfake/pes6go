@@ -7,9 +7,11 @@ import (
 	"github.com/pinfake/pes6go/data/block"
 	"github.com/pinfake/pes6go/data/message"
 	"github.com/pinfake/pes6go/server"
+	"github.com/pinfake/pes6go/storage"
 )
 
 type DiscoveryServer struct {
+	storage storage.Storage
 }
 
 var handlers = map[uint16]server.Handler{
@@ -25,27 +27,14 @@ func (s DiscoveryServer) GetHandlers() map[uint16]server.Handler {
 	return handlers
 }
 
-func Init(_ block.Block, _ *server.Connection) message.Message {
+func Init(s server.Server, _ block.Block, _ *server.Connection) message.Message {
 	fmt.Println("I am handling discovery init")
-	return message.NewMotdMessage(
-		[]block.ServerMessage{
-			{
-				Time:  time.Date(2016, 1, 1, 12, 0, 0, 0, time.UTC),
-				Title: "Mariano Powered:",
-				Text: "Es el vecino el que elige al alcalde y es el alcalde el que quiere " +
-					"que sean los vecinos el alcalde",
-			},
-			{
-				Time:  time.Date(2016, 1, 1, 12, 0, 0, 0, time.UTC),
-				Title: "Mariano Powered:",
-				Text: "Es el vecino el que elige al alcalde y es el alcalde el que quiere " +
-					"que sean los vecinos el alcalde",
-			},
-		},
+	return message.NewServerNewsMessage(
+		s.(DiscoveryServer).storage.GetServerNews(),
 	)
 }
 
-func Servers(_ block.Block, _ *server.Connection) message.Message {
+func Servers(_ server.Server, _ block.Block, _ *server.Connection) message.Message {
 	fmt.Println("I am handling query servers")
 	return message.ServerList{
 		Servers: []block.Piece{
@@ -61,39 +50,33 @@ func Servers(_ block.Block, _ *server.Connection) message.Message {
 	}
 }
 
-func RankUrls(_ block.Block, _ *server.Connection) message.Message {
+func RankUrls(s server.Server, _ block.Block, _ *server.Connection) message.Message {
 	fmt.Println("I am handling rank urls")
-	return message.RankUrlList{
-		RankUrls: []block.Piece{
-			block.RankUrl{0, "http://pes6web.winning-eleven.net/pes6e2/ranking/we10getrank.html"},
-			block.RankUrl{1, "https://pes6web.winning-eleven.net/pes6e2/ranking/we10getgrprank.html"},
-			block.RankUrl{2, "http://pes6web.winning-eleven.net/pes6e2/ranking/we10RankingWeek.html"},
-			block.RankUrl{3, "https://pes6web.winning-eleven.net/pes6e2/ranking/we10GrpRankingWeek.html"},
-			block.RankUrl{4, "https://pes6web.winning-eleven.net/pes6e2/ranking/we10RankingCup.html"},
-			block.RankUrl{5, "http://www.pes6j.net/server/we10getgrpboard.html"},
-			block.RankUrl{6, "http://www.pes6j.net/server/we10getgrpinvitelist.html"},
-		},
-	}
+	return message.NewRankUrlListMessage(
+		s.(DiscoveryServer).storage.GetRankUrls(),
+	)
 }
 
-func ServerTime(_ block.Block, _ *server.Connection) message.Message {
+func ServerTime(_ server.Server, _ block.Block, _ *server.Connection) message.Message {
 	fmt.Println("I am handling server time")
 	return message.ServerTime{
 		ServerTime: block.ServerTime{Time: time.Now()},
 	}
 }
 
-func KeepAlive(_ block.Block, _ *server.Connection) message.Message {
+func KeepAlive(_ server.Server, _ block.Block, _ *server.Connection) message.Message {
 	fmt.Println("I am handling a keep alive")
 	return message.KeepAlive{}
 }
 
-func Disconnect(_ block.Block, _ *server.Connection) message.Message {
+func Disconnect(_ server.Server, _ block.Block, _ *server.Connection) message.Message {
 	fmt.Println("Handling disconnect")
 	return nil
 }
 
 func Start() {
 	fmt.Println("Here i am the discovery server!")
-	server.Serve(DiscoveryServer{}, 10881)
+	server.Serve(DiscoveryServer{
+		storage: storage.Forged{},
+	}, 10881)
 }

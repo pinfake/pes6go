@@ -1,8 +1,8 @@
 package storage
 
-//type Storage interface {
-//	SavePlayerProfile(profile info.PlayerProfile)
-//	LoadPlayerProfiles() []info.PlayerProfile
-//	CreateAccount(key, password)
-//	Login(key, password)
-//}
+import "github.com/pinfake/pes6go/data/block"
+
+type Storage interface {
+	GetServerNews() []block.News
+	GetRankUrls() []block.RankUrl
+}
