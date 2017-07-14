@@ -27,16 +27,22 @@ func (s DiscoveryServer) GetHandlers() map[uint16]server.Handler {
 
 func Init(_ block.Block, _ *server.Connection) message.Message {
 	fmt.Println("I am handling discovery init")
-	return message.Motd{
-		Messages: []block.Piece{
-			block.ServerMessage{
+	return message.NewMotdMessage(
+		[]block.ServerMessage{
+			{
+				Time:  time.Date(2016, 1, 1, 12, 0, 0, 0, time.UTC),
+				Title: "Mariano Powered:",
+				Text: "Es el vecino el que elige al alcalde y es el alcalde el que quiere " +
+					"que sean los vecinos el alcalde",
+			},
+			{
 				Time:  time.Date(2016, 1, 1, 12, 0, 0, 0, time.UTC),
 				Title: "Mariano Powered:",
 				Text: "Es el vecino el que elige al alcalde y es el alcalde el que quiere " +
 					"que sean los vecinos el alcalde",
 			},
 		},
-	}
+	)
 }
 
 func Servers(_ block.Block, _ *server.Connection) message.Message {

@@ -4,9 +4,14 @@ import (
 	"bytes"
 	"encoding/binary"
 	"fmt"
+	"reflect"
 )
 
 const MAX_BLOCK_DATA_SIZE = 1024
+
+type Pieces struct {
+	pieces []interface{}
+}
 
 type PieceInternal interface {
 }
@@ -51,4 +56,15 @@ func GetBlocks(query uint16, pieces []Piece) []Block {
 		internals = append(internals, piece.buildInternal())
 	}
 	return getBlocksFromInternals(query, internals)
+}
+
+func GetPieces(slice reflect.Value) []Piece {
+	if slice.Kind() != reflect.Slice {
+		panic("Trying to get pieces from a non slice value!")
+	}
+	ret := make([]Piece, slice.Len())
+	for i := 0; i < slice.Len(); i++ {
+		ret[i] = slice.Index(i).Interface().(Piece)
+	}
+	return ret
 }

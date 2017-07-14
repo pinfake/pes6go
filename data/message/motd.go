@@ -1,6 +1,10 @@
 package message
 
-import "github.com/pinfake/pes6go/data/block"
+import (
+	"reflect"
+
+	"github.com/pinfake/pes6go/data/block"
+)
 
 type Motd struct {
 	Messages []block.Piece
@@ -13,4 +17,10 @@ func (r Motd) GetBlocks() []block.Block {
 	blocks = append(blocks, block.NewBlock(0x200b, block.Zero{}))
 
 	return blocks
+}
+
+func NewMotdMessage(messages []block.ServerMessage) Motd {
+	return Motd{
+		Messages: block.GetPieces(reflect.ValueOf(messages)),
+	}
 }

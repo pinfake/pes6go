@@ -16,7 +16,7 @@ type ServerMessageInternal struct {
 	header [6]byte
 	time   [19]byte
 	title  [64]byte
-	text   [128]byte
+	text   [512]byte
 }
 
 func (info ServerMessage) buildInternal() PieceInternal {
