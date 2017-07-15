@@ -6,16 +6,21 @@ import (
 	"github.com/pinfake/pes6go/data/block"
 	"github.com/pinfake/pes6go/data/message"
 	"github.com/pinfake/pes6go/server"
+	"github.com/pinfake/pes6go/storage"
 )
 
 type AccountingServer struct {
+	storage storage.Storage
 }
 
 var handlers = map[uint16]server.Handler{
 	0x3001: Init,
 	0x3003: Login,
 	0x3010: Profiles,
+	0x3040: PlayerGroupInfo,
+	0x3050: GroupInfo,
 	0x3060: QueryPlayerId,
+	0x3070: Unknown0,
 	0x0005: KeepAlive,
 	0x0003: Disconnect,
 }
@@ -24,47 +29,34 @@ func (s AccountingServer) GetHandlers() map[uint16]server.Handler {
 	return handlers
 }
 
+func Unknown0(_ server.Server, _ block.Block, _ *server.Connection) message.Message {
+	return message.NewUnknown3070Message()
+}
+
+func GroupInfo(s server.Server, b block.Block, _ *server.Connection) message.Message {
+	groupId := block.NewId(b)
+	return message.NewGroupInfoMessage(
+		s.(AccountingServer).storage.GetGroupInfo(groupId.Id),
+	)
+}
+
+func PlayerGroupInfo(s server.Server, b block.Block, _ *server.Connection) message.Message {
+	playerId := block.NewId(b)
+	return message.NewPlayerGroupMessage(
+		s.(AccountingServer).storage.GetPlayerGroup(playerId.Id),
+	)
+}
+
 func QueryPlayerId(_ server.Server, _ block.Block, _ *server.Connection) message.Message {
 	return message.NewPlayerIdResponseMessage(block.PlayerIdOk)
 }
 
-func Profiles(_ server.Server, _ block.Block, _ *server.Connection) message.Message {
-
-	return message.NewAccountPlayersMessage(
+func Profiles(s server.Server, _ block.Block, _ *server.Connection) message.Message {
+	return message.NewAccountProfilesMessage(
 		block.AccountPlayers{
-			Players: [3]block.AccountPlayer{
-				{
-					Position:      0,
-					Id:            12345,
-					Name:          "PadreJohn",
-					TimePlayed:    1000,
-					Division:      2,
-					Points:        0,
-					Category:      500,
-					MatchesPlayed: 20,
-				},
-				{
-					Position:      1,
-					Id:            0,
-					Name:          "",
-					TimePlayed:    0,
-					Division:      2,
-					Points:        0,
-					Category:      500,
-					MatchesPlayed: 0,
-				},
-				{
-					Position:      2,
-					Id:            0,
-					Name:          "",
-					TimePlayed:    0,
-					Division:      2,
-					Points:        0,
-					Category:      500,
-					MatchesPlayed: 0,
-				},
-			},
-		})
+			s.(AccountingServer).storage.GetAccountProfiles(0),
+		},
+	)
 }
 
 func Login(_ server.Server, b block.Block, _ *server.Connection) message.Message {
@@ -94,5 +86,7 @@ func Disconnect(_ server.Server, _ block.Block, _ *server.Connection) message.Me
 
 func Start() {
 	fmt.Println("Here i am the accounting server!")
-	server.Serve(AccountingServer{}, 12881)
+	server.Serve(AccountingServer{
+		storage.Forged{},
+	}, 12881)
 }

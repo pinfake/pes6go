@@ -4,8 +4,6 @@ import (
 	"time"
 )
 
-const dtLayout = "2006-01-15 15:04:05"
-
 type News struct {
 	Time  time.Time
 	Title string

@@ -12,6 +12,7 @@ import (
 type Connection struct {
 	conn net.Conn
 	seq  uint16
+	data interface{}
 }
 
 func (c Connection) readBlock() (block.Block, error) {

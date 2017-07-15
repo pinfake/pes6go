@@ -9,6 +9,7 @@ import (
 	"github.com/pinfake/pes6go/network"
 )
 
+const dtLayout = "2006-01-15 15:04:05"
 const headerSize = 24
 
 type Header struct {
