@@ -3,8 +3,6 @@ package message
 import (
 	"reflect"
 
-	"fmt"
-
 	"github.com/pinfake/pes6go/data/block"
 )
 
@@ -15,9 +13,6 @@ type PlayerSettings struct {
 
 func (r PlayerSettings) GetBlocks() []block.Block {
 	var blocks []block.Block
-	// Primero va el player Id
-
-	fmt.Printf("SETTTINGSDASDFASD!!!!: % x\n", r.PlayerSettings)
 
 	blocks = append(blocks, block.GetBlocks(0x3087,
 		[]block.Piece{block.PlayerSettingsHeader{r.PlayerId}})...,

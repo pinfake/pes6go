@@ -16,6 +16,22 @@ type MenuServer struct {
 var handlers = map[uint16]server.Handler{
 	0x0003: Disconnect,
 	0x0005: KeepAlive,
+	0x3001: Init,
+	0x3003: Login,
+}
+
+func Init(_ server.Server, _ block.Block, _ *server.Connection) message.Message {
+	return message.AccountingInit{}
+}
+
+func Login(_ server.Server, b block.Block, _ *server.Connection) message.Message {
+	auth := block.NewAthentication(b)
+	fmt.Println("I am handling login")
+	fmt.Printf("key: % x\n", auth.Key)
+	fmt.Printf("password: % x\n", auth.Password)
+	fmt.Printf("unknown: % x\n", auth.Unknown)
+	fmt.Printf("roster: % x\n", auth.RosterHash)
+	return message.LoginResponse{}
 }
 
 func (s MenuServer) GetHandlers() map[uint16]server.Handler {
@@ -23,17 +39,15 @@ func (s MenuServer) GetHandlers() map[uint16]server.Handler {
 }
 
 func KeepAlive(_ server.Server, _ block.Block, _ *server.Connection) message.Message {
-	fmt.Println("I am handling a keep alive")
 	return message.KeepAlive{}
 }
 
 func Disconnect(_ server.Server, _ block.Block, _ *server.Connection) message.Message {
-	fmt.Println("Handling disconnect")
 	return nil
 }
 
 func Start() {
-	fmt.Println("Here i am the menu server!")
+	fmt.Println("Menu Server starting")
 	server.Serve(MenuServer{
 		storage: storage.Forged{},
 	}, 12882)

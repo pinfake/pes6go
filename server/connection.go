@@ -28,17 +28,16 @@ func (c Connection) readBlock() (block.Block, error) {
 		return block.Block{}, err
 	}
 
-	fmt.Printf("% x\n", got)
+	fmt.Printf("READ: % x\n", got)
 	return got, nil
 }
 
 func (c *Connection) writeMessage(message message.Message) {
-	fmt.Println("I should write something here")
 	for _, b := range message.GetBlocks() {
-		fmt.Printf("Seq vale %d\n", c.seq)
+		fmt.Printf("Sequence is %d\n", c.seq)
 		c.seq++
 		b.Header.Sequence = c.seq
-		fmt.Printf("% x\n", b.GetBytes())
+		fmt.Printf("WRITE: % x\n", b.GetBytes())
 		c.conn.Write(network.Mutate(b.GetBytes()))
 	}
 }

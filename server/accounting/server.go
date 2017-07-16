@@ -93,22 +93,19 @@ func Login(_ server.Server, b block.Block, _ *server.Connection) message.Message
 }
 
 func Init(_ server.Server, _ block.Block, _ *server.Connection) message.Message {
-	fmt.Println("I am handling init")
 	return message.AccountingInit{}
 }
 
 func KeepAlive(_ server.Server, _ block.Block, _ *server.Connection) message.Message {
-	fmt.Println("I am handling a keep alive")
 	return message.KeepAlive{}
 }
 
 func Disconnect(_ server.Server, _ block.Block, _ *server.Connection) message.Message {
-	fmt.Println("Handling disconnect")
 	return nil
 }
 
 func Start() {
-	fmt.Println("Here i am the accounting server!")
+	fmt.Println("Accounting Server starting")
 	server.Serve(AccountingServer{
 		storage.Forged{},
 	}, 12881)

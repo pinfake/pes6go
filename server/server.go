@@ -24,7 +24,7 @@ func handleConnection(s Server, conn net.Conn) {
 		conn: conn,
 		seq:  0,
 	}
-	fmt.Println("Hey!, a connection!")
+	fmt.Println("New connection")
 	for {
 		b, err := c.readBlock()
 		if err != nil {
@@ -41,7 +41,7 @@ func handleConnection(s Server, conn net.Conn) {
 		fmt.Printf("Going to write: % x", bs)
 		c.writeMessage(m)
 	}
-	fmt.Println("It's over!")
+	fmt.Println("Closing connection!")
 }
 
 func handleBlock(s Server, block block.Block, c *Connection) (message.Message, error) {

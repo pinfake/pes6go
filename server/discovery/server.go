@@ -28,14 +28,12 @@ func (s DiscoveryServer) GetHandlers() map[uint16]server.Handler {
 }
 
 func Init(s server.Server, _ block.Block, _ *server.Connection) message.Message {
-	fmt.Println("I am handling discovery init")
 	return message.NewServerNewsMessage(
 		s.(DiscoveryServer).storage.GetServerNews(),
 	)
 }
 
 func Servers(_ server.Server, _ block.Block, _ *server.Connection) message.Message {
-	fmt.Println("I am handling query servers")
 	return message.NewServerListMessage(
 		[]block.Server{
 			{7, "GROUP-SP/", "127.0.0.1", 10887, 0},
@@ -51,31 +49,27 @@ func Servers(_ server.Server, _ block.Block, _ *server.Connection) message.Messa
 }
 
 func RankUrls(s server.Server, _ block.Block, _ *server.Connection) message.Message {
-	fmt.Println("I am handling rank urls")
 	return message.NewRankUrlListMessage(
 		s.(DiscoveryServer).storage.GetRankUrls(),
 	)
 }
 
 func ServerTime(_ server.Server, _ block.Block, _ *server.Connection) message.Message {
-	fmt.Println("I am handling server time")
 	return message.ServerTime{
 		ServerTime: block.ServerTime{Time: time.Now()},
 	}
 }
 
 func KeepAlive(_ server.Server, _ block.Block, _ *server.Connection) message.Message {
-	fmt.Println("I am handling a keep alive")
 	return message.KeepAlive{}
 }
 
 func Disconnect(_ server.Server, _ block.Block, _ *server.Connection) message.Message {
-	fmt.Println("Handling disconnect")
 	return nil
 }
 
 func Start() {
-	fmt.Println("Here i am the discovery server!")
+	fmt.Println("Discovery Server starting")
 	server.Serve(DiscoveryServer{
 		storage: storage.Forged{},
 	}, 10881)
