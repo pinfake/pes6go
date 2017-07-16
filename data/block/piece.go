@@ -19,26 +19,29 @@ type Piece interface {
 	buildInternal() PieceInternal
 }
 
+func getBytesFromInternals(internals []PieceInternal) []byte {
+	var data []byte
+	for _, internal := range internals {
+		data = append(data, GetBytes(internal)...)
+	}
+
+	return data
+}
+
 func getBlocksFromInternals(query uint16, internals []PieceInternal) []Block {
 	var blocks []Block
-	var buffer []byte
 
-	for _, internal := range internals {
-		data := GetBytes(internal)
-		if len(data) <= MAX_BLOCK_DATA_SIZE &&
-			len(data)+len(buffer) > MAX_BLOCK_DATA_SIZE {
-			blocks = append(
-				blocks,
-				NewBlock(query, GenericBody{buffer}),
-			)
-			buffer = nil
-		}
-		buffer = append(buffer, data...)
+	data := getBytesFromInternals(internals)
+
+	for len(data) > MAX_BLOCK_DATA_SIZE {
+		chunk := data[:MAX_BLOCK_DATA_SIZE]
+		data = data[MAX_BLOCK_DATA_SIZE:]
+		blocks = append(blocks, NewBlock(query, GenericBody{chunk}))
 	}
-	blocks = append(
-		blocks,
-		NewBlock(query, GenericBody{buffer}),
-	)
+
+	if len(data) > 0 {
+		blocks = append(blocks, NewBlock(query, GenericBody{data}))
+	}
 	return blocks
 }
 
