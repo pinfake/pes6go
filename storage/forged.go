@@ -86,3 +86,9 @@ func (_ Forged) GetGroupInfo(id uint32) block.GroupInfo {
 		Time: time.Date(2016, 1, 1, 12, 0, 0, 0, time.UTC),
 	}
 }
+
+func (_ Forged) GetPlayerSettings(id uint32) block.PlayerSettings {
+	return block.PlayerSettings{
+		Settings: DefaultPlayerSettings,
+	}
+}

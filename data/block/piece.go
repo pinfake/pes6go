@@ -25,8 +25,8 @@ func getBlocksFromInternals(query uint16, internals []PieceInternal) []Block {
 
 	for _, internal := range internals {
 		data := GetBytes(internal)
-
-		if len(data)+len(buffer) > MAX_BLOCK_DATA_SIZE {
+		if len(data) <= MAX_BLOCK_DATA_SIZE &&
+			len(data)+len(buffer) > MAX_BLOCK_DATA_SIZE {
 			blocks = append(
 				blocks,
 				NewBlock(query, GenericBody{buffer}),

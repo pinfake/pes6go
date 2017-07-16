@@ -21,12 +21,20 @@ var handlers = map[uint16]server.Handler{
 	0x3050: GroupInfo,
 	0x3060: QueryPlayerId,
 	0x3070: Unknown3070,
+	0x308a: PlayerSettings,
 	0x0005: KeepAlive,
 	0x0003: Disconnect,
 }
 
 func (s AccountingServer) GetHandlers() map[uint16]server.Handler {
 	return handlers
+}
+
+func PlayerSettings(s server.Server, b block.Block, _ *server.Connection) message.Message {
+	playerId := block.NewId(b)
+	return message.NewPlayerSettingsMessage(
+		playerId.Id, s.(AccountingServer).storage.GetPlayerSettings(playerId.Id),
+	)
 }
 
 func Unknown3070(_ server.Server, _ block.Block, _ *server.Connection) message.Message {
