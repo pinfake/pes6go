@@ -42,7 +42,7 @@ func Servers(_ server.Server, _ block.Block, _ *server.Connection) message.Messa
 			{6, "SCHE-SP/", "127.0.0.1", 10887, 0},
 			{4, "QUICK0-SP/", "127.0.0.1", 10887, 0},
 			{4, "QUICK1-SP/", "127.0.0.1", 10887, 0},
-			{8, "MENU03-SP/", "127.0.0.1", 12881, 0},
+			{8, "MENU03-SP/", "127.0.0.1", 12882, 0},
 			{3, "TurboLobas Inc.", "127.0.0.1", 10900, 50},
 			{2, "ACCT03-SP/", "127.0.0.1", 12881, 0},
 			{1, "GATE-SP/", "127.0.0.1", 10887, 0},
