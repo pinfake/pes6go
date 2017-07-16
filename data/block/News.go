@@ -14,7 +14,7 @@ type NewsInternal struct {
 	header [6]byte
 	time   [19]byte
 	title  [64]byte
-	text   [512]byte
+	text   [935]byte
 }
 
 func (info News) buildInternal() PieceInternal {
