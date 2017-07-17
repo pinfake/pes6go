@@ -18,6 +18,11 @@ var handlers = map[uint16]server.Handler{
 	0x0005: KeepAlive,
 	0x3001: Init,
 	0x3003: Login,
+	0x4100: Capabilities,
+}
+
+func Capabilities(_ server.Server, _ block.Block, _ *server.Connection) message.Message {
+	return nil
 }
 
 func Init(_ server.Server, _ block.Block, _ *server.Connection) message.Message {

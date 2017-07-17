@@ -89,7 +89,9 @@ func Login(_ server.Server, b block.Block, _ *server.Connection) message.Message
 	fmt.Printf("password: % x\n", auth.Password)
 	fmt.Printf("unknown: % x\n", auth.Unknown)
 	fmt.Printf("roster: % x\n", auth.RosterHash)
-	return message.LoginResponse{}
+	return message.LoginResponse{
+		message.LoginOk,
+	}
 }
 
 func Init(_ server.Server, _ block.Block, _ *server.Connection) message.Message {
