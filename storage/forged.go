@@ -96,3 +96,10 @@ func (_ Forged) GetPlayerSettings(id uint32) block.PlayerSettings {
 func (_ Forged) FindAccount(key string, hash []byte) uint32 {
 	return 1234
 }
+
+func (_ Forged) CreateAccount(key string, password string) uint32 {
+	return 1234
+}
+
+func (_ Forged) CreatePlayer(position byte, name string) {
+}

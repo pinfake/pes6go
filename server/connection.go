@@ -10,9 +10,10 @@ import (
 )
 
 type Connection struct {
-	conn net.Conn
-	seq  uint32
-	data interface{}
+	conn      net.Conn
+	seq       uint32
+	AccountId uint32
+	data      interface{}
 }
 
 func (c Connection) readBlock() (block.Block, error) {

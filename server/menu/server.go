@@ -39,7 +39,7 @@ func Login(_ server.Server, b block.Block, _ *server.Connection) message.Message
 	fmt.Printf("unknown: % x\n", auth.Unknown)
 	fmt.Printf("roster: % x\n", auth.RosterHash)
 	return message.LoginResponse{
-		message.Ok,
+		block.Ok,
 	}
 }
 

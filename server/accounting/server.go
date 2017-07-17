@@ -31,6 +31,7 @@ var handlers = map[uint16]server.Handler{
 	0x3001: Init,
 	0x3003: Login,
 	0x3010: Profiles,
+	0x3020: CreateProfile,
 	0x3040: PlayerGroupInfo,
 	0x3050: GroupInfo,
 	0x3060: QueryPlayerId,
@@ -43,6 +44,18 @@ var handlers = map[uint16]server.Handler{
 
 func (s AccountingServer) GetHandlers() map[uint16]server.Handler {
 	return handlers
+}
+
+func CreateProfile(s server.Server, b block.Block, _ *server.Connection) message.Message {
+	playerCreate := block.NewPlayerCreate(b)
+	s.(AccountingServer).storage.CreatePlayer(
+		playerCreate.Position,
+		playerCreate.Name,
+	)
+
+	return message.PlayerCreateResponse{
+		block.Ok,
+	}
 }
 
 func PlayerSettings(s server.Server, b block.Block, _ *server.Connection) message.Message {
@@ -94,7 +107,7 @@ func Profiles(s server.Server, _ block.Block, _ *server.Connection) message.Mess
 	)
 }
 
-func Login(_ server.Server, b block.Block, _ *server.Connection) message.Message {
+func Login(s server.Server, b block.Block, c *server.Connection) message.Message {
 	auth := block.NewAthentication(b)
 	fmt.Println("I am handling login")
 	fmt.Printf("key: % x\n", auth.Key)
@@ -109,8 +122,12 @@ func Login(_ server.Server, b block.Block, _ *server.Connection) message.Message
 
 	fmt.Printf("cd key decoded: %s\n", dst)
 
+	c.AccountId = s.(AccountingServer).storage.FindAccount(
+		string(dst), auth.Password,
+	)
+
 	return message.LoginResponse{
-		message.Ok,
+		block.Ok,
 	}
 }
 

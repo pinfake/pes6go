@@ -6,6 +6,7 @@ import (
 	"os"
 
 	"github.com/pinfake/pes6go/server/accounting"
+	"github.com/pinfake/pes6go/server/admin"
 	"github.com/pinfake/pes6go/server/discovery"
 	"github.com/pinfake/pes6go/server/game"
 	"github.com/pinfake/pes6go/server/menu"
@@ -17,6 +18,7 @@ func main() {
 		fmt.Fprint(os.Stderr, "Usage:\n\n")
 		fmt.Fprintf(os.Stderr, "\t%s command [arguments]\n\n", os.Args[0])
 		fmt.Fprint(os.Stderr, "The commands are:\n\n")
+		fmt.Fprint(os.Stderr, "\tadmin          Run the administration server")
 		fmt.Fprint(os.Stderr, "\tdiscovery      Run a discovery server\n")
 		fmt.Fprint(os.Stderr, "\taccounting     Run an accounting server\n")
 		fmt.Fprint(os.Stderr, "\tmenu           Run a menu server\n")
@@ -36,11 +38,14 @@ func main() {
 
 	switch args[0] {
 	case "fullhouse":
+		go admin.Start()
 		go discovery.Start()
 		go accounting.Start()
 		go menu.Start()
 		go game.Start()
 		select {}
+	case "admin":
+		admin.Start()
 	case "discovery":
 		discovery.Start()
 	case "accounting":
