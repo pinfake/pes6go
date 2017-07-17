@@ -18,6 +18,6 @@ func (info Id) buildInternal() PieceInternal {
 
 func NewId(b Block) Id {
 	return Id{
-		Id: binary.BigEndian.Uint32(b.body.GetBytes()),
+		Id: binary.BigEndian.Uint32(b.Body.GetBytes()),
 	}
 }

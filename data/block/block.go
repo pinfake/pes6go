@@ -6,6 +6,8 @@ import (
 	"errors"
 	"fmt"
 
+	"crypto/md5"
+
 	"github.com/pinfake/pes6go/network"
 )
 
@@ -15,9 +17,8 @@ const headerSize = 24
 type Header struct {
 	Query    uint16
 	Size     uint16
-	Unknown1 uint16
-	Sequence uint16
-	Unknown2 [16]byte
+	Sequence uint32
+	Hash     [16]byte // Sixserver says this is the md5 of data
 }
 
 type Body interface {
@@ -26,7 +27,7 @@ type Body interface {
 
 type Block struct {
 	Header Header
-	body   Body
+	Body   Body
 }
 
 type GenericBody struct {
@@ -37,18 +38,22 @@ func (body GenericBody) GetBytes() []byte {
 	return body.Data
 }
 
-func NewHeader(query uint16, size uint16) Header {
-	return Header{Query: query, Size: size}
+func NewHeader(query uint16, size uint16, hash [16]byte) Header {
+	return Header{Query: query, Size: size, Hash: hash}
 }
 
 func NewBlock(query uint16, body Body) Block {
-	return Block{NewHeader(query, uint16(len(body.GetBytes()))), body}
+	return Block{NewHeader(
+		query,
+		uint16(len(body.GetBytes())),
+		md5.Sum(body.GetBytes()),
+	), body}
 }
 
 func (b Block) GetBytes() []byte {
 	buf := new(bytes.Buffer)
 	binary.Write(buf, binary.BigEndian, b.Header)
-	buf.Write(b.body.GetBytes())
+	buf.Write(b.Body.GetBytes())
 	return buf.Bytes()
 }
 

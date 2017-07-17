@@ -52,13 +52,13 @@ func (_ Forged) GetAccountProfiles(id uint32) [3]block.AccountPlayer {
 		},
 		{
 			Position:      1,
-			Id:            0,
-			Name:          "",
-			TimePlayed:    0,
-			Division:      2,
-			Points:        0,
-			Category:      500,
-			MatchesPlayed: 0,
+			Id:            2345,
+			Name:          "Danilo",
+			TimePlayed:    500,
+			Division:      1,
+			Points:        50000,
+			Category:      1000,
+			MatchesPlayed: 90,
 		},
 		{
 			Position:      2,
@@ -77,7 +77,7 @@ func (_ Forged) GetPlayerGroup(id uint32) block.PlayerGroup {
 	return block.PlayerGroup{
 		PlayerName: "PadreJohn",
 		GroupId:    1234,
-		GroupName:  "Los bonifacios",
+		GroupName:  "Outlaws in law",
 	}
 }
 
@@ -91,4 +91,8 @@ func (_ Forged) GetPlayerSettings(id uint32) block.PlayerSettings {
 	return block.PlayerSettings{
 		Settings: DefaultPlayerSettings,
 	}
+}
+
+func (_ Forged) FindAccount(key string, hash []byte) uint32 {
+	return 1234
 }

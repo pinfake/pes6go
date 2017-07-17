@@ -21,7 +21,9 @@ var handlers = map[uint16]server.Handler{
 	0x4100: Capabilities,
 }
 
-func Capabilities(_ server.Server, _ block.Block, _ *server.Connection) message.Message {
+func Capabilities(_ server.Server, b block.Block, _ *server.Connection) message.Message {
+	_ = block.NewPlayerSelected(b)
+
 	return nil
 }
 
@@ -36,7 +38,9 @@ func Login(_ server.Server, b block.Block, _ *server.Connection) message.Message
 	fmt.Printf("password: % x\n", auth.Password)
 	fmt.Printf("unknown: % x\n", auth.Unknown)
 	fmt.Printf("roster: % x\n", auth.RosterHash)
-	return message.LoginResponse{}
+	return message.LoginResponse{
+		message.Ok,
+	}
 }
 
 func (s MenuServer) GetHandlers() map[uint16]server.Handler {

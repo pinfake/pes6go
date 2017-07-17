@@ -2,8 +2,9 @@ package message
 
 import "github.com/pinfake/pes6go/data/block"
 
-const LoginOk = 0
-const LoginFail = 0xffffff10
+const Ok = 0
+const VerificationError = 0xffffff10
+const ServiceUnavailableError = 0xffffff12
 
 type LoginResponse struct {
 	RCode uint32

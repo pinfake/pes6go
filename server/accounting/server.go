@@ -3,11 +3,23 @@ package accounting
 import (
 	"fmt"
 
+	"github.com/andreburgaud/crypt2go/ecb"
 	"github.com/pinfake/pes6go/data/block"
 	"github.com/pinfake/pes6go/data/message"
 	"github.com/pinfake/pes6go/server"
 	"github.com/pinfake/pes6go/storage"
+	"golang.org/x/crypto/blowfish"
 )
+
+var blowfishKey = []byte{
+	0x27, 0x50, 0x1f, 0xd0, 0x4e, 0x6b, 0x82, 0xc8,
+	0x31, 0x02, 0x4d, 0xac, 0x5c, 0x63, 0x05, 0x22,
+	0x19, 0x74, 0xde, 0xb9, 0x38, 0x8a, 0x21, 0x90,
+	0x1d, 0x57, 0x6c, 0xbb, 0xe2, 0xf3, 0x77, 0xef,
+	0x23, 0xd7, 0x54, 0x86, 0x01, 0x0f, 0x37, 0x81,
+	0x9a, 0xfe, 0x6c, 0x32, 0x1a, 0x01, 0x46, 0xd2,
+	0x15, 0x44, 0xec, 0x36, 0x5b, 0xf7, 0x28, 0x9a,
+}
 
 type AccountingServer struct {
 	storage storage.Storage
@@ -89,8 +101,16 @@ func Login(_ server.Server, b block.Block, _ *server.Connection) message.Message
 	fmt.Printf("password: % x\n", auth.Password)
 	fmt.Printf("unknown: % x\n", auth.Unknown)
 	fmt.Printf("roster: % x\n", auth.RosterHash)
+
+	bl, _ := blowfish.NewCipher(blowfishKey)
+	decrypter := ecb.NewECBDecrypter(bl)
+	dst := make([]byte, len(auth.Key))
+	decrypter.CryptBlocks(dst, auth.Key)
+
+	fmt.Printf("cd key decoded: %s\n", dst)
+
 	return message.LoginResponse{
-		message.LoginOk,
+		message.Ok,
 	}
 }
 
