@@ -3,7 +3,7 @@ package storage
 import "github.com/pinfake/pes6go/data/block"
 
 type Storage interface {
-	CreateAccount(key string, password string) uint32
+	CreateAccount(key string, hash []byte) uint32
 	FindAccount(key string, hash []byte) uint32
 	CreatePlayer(position byte, name string)
 	GetServerNews() []block.News

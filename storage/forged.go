@@ -13,15 +13,14 @@ func (_ Forged) GetServerNews() []block.News {
 	return []block.News{
 		{
 			Time:  time.Date(2016, 1, 1, 12, 0, 0, 0, time.UTC),
-			Title: "Mariano Powered:",
+			Title: "Mariano Speaks!",
 			Text: "Es el vecino el que elige al alcalde y es el alcalde el que quiere " +
 				"que sean los vecinos el alcalde",
 		},
 		{
 			Time:  time.Date(2026, 1, 1, 12, 0, 0, 0, time.UTC),
-			Title: "Mariano Powered:",
-			Text: "Es el vecino el que elige al alcalde y es el alcalde el que quiere " +
-				"que sean los vecinos el alcalde",
+			Title: "Mariano Keeps Speaking!",
+			Text:  "No he dormido nada, no me pregunten demasiado si hacen el favor",
 		},
 	}
 }
@@ -97,7 +96,7 @@ func (_ Forged) FindAccount(key string, hash []byte) uint32 {
 	return 1234
 }
 
-func (_ Forged) CreateAccount(key string, password string) uint32 {
+func (_ Forged) CreateAccount(key string, hash []byte) uint32 {
 	return 1234
 }
 
