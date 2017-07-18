@@ -21,9 +21,14 @@ var handlers = map[uint16]server.Handler{
 	0x0005: KeepAlive,
 	0x3001: Init,
 	0x3003: Login,
+	0x3080: PlayerFriends,
 	0x4100: SelectPlayer,
 	0x4200: MenuServers,
 	0x4202: IpInfo,
+}
+
+func PlayerFriends(_ server.Server, b block.Block, _ *server.Connection) message.Message {
+	return message.NewPlayerFriendsMessage(block.PlayerFriends{})
 }
 
 func IpInfo(_ server.Server, _ block.Block, _ *server.Connection) message.Message {
