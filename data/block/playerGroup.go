@@ -7,19 +7,19 @@ type PlayerGroup struct {
 }
 
 type PlayerGroupInternal struct {
-	zero       uint32
-	playerName [48]byte
-	groupId    uint32
-	groupName  [48]byte
-	unknown    [294]byte
+	Zero       uint32
+	PlayerName [48]byte
+	GroupId    uint32
+	GroupName  [48]byte
+	Unknown    [294]byte
 }
 
 func (info PlayerGroup) buildInternal() PieceInternal {
 	var internal PlayerGroupInternal
-	internal.zero = 0
-	copy(internal.playerName[:], info.PlayerName)
-	internal.groupId = info.GroupId
-	copy(internal.groupName[:], info.GroupName)
+	internal.Zero = 0
+	copy(internal.PlayerName[:], info.PlayerName)
+	internal.GroupId = info.GroupId
+	copy(internal.GroupName[:], info.GroupName)
 
 	return internal
 }

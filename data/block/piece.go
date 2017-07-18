@@ -3,7 +3,6 @@ package block
 import (
 	"bytes"
 	"encoding/binary"
-	"fmt"
 	"reflect"
 )
 
@@ -48,9 +47,20 @@ func getBlocksFromInternals(query uint16, internals []PieceInternal) []Block {
 
 func GetBytes(b PieceInternal) []byte {
 	buf := new(bytes.Buffer)
-	fmt.Printf("pieceinternal: % x\n", b)
-	binary.Write(buf, binary.BigEndian, b)
-	fmt.Printf("binarywrite:   % x\n", buf.Bytes())
+
+	// I'll use reflection here just in case there is slices
+	v := reflect.ValueOf(b)
+	for i := 0; i < v.NumField(); i++ {
+		field := v.Field(i)
+		if field.Kind() == reflect.Slice {
+			for j := 0; j < field.Len(); j++ {
+				binary.Write(buf, binary.BigEndian, field.Index(j).Interface())
+			}
+		} else {
+			binary.Write(buf, binary.BigEndian, field.Interface())
+		}
+	}
+
 	return buf.Bytes()
 }
 

@@ -9,12 +9,12 @@ type ServerTime struct {
 }
 
 type ServerTimeInternal struct {
-	time uint32
+	Time uint32
 }
 
 func (info ServerTime) buildInternal() PieceInternal {
 	internal := ServerTimeInternal{
-		time: uint32(info.Time.Unix()),
+		Time: uint32(info.Time.Unix()),
 	}
 	return internal
 }

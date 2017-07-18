@@ -38,7 +38,7 @@ func IpInfo(_ server.Server, _ block.Block, _ *server.Connection) message.Messag
 func MenuServers(_ server.Server, _ block.Block, _ *server.Connection) message.Message {
 	return message.NewMenuServersMessage(
 		block.MenuServers{
-			[1]block.MenuServer{
+			[]block.MenuServer{
 				{8, "MENU03-SP/", 0},
 			},
 		},

@@ -11,18 +11,18 @@ type News struct {
 }
 
 type NewsInternal struct {
-	header [6]byte
-	time   [19]byte
-	title  [64]byte
-	text   [935]byte
+	Header [6]byte
+	Time   [19]byte
+	Title  [64]byte
+	Text   [935]byte
 }
 
 func (info News) buildInternal() PieceInternal {
 	var internal NewsInternal
-	copy(internal.header[:], []byte{0x00, 0x00, 0x03, 0x10, 0x01, 0x00})
-	copy(internal.time[:], info.Time.Format(dtLayout))
-	copy(internal.title[:], info.Title)
-	copy(internal.text[:], info.Text)
+	copy(internal.Header[:], []byte{0x00, 0x00, 0x03, 0x10, 0x01, 0x00})
+	copy(internal.Time[:], info.Time.Format(dtLayout))
+	copy(internal.Title[:], info.Title)
+	copy(internal.Text[:], info.Text)
 
 	return internal
 }

@@ -9,25 +9,25 @@ type PlayerSettings struct {
 }
 
 type PlayerSettingsHeaderInternal struct {
-	zero     uint32
-	playerId uint32
+	Zero     uint32
+	PlayerId uint32
 }
 
 type PlayerSettingsInternal struct {
-	settings [1300]byte
+	Settings [1300]byte
 }
 
 func (info PlayerSettings) buildInternal() PieceInternal {
 	var internal PlayerSettingsInternal
-	copy(internal.settings[:], info.Settings)
+	copy(internal.Settings[:], info.Settings)
 
 	return internal
 }
 
 func (info PlayerSettingsHeader) buildInternal() PieceInternal {
 	var internal PlayerSettingsHeaderInternal
-	internal.zero = 0
-	internal.playerId = info.PlayerId
+	internal.Zero = 0
+	internal.PlayerId = info.PlayerId
 
 	return internal
 }

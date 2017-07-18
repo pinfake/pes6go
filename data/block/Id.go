@@ -7,12 +7,12 @@ type Id struct {
 }
 
 type IdInternal struct {
-	id uint32
+	Id uint32
 }
 
 func (info Id) buildInternal() PieceInternal {
 	var internal IdInternal
-	internal.id = info.Id
+	internal.Id = info.Id
 	return internal
 }
 

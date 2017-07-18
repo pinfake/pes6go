@@ -71,7 +71,7 @@ func ReadBlock(data []byte) (Block, error) {
 
 	if len(decoded) < int(headerSize+header.Size) {
 		fmt.Printf("%d headersize % x", header.Size, decoded)
-		panic("Smaller than a header!")
+		panic("Smaller than a Header!")
 	}
 	return Block{header, GenericBody{decoded[headerSize : headerSize+header.Size]}}, nil
 }

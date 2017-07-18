@@ -1,37 +1,37 @@
 package block
 
 type MenuServers struct {
-	MenuServers [1]MenuServer
+	MenuServers []MenuServer
 }
 
 type MenuServer struct {
-	Stype      byte
+	Type       byte
 	Name       string
 	NumClients uint16
 }
 
 type MenuServerInternal struct {
-	stype      byte
-	name       [32]byte
-	numClients uint16
+	Type       byte
+	Name       [32]byte
+	NumClients uint16
 }
 
 type MenuServersInternal struct {
-	zero                uint16
-	MenuServersInternal [1]MenuServerInternal
+	NumServers          uint16
+	MenuServersInternal []MenuServerInternal
 }
 
 func (info MenuServers) buildInternal() PieceInternal {
 	internals := MenuServersInternal{
-		zero: 1,
+		NumServers: uint16(len(info.MenuServers)),
 	}
 
-	for i, server := range info.MenuServers {
+	for _, server := range info.MenuServers {
 		var internal MenuServerInternal
-		internal.stype = server.Stype
-		copy(internal.name[:], server.Name)
-		internal.numClients = server.NumClients
-		internals.MenuServersInternal[i] = internal
+		internal.Type = server.Type
+		copy(internal.Name[:], server.Name)
+		internal.NumClients = server.NumClients
+		internals.MenuServersInternal = append(internals.MenuServersInternal, internal)
 	}
 
 	return internals

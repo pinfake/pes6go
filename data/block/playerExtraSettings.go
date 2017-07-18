@@ -6,27 +6,27 @@ type PlayerExtraSettings struct {
 }
 
 type PlayerExtraSettingsInternal struct {
-	unknown0  uint32
-	playerId  uint32
-	unknown1  [37]byte
-	groupName [48]byte
-	unknown2  [3]byte
+	Unknown0  uint32
+	PlayerId  uint32
+	Unknown1  [37]byte
+	GroupName [48]byte
+	Unknown2  [3]byte
 }
 
 func (info PlayerExtraSettings) buildInternal() PieceInternal {
 	var internal PlayerExtraSettingsInternal
-	internal.unknown0 = 0
-	internal.playerId = info.PlayerId
-	internal.unknown1 = [37]byte{
+	internal.Unknown0 = 0
+	internal.PlayerId = info.PlayerId
+	internal.Unknown1 = [37]byte{
 		0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0x80,
 		0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
 		0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xc0,
 		0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02,
 		0x00, 0x00, 0x00, 0x00, 0x04,
 	}
-	copy(internal.groupName[:], info.GroupName)
+	copy(internal.GroupName[:], info.GroupName)
 
-	internal.unknown2 = [3]byte{
+	internal.Unknown2 = [3]byte{
 		0xff, 0xff, 0x00,
 	}
 
