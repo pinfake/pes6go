@@ -20,6 +20,12 @@ func (s GameServer) GetHandlers() map[uint16]server.Handler {
 	return handlers
 }
 
+func (s GameServer) GetConfig() server.ServerConfig {
+	return server.ServerConfig{
+		"serverId": "1",
+	}
+}
+
 func Start() {
 	fmt.Println("Game Server starting")
 	server.Serve(GameServer{}, 10887)

@@ -29,6 +29,12 @@ func (s MenuServer) GetStorage() storage.Storage {
 	return storage.Forged{}
 }
 
+func (s MenuServer) GetConfig() server.ServerConfig {
+	return server.ServerConfig{
+		"serverId": "2",
+	}
+}
+
 func Start() {
 	fmt.Println("Menu Server starting")
 	server.Serve(MenuServer{}, 12882)

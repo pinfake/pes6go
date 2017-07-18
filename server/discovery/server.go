@@ -72,6 +72,10 @@ func Disconnect(_ server.Server, _ block.Block, _ *server.Connection) message.Me
 	return nil
 }
 
+func (s DiscoveryServer) GetConfig() server.ServerConfig {
+	return server.ServerConfig{}
+}
+
 func Start() {
 	fmt.Println("Discovery Server starting")
 	server.Serve(DiscoveryServer{}, 10881)

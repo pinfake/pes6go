@@ -103,10 +103,20 @@ func (_ Forged) CreateAccount(key string, hash []byte) uint32 {
 func (_ Forged) CreatePlayer(position byte, name string) {
 }
 
-func (_ Forged) GetLobbies() []block.Lobby {
-	return []block.Lobby{
-		{63, "Lobby 1 Kenobi", 23},
-		{63, "Lobby 2 testá3", 43},
-		{63, "Lobby 3 testñ3", 42},
+func (_ Forged) GetLobbies(serverId uint32) []block.Lobby {
+	switch serverId {
+	case 1:
+		return []block.Lobby{
+			{63, "Lobby 1 Kenobi", 23},
+			{63, "Lobby 2 testá3", 43},
+			{63, "Lobby 3 testñ3", 42},
+		}
+	case 2:
+		return []block.Lobby{
+			{0x1f, "", 0},
+		}
+	default:
+		return nil
 	}
+
 }

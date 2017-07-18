@@ -15,7 +15,10 @@ const host = "0.0.0.0"
 
 type Handler func(Server, block.Block, *Connection) message.Message
 
+type ServerConfig map[string]string
+
 type Server interface {
+	GetConfig() ServerConfig
 	GetStorage() storage.Storage
 	GetHandlers() map[uint16]Handler
 }

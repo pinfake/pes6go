@@ -3,6 +3,8 @@ package server
 import (
 	"fmt"
 
+	"strconv"
+
 	"github.com/andreburgaud/crypt2go/ecb"
 	"github.com/pinfake/pes6go/data/block"
 	"github.com/pinfake/pes6go/data/message"
@@ -16,7 +18,7 @@ var handlers = map[uint16]Handler{
 	0x3003: Login,
 	0x4100: SelectPlayer,
 	0x4200: ServerLobbies,
-	0x4202: IpInfo,
+	0x4202: JoinLobby,
 }
 
 func Init(_ Server, _ block.Block, _ *Connection) message.Message {
@@ -66,13 +68,18 @@ func SelectPlayer(s Server, b block.Block, c *Connection) message.Message {
 }
 
 func ServerLobbies(s Server, _ block.Block, _ *Connection) message.Message {
+	a, _ := strconv.ParseUint(s.GetConfig()["serverId"], 10, 32)
 	return message.NewLobbiesMessage(
 		block.Lobbies{
-			s.GetStorage().GetLobbies(),
+			s.GetStorage().GetLobbies(
+				uint32(a),
+			),
 		},
 	)
 }
 
-func IpInfo(_ Server, _ block.Block, _ *Connection) message.Message {
+func JoinLobby(_ Server, b block.Block, _ *Connection) message.Message {
+	playerIp := block.NewJoinLobby(b)
+	fmt.Printf("%+v\n", playerIp)
 	return message.IpInfoResponse{}
 }

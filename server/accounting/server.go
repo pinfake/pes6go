@@ -33,6 +33,10 @@ func (s AccountingServer) GetStorage() storage.Storage {
 	return storage.Forged{}
 }
 
+func (s AccountingServer) GetConfig() server.ServerConfig {
+	return server.ServerConfig{}
+}
+
 func CreateProfile(s server.Server, b block.Block, _ *server.Connection) message.Message {
 	playerCreate := block.NewPlayerCreate(b)
 	s.GetStorage().CreatePlayer(
