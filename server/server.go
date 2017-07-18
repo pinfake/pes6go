@@ -8,6 +8,7 @@ import (
 
 	"github.com/pinfake/pes6go/data/block"
 	"github.com/pinfake/pes6go/data/message"
+	"github.com/pinfake/pes6go/storage"
 )
 
 const host = "0.0.0.0"
@@ -15,6 +16,7 @@ const host = "0.0.0.0"
 type Handler func(Server, block.Block, *Connection) message.Message
 
 type Server interface {
+	GetStorage() storage.Storage
 	GetHandlers() map[uint16]Handler
 }
 
@@ -45,9 +47,12 @@ func handleConnection(s Server, conn net.Conn) {
 }
 
 func handleBlock(s Server, block block.Block, c *Connection) (message.Message, error) {
-	method, ok := s.GetHandlers()[block.Header.Query]
+	var method, ok = s.GetHandlers()[block.Header.Query]
 	if !ok {
-		return nil, fmt.Errorf("Unknown query!")
+		method, ok = handlers[block.Header.Query]
+		if !ok {
+			return nil, fmt.Errorf("Unknown query!")
+		}
 	}
 	return method(s, block, c), nil
 }

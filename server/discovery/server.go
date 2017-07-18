@@ -11,7 +11,6 @@ import (
 )
 
 type DiscoveryServer struct {
-	storage storage.Storage
 }
 
 var handlers = map[uint16]server.Handler{
@@ -27,9 +26,13 @@ func (s DiscoveryServer) GetHandlers() map[uint16]server.Handler {
 	return handlers
 }
 
+func (s DiscoveryServer) GetStorage() storage.Storage {
+	return storage.Forged{}
+}
+
 func Init(s server.Server, _ block.Block, _ *server.Connection) message.Message {
 	return message.NewServerNewsMessage(
-		s.(DiscoveryServer).storage.GetServerNews(),
+		s.GetStorage().GetServerNews(),
 	)
 }
 
@@ -41,7 +44,8 @@ func Servers(_ server.Server, _ block.Block, _ *server.Connection) message.Messa
 			{4, "QUICK0-SP/", "127.0.0.1", 10887, 0},
 			{4, "QUICK1-SP/", "127.0.0.1", 10887, 0},
 			{8, "MENU03-SP/", "127.0.0.1", 12882, 0},
-			{3, "TurboLobas Inc.", "127.0.0.1", 10900, 50},
+			{3, "TurboLobas Inc.", "127.0.0.1", 10887, 50},
+			{3, "TurboLobas Inc.", "127.0.0.1", 10888, 130},
 			{2, "ACCT03-SP/", "127.0.0.1", 12881, 0},
 			{1, "GATE-SP/", "127.0.0.1", 10887, 0},
 		},
@@ -50,7 +54,7 @@ func Servers(_ server.Server, _ block.Block, _ *server.Connection) message.Messa
 
 func RankUrls(s server.Server, _ block.Block, _ *server.Connection) message.Message {
 	return message.NewRankUrlListMessage(
-		s.(DiscoveryServer).storage.GetRankUrls(),
+		s.GetStorage().GetRankUrls(),
 	)
 }
 
@@ -70,7 +74,5 @@ func Disconnect(_ server.Server, _ block.Block, _ *server.Connection) message.Me
 
 func Start() {
 	fmt.Println("Discovery Server starting")
-	server.Serve(DiscoveryServer{
-		storage: storage.Forged{},
-	}, 10881)
+	server.Serve(DiscoveryServer{}, 10881)
 }

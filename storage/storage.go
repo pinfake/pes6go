@@ -12,4 +12,5 @@ type Storage interface {
 	GetPlayerGroup(id uint32) block.PlayerGroup
 	GetGroupInfo(id uint32) block.GroupInfo
 	GetPlayerSettings(id uint32) block.PlayerSettings
+	GetLobbies() []block.Lobby
 }

@@ -8,6 +8,6 @@ type LoginResponse struct {
 
 func (m LoginResponse) GetBlocks() []block.Block {
 	return block.GetBlocks(0x3004, []block.Piece{
-		block.Id{m.Code},
+		block.Uint32{m.Code},
 	})
 }
