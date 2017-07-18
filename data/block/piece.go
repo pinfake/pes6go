@@ -3,6 +3,7 @@ package block
 import (
 	"bytes"
 	"encoding/binary"
+	"fmt"
 	"reflect"
 )
 
@@ -47,7 +48,9 @@ func getBlocksFromInternals(query uint16, internals []PieceInternal) []Block {
 
 func GetBytes(b PieceInternal) []byte {
 	buf := new(bytes.Buffer)
+	fmt.Printf("pieceinternal: % x\n", b)
 	binary.Write(buf, binary.BigEndian, b)
+	fmt.Printf("binarywrite:   % x\n", buf.Bytes())
 	return buf.Bytes()
 }
 

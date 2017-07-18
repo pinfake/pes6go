@@ -1,20 +1,20 @@
 package block
 
-type Capabilities struct {
-	PlayerId uint32
+type PlayerExtraSettings struct {
+	PlayerId  uint32
 	GroupName string
 }
 
-type CapabilitiesInternal struct {
-	unknown0 uint32
-	playerId uint32
-	unknown1 [37]byte
+type PlayerExtraSettingsInternal struct {
+	unknown0  uint32
+	playerId  uint32
+	unknown1  [37]byte
 	groupName [48]byte
-	unknown2 [3]byte
+	unknown2  [3]byte
 }
 
-func (info Capabilities) buildInternal() PieceInternal {
-	var internal CapabilitiesInternal
+func (info PlayerExtraSettings) buildInternal() PieceInternal {
+	var internal PlayerExtraSettingsInternal
 	internal.unknown0 = 0
 	internal.playerId = info.PlayerId
 	internal.unknown1 = [37]byte{

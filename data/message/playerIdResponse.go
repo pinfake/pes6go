@@ -14,12 +14,10 @@ func (m PlayerIdResponse) GetBlocks() []block.Block {
 	return blocks
 }
 
-func NewPlayerIdResponseMessage(code uint16) PlayerIdResponse {
+func NewPlayerIdResponseMessage() PlayerIdResponse {
 	return PlayerIdResponse{
 		PlayerIdResponse: []block.Piece{
-			block.PlayerIdResponse{
-				Code: code,
-			},
+			block.PlayerIdResponse{},
 		},
 	}
 }

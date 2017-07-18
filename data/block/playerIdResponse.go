@@ -1,9 +1,6 @@
 package block
 
-const PlayerIdOk = 0x01
-
 type PlayerIdResponse struct {
-	Code uint16
 }
 
 type PlayerIdResponseInternal struct {
@@ -14,6 +11,6 @@ type PlayerIdResponseInternal struct {
 
 func (info PlayerIdResponse) buildInternal() PieceInternal {
 	internal := PlayerIdResponseInternal{}
-	internal.code = info.Code
+	internal.code = 0x0001
 	return internal
 }
