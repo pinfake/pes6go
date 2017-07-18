@@ -1,9 +1,13 @@
 FROM scratch
-
-EXPOSE 12881 #accounting
-EXPOSE 10881 #discovery
-EXPOSE 12882 #menu
-EXPOSE 10887 #game
+#accounting
+EXPOSE 12881
+#discovery
+EXPOSE 10881
+#menu
+EXPOSE 12882
+#game
+EXPOSE 10887
+#admin
 EXPOSE 19770
 
 COPY bin/pes6go /
