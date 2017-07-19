@@ -1,6 +1,9 @@
 package storage
 
-import "github.com/pinfake/pes6go/data/block"
+import (
+	"github.com/pinfake/pes6go/data/block"
+	"github.com/pinfake/pes6go/data/info"
+)
 
 type Storage interface {
 	CreateAccount(key string, hash []byte) uint32
@@ -12,5 +15,6 @@ type Storage interface {
 	GetPlayerGroup(id uint32) block.PlayerGroup
 	GetGroupInfo(id uint32) block.GroupInfo
 	GetPlayerSettings(id uint32) block.PlayerSettings
+	GetPlayer(id uint32) info.Player
 	GetLobbies(serverId uint32) []block.Lobby
 }

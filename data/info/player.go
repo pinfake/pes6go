@@ -1,6 +1,6 @@
 package info
 
-type PlayerProfile struct {
+type Player struct {
 	Id       uint32
 	Category uint32
 	Points   uint32

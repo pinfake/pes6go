@@ -3,7 +3,10 @@ package storage
 import (
 	"time"
 
+	"bytes"
+
 	"github.com/pinfake/pes6go/data/block"
+	"github.com/pinfake/pes6go/data/info"
 )
 
 type Forged struct {
@@ -93,7 +96,15 @@ func (_ Forged) GetPlayerSettings(id uint32) block.PlayerSettings {
 }
 
 func (_ Forged) FindAccount(key string, hash []byte) uint32 {
-	return 1234
+	if key == "RFLJY34DRE993HX3ER94" && bytes.Equal(
+		hash, []byte{
+			0xac, 0x04, 0x6e, 0x00, 0x7a, 0x40, 0x06, 0x17,
+			0x0e, 0x9a, 0xc7, 0x3f, 0x66, 0x53, 0x31, 0x71,
+		}) {
+		return 1234
+	} else {
+		return 0
+	}
 }
 
 func (_ Forged) CreateAccount(key string, hash []byte) uint32 {
@@ -118,5 +129,8 @@ func (_ Forged) GetLobbies(serverId uint32) []block.Lobby {
 	default:
 		return nil
 	}
+}
 
+func (_ Forged) GetPlayer(id uint32) info.Player {
+	return info.Player{}
 }

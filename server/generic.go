@@ -49,26 +49,33 @@ func Login(s Server, b block.Block, c *Connection) message.Message {
 	fmt.Printf("cd key decoded: %s\n", dst)
 
 	c.AccountId = s.GetStorage().FindAccount(
-		string(dst), auth.Password,
+		string(dst[:20]), auth.Password,
 	)
 
+	code := block.Ok
+	if c.AccountId < 1 {
+		code = block.ServiceUnavailableError
+	}
 	return message.LoginResponse{
-		block.Ok,
+		uint32(code),
 	}
 }
 
 func SelectPlayer(s Server, b block.Block, c *Connection) message.Message {
 	playerSelected := block.NewPlayerSelected(b)
-	player := s.GetStorage().GetAccountProfiles(c.AccountId)[playerSelected.Position]
+	playerProfile := s.GetStorage().GetAccountProfiles(c.AccountId)[playerSelected.Position]
+	player := s.GetStorage().GetPlayer(playerProfile.Id)
+	c.Player = &player
 	return message.NewPlayerExtraSettingsMessage(
 		block.PlayerExtraSettings{
-			PlayerId: player.Id,
+			PlayerId: playerProfile.Id,
 		},
 	)
 }
 
 func ServerLobbies(s Server, _ block.Block, _ *Connection) message.Message {
 	a, _ := strconv.ParseUint(s.GetConfig()["serverId"], 10, 32)
+
 	return message.NewLobbiesMessage(
 		block.Lobbies{
 			s.GetStorage().GetLobbies(

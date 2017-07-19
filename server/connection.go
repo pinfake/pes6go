@@ -5,6 +5,7 @@ import (
 	"net"
 
 	"github.com/pinfake/pes6go/data/block"
+	"github.com/pinfake/pes6go/data/info"
 	"github.com/pinfake/pes6go/data/message"
 	"github.com/pinfake/pes6go/network"
 )
@@ -13,7 +14,7 @@ type Connection struct {
 	conn      net.Conn
 	seq       uint32
 	AccountId uint32
-	data      interface{}
+	Player    *info.Player
 }
 
 func (c Connection) readBlock() (block.Block, error) {

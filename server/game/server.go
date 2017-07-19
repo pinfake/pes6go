@@ -8,6 +8,12 @@ import (
 )
 
 type GameServer struct {
+	data GameServerData
+}
+
+type GameServerData struct {
+	Hola  string
+	Adios int
 }
 
 var handlers = map[uint16]server.Handler{}
@@ -24,6 +30,10 @@ func (s GameServer) GetConfig() server.ServerConfig {
 	return server.ServerConfig{
 		"serverId": "1",
 	}
+}
+
+func (s GameServer) GetData() interface{} {
+	return s.data
 }
 
 func Start() {
