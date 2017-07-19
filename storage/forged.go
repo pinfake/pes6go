@@ -132,5 +132,14 @@ func (_ Forged) GetLobbies(serverId uint32) []block.Lobby {
 }
 
 func (_ Forged) GetPlayer(id uint32) info.Player {
-	return info.Player{}
+	return info.Player{
+		Position:      1,
+		Id:            12345,
+		Name:          "PadreJohn",
+		TimePlayed:    1000,
+		Division:      2,
+		Points:        0,
+		Category:      500,
+		MatchesPlayed: 20,
+	}
 }
