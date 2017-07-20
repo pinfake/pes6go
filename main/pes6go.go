@@ -5,11 +5,7 @@ import (
 	"flag"
 	"os"
 
-	"github.com/pinfake/pes6go/server/accounting"
-	"github.com/pinfake/pes6go/server/admin"
-	"github.com/pinfake/pes6go/server/discovery"
-	"github.com/pinfake/pes6go/server/game"
-	"github.com/pinfake/pes6go/server/menu"
+	"github.com/pinfake/pes6go/server"
 )
 
 func main() {
@@ -38,22 +34,22 @@ func main() {
 
 	switch args[0] {
 	case "fullhouse":
-		go admin.Start()
-		go discovery.Start()
-		go accounting.Start()
-		go menu.Start()
-		go game.Start()
+		go server.StartAdmin()
+		go server.StartDiscovery()
+		go server.StartAccounting()
+		go server.StartMenu()
+		go server.StartGame()
 		select {}
 	case "admin":
-		admin.Start()
+		server.StartAdmin()
 	case "discovery":
-		discovery.Start()
+		server.StartDiscovery()
 	case "accounting":
-		accounting.Start()
+		server.StartAccounting()
 	case "menu":
-		menu.Start()
+		server.StartMenu()
 	case "game":
-		game.Start()
+		server.StartGame()
 	default:
 		flag.Usage()
 	}

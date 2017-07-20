@@ -1,8 +1,6 @@
 package server
 
 import (
-	"fmt"
-
 	"strconv"
 
 	"github.com/andreburgaud/crypt2go/ecb"
@@ -35,18 +33,13 @@ func Disconnect(_ Server, _ block.Block, _ *Connection) message.Message {
 
 func Login(s Server, b block.Block, c *Connection) message.Message {
 	auth := block.NewAthentication(b)
-	fmt.Println("I am handling login")
-	fmt.Printf("key: % x\n", auth.Key)
-	fmt.Printf("password: % x\n", auth.Password)
-	fmt.Printf("unknown: % x\n", auth.Unknown)
-	fmt.Printf("roster: % x\n", auth.RosterHash)
 
 	bl, _ := blowfish.NewCipher(BlowfishKey)
 	decrypter := ecb.NewECBDecrypter(bl)
 	dst := make([]byte, len(auth.Key))
 	decrypter.CryptBlocks(dst, auth.Key)
 
-	fmt.Printf("cd key decoded: %s\n", dst)
+	Log(s, c, "LOGIN -> Key: %s, Pass: %x, Roster: %x", dst, auth.Password, auth.RosterHash)
 
 	c.AccountId = s.Storage().FindAccount(
 		string(dst[:20]), auth.Password,
@@ -85,8 +78,8 @@ func ServerLobbies(s Server, _ block.Block, _ *Connection) message.Message {
 	)
 }
 
-func JoinLobby(_ Server, b block.Block, _ *Connection) message.Message {
+func JoinLobby(s Server, b block.Block, c *Connection) message.Message {
 	playerIp := block.NewJoinLobby(b)
-	fmt.Printf("%+v\n", playerIp)
+	Log(s, c, "JOIN LOBBY -> %+v", playerIp)
 	return message.IpInfoResponse{}
 }

@@ -1,53 +1,63 @@
-package discovery
+package server
 
 import (
 	"fmt"
 	"time"
 
+	"log"
+	"os"
+
 	"github.com/pinfake/pes6go/data/block"
 	"github.com/pinfake/pes6go/data/message"
-	"github.com/pinfake/pes6go/server"
 	"github.com/pinfake/pes6go/storage"
 )
 
 type DiscoveryServer struct {
-	connections server.Connections
+	logger      *log.Logger
+	connections Connections
 }
 
-var handlers = map[uint16]server.Handler{
-	0x2008: Init,
+var discoveryHandlers = map[uint16]Handler{
+	0x2008: DiscoveryInit,
 	0x2006: ServerTime,
 	0x2005: Servers,
 	0x2200: RankUrls,
 }
 
 func NewDiscoveryServer() DiscoveryServer {
-	return DiscoveryServer{connections: server.NewConnections()}
+	return DiscoveryServer{
+		logger:      log.New(os.Stdout, "Discovery: ", log.LstdFlags),
+		connections: NewConnections(),
+	}
 }
 
-func (s DiscoveryServer) Config() server.ServerConfig {
-	return server.ServerConfig{}
+func (s DiscoveryServer) Config() ServerConfig {
+	return ServerConfig{}
 }
 
-func (s DiscoveryServer) Connections() server.Connections {
+func (s DiscoveryServer) Connections() Connections {
 	return s.connections
 }
 
-func (s DiscoveryServer) Handlers() map[uint16]server.Handler {
-	return handlers
+func (s DiscoveryServer) Handlers() map[uint16]Handler {
+	return discoveryHandlers
 }
 
 func (s DiscoveryServer) Storage() storage.Storage {
 	return storage.Forged{}
 }
 
-func Init(s server.Server, _ block.Block, _ *server.Connection) message.Message {
+func (s DiscoveryServer) Logger() *log.Logger {
+	return s.logger
+}
+
+func DiscoveryInit(s Server, _ block.Block, _ *Connection) message.Message {
 	return message.NewServerNewsMessage(
 		s.Storage().GetServerNews(),
 	)
 }
 
-func Servers(_ server.Server, _ block.Block, _ *server.Connection) message.Message {
+func Servers(_ Server, _ block.Block, _ *Connection) message.Message {
 	return message.NewServerListMessage(
 		[]block.Server{
 			{7, "GROUP-SP/", "127.0.0.1", 10887, 0},
@@ -63,19 +73,19 @@ func Servers(_ server.Server, _ block.Block, _ *server.Connection) message.Messa
 	)
 }
 
-func RankUrls(s server.Server, _ block.Block, _ *server.Connection) message.Message {
+func RankUrls(s Server, _ block.Block, _ *Connection) message.Message {
 	return message.NewRankUrlListMessage(
 		s.Storage().GetRankUrls(),
 	)
 }
 
-func ServerTime(_ server.Server, _ block.Block, _ *server.Connection) message.Message {
+func ServerTime(_ Server, _ block.Block, _ *Connection) message.Message {
 	return message.ServerTime{
 		ServerTime: block.ServerTime{Time: time.Now()},
 	}
 }
 
-func Start() {
+func StartDiscovery() {
 	fmt.Println("Discovery Server starting")
-	server.Serve(NewDiscoveryServer(), 10881)
+	Serve(NewDiscoveryServer(), 10881)
 }

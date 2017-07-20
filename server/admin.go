@@ -1,4 +1,4 @@
-package admin
+package server
 
 import (
 	"fmt"
@@ -12,15 +12,14 @@ import (
 	"crypto/md5"
 
 	"github.com/andreburgaud/crypt2go/ecb"
-	"github.com/pinfake/pes6go/server"
 	"github.com/pinfake/pes6go/storage"
 )
 
-type Server struct {
+type AdminServer struct {
 	storage storage.Storage
 }
 
-func (s Server) account(w http.ResponseWriter, req *http.Request) {
+func (s AdminServer) account(w http.ResponseWriter, req *http.Request) {
 	switch req.Method {
 	case "POST":
 		key := req.FormValue("key")
@@ -36,7 +35,7 @@ func (s Server) account(w http.ResponseWriter, req *http.Request) {
 		var data = buf.Bytes()
 		fmt.Fprintf(w, "% x\n", data)
 		md5sum := md5.Sum(data)
-		block, _ := blowfish.NewCipher(server.BlowfishKey)
+		block, _ := blowfish.NewCipher(BlowfishKey)
 		encrypter := ecb.NewECBEncrypter(block)
 		dst := make([]byte, len(md5sum))
 		encrypter.CryptBlocks(dst, md5sum[:])
@@ -46,8 +45,8 @@ func (s Server) account(w http.ResponseWriter, req *http.Request) {
 	}
 }
 
-func Start() {
-	s := Server{storage.Forged{}}
+func StartAdmin() {
+	s := AdminServer{storage.Forged{}}
 	fmt.Println("Administration Server starting")
 	mux := http.NewServeMux()
 	mux.Handle("/account", http.HandlerFunc(s.account))

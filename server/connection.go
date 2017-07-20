@@ -1,7 +1,6 @@
 package server
 
 import (
-	"fmt"
 	"net"
 
 	"github.com/pinfake/pes6go/data/block"
@@ -31,16 +30,13 @@ func (c Connection) readBlock() (block.Block, error) {
 		return block.Block{}, err
 	}
 
-	fmt.Printf("READ: % x\n", got)
 	return got, nil
 }
 
 func (c *Connection) writeMessage(message message.Message) {
 	for _, b := range message.GetBlocks() {
-		fmt.Printf("Sequence is %d\n", c.seq)
 		c.seq++
 		b.Header.Sequence = c.seq
-		fmt.Printf("WRITE: % x\n", b.GetBytes())
 		c.conn.Write(network.Mutate(b.GetBytes()))
 	}
 }

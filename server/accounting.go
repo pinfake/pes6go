@@ -1,19 +1,22 @@
-package accounting
+package server
 
 import (
 	"fmt"
 
+	"log"
+	"os"
+
 	"github.com/pinfake/pes6go/data/block"
 	"github.com/pinfake/pes6go/data/message"
-	"github.com/pinfake/pes6go/server"
 	"github.com/pinfake/pes6go/storage"
 )
 
 type AccountingServer struct {
-	connections server.Connections
+	logger      *log.Logger
+	connections Connections
 }
 
-var handlers = map[uint16]server.Handler{
+var accountingHandlers = map[uint16]Handler{
 	0x3010: Profiles,
 	0x3020: CreateProfile,
 	0x3040: PlayerGroupInfo,
@@ -27,26 +30,33 @@ var handlers = map[uint16]server.Handler{
 }
 
 func NewAccountingServer() AccountingServer {
-	return AccountingServer{connections: server.NewConnections()}
+	return AccountingServer{
+		logger:      log.New(os.Stdout, "Accounting: ", log.LstdFlags),
+		connections: NewConnections(),
+	}
 }
 
-func (s AccountingServer) Handlers() map[uint16]server.Handler {
-	return handlers
+func (s AccountingServer) Handlers() map[uint16]Handler {
+	return accountingHandlers
 }
 
 func (s AccountingServer) Storage() storage.Storage {
 	return storage.Forged{}
 }
 
-func (s AccountingServer) Config() server.ServerConfig {
-	return server.ServerConfig{}
+func (s AccountingServer) Config() ServerConfig {
+	return ServerConfig{}
 }
 
-func (s AccountingServer) Connections() server.Connections {
+func (s AccountingServer) Connections() Connections {
 	return s.connections
 }
 
-func CreateProfile(s server.Server, b block.Block, _ *server.Connection) message.Message {
+func (s AccountingServer) Logger() *log.Logger {
+	return s.logger
+}
+
+func CreateProfile(s Server, b block.Block, _ *Connection) message.Message {
 	playerCreate := block.NewPlayerCreate(b)
 	s.Storage().CreatePlayer(
 		playerCreate.Position,
@@ -58,49 +68,49 @@ func CreateProfile(s server.Server, b block.Block, _ *server.Connection) message
 	}
 }
 
-func PlayerSettings(s server.Server, b block.Block, _ *server.Connection) message.Message {
+func PlayerSettings(s Server, b block.Block, _ *Connection) message.Message {
 	playerId := block.NewUint32(b)
 	return message.NewPlayerSettingsMessage(
 		playerId.Value, s.Storage().GetPlayerSettings(playerId.Value),
 	)
 }
 
-func Unknown3120(_ server.Server, _ block.Block, _ *server.Connection) message.Message {
+func Unknown3120(_ Server, _ block.Block, _ *Connection) message.Message {
 	return message.NewUnknown3120Message()
 }
 
-func Unknown3100(_ server.Server, _ block.Block, _ *server.Connection) message.Message {
+func Unknown3100(_ Server, _ block.Block, _ *Connection) message.Message {
 	return message.NewUnknown3100Message()
 }
 
-func Unknown3070(_ server.Server, _ block.Block, _ *server.Connection) message.Message {
+func Unknown3070(_ Server, _ block.Block, _ *Connection) message.Message {
 	return message.NewUnknown3070Message()
 }
 
-func Unknown3090(_ server.Server, _ block.Block, _ *server.Connection) message.Message {
+func Unknown3090(_ Server, _ block.Block, _ *Connection) message.Message {
 	return message.NewUnknown3090Message()
 }
 
-func GroupInfo(s server.Server, b block.Block, _ *server.Connection) message.Message {
+func GroupInfo(s Server, b block.Block, _ *Connection) message.Message {
 	groupId := block.NewUint32(b)
 	return message.NewGroupInfoMessage(
 		s.Storage().GetGroupInfo(groupId.Value),
 	)
 }
 
-func PlayerGroupInfo(s server.Server, b block.Block, _ *server.Connection) message.Message {
+func PlayerGroupInfo(s Server, b block.Block, _ *Connection) message.Message {
 	playerId := block.NewUint32(b)
 	return message.NewPlayerGroupMessage(
 		s.Storage().GetPlayerGroup(playerId.Value),
 	)
 }
 
-func QueryPlayerId(_ server.Server, b block.Block, _ *server.Connection) message.Message {
+func QueryPlayerId(_ Server, b block.Block, _ *Connection) message.Message {
 	_ = block.NewUint32(b)
 	return message.NewPlayerIdResponseMessage()
 }
 
-func Profiles(s server.Server, _ block.Block, _ *server.Connection) message.Message {
+func Profiles(s Server, _ block.Block, _ *Connection) message.Message {
 	return message.NewAccountProfilesMessage(
 		block.AccountPlayers{
 			s.Storage().GetAccountProfiles(0),
@@ -108,7 +118,7 @@ func Profiles(s server.Server, _ block.Block, _ *server.Connection) message.Mess
 	)
 }
 
-func Start() {
+func StartAccounting() {
 	fmt.Println("Accounting Server starting")
-	server.Serve(NewAccountingServer(), 12881)
+	Serve(NewAccountingServer(), 12881)
 }

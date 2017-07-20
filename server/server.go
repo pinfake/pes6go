@@ -6,6 +6,8 @@ import (
 	"os"
 	"strconv"
 
+	"log"
+
 	"github.com/pinfake/pes6go/data/block"
 	"github.com/pinfake/pes6go/data/message"
 	"github.com/pinfake/pes6go/storage"
@@ -18,21 +20,28 @@ type Handler func(Server, block.Block, *Connection) message.Message
 type ServerConfig map[string]string
 
 type Server interface {
+	Logger() *log.Logger
 	Connections() Connections
 	Config() ServerConfig
 	Storage() storage.Storage
 	Handlers() map[uint16]Handler
 }
 
+func Log(s Server, c *Connection, format string, v ...interface{}) {
+	prefix := c.conn.RemoteAddr().String() + " " + strconv.Itoa(c.id) + " "
+	s.Logger().Printf(prefix+format, v...)
+}
+
 func handleConnection(s Server, conn net.Conn) {
 	c := s.Connections().add(conn)
 	defer s.Connections().remove(c.id)
-	fmt.Println("New connection")
+	Log(s, c, "Incoming connection")
 	for {
 		b, err := c.readBlock()
 		if err != nil {
-			panic("Couldn't properly read")
+			panic("Couldn't properly read " + err.Error())
 		}
+		Log(s, c, "R <- %x", b)
 		m, err := handleBlock(s, b, c)
 		if err != nil {
 			panic(err)
@@ -41,10 +50,10 @@ func handleConnection(s Server, conn net.Conn) {
 			break
 		}
 		bs := m.GetBlocks()
-		fmt.Printf("Going to write: % x", bs)
+		Log(s, c, "W -> %x", bs)
 		c.writeMessage(m)
 	}
-	fmt.Println("Closing connection!")
+	Log(s, c, "Closing connection")
 }
 
 func handleBlock(s Server, block block.Block, c *Connection) (message.Message, error) {
