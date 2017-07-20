@@ -48,7 +48,7 @@ func Login(s Server, b block.Block, c *Connection) message.Message {
 
 	fmt.Printf("cd key decoded: %s\n", dst)
 
-	c.AccountId = s.GetStorage().FindAccount(
+	c.AccountId = s.Storage().FindAccount(
 		string(dst[:20]), auth.Password,
 	)
 
@@ -63,8 +63,8 @@ func Login(s Server, b block.Block, c *Connection) message.Message {
 
 func SelectPlayer(s Server, b block.Block, c *Connection) message.Message {
 	playerSelected := block.NewPlayerSelected(b)
-	playerProfile := s.GetStorage().GetAccountProfiles(c.AccountId)[playerSelected.Position]
-	player := s.GetStorage().GetPlayer(playerProfile.Id)
+	playerProfile := s.Storage().GetAccountProfiles(c.AccountId)[playerSelected.Position]
+	player := s.Storage().GetPlayer(playerProfile.Id)
 	c.Player = &player
 	return message.NewPlayerExtraSettingsMessage(
 		block.PlayerExtraSettings{
@@ -74,11 +74,11 @@ func SelectPlayer(s Server, b block.Block, c *Connection) message.Message {
 }
 
 func ServerLobbies(s Server, _ block.Block, _ *Connection) message.Message {
-	a, _ := strconv.ParseUint(s.GetConfig()["serverId"], 10, 32)
+	a, _ := strconv.ParseUint(s.Config()["serverId"], 10, 32)
 
 	return message.NewLobbiesMessage(
 		block.Lobbies{
-			s.GetStorage().GetLobbies(
+			s.Storage().GetLobbies(
 				uint32(a),
 			),
 		},

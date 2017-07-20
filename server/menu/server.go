@@ -10,32 +10,40 @@ import (
 )
 
 type MenuServer struct {
-	storage storage.Storage
+	connections server.Connections
 }
 
 var handlers = map[uint16]server.Handler{
 	0x3080: PlayerFriends,
 }
 
-func PlayerFriends(_ server.Server, _ block.Block, _ *server.Connection) message.Message {
-	return message.NewPlayerFriendsMessage(block.PlayerFriends{})
+func NewMenuServer() MenuServer {
+	return MenuServer{connections: server.NewConnections()}
 }
 
-func (s MenuServer) GetHandlers() map[uint16]server.Handler {
+func (s MenuServer) Handlers() map[uint16]server.Handler {
 	return handlers
 }
 
-func (s MenuServer) GetStorage() storage.Storage {
+func (s MenuServer) Storage() storage.Storage {
 	return storage.Forged{}
 }
 
-func (s MenuServer) GetConfig() server.ServerConfig {
+func (s MenuServer) Config() server.ServerConfig {
 	return server.ServerConfig{
 		"serverId": "2",
 	}
 }
 
+func (s MenuServer) Connections() server.Connections {
+	return s.connections
+}
+
+func PlayerFriends(_ server.Server, _ block.Block, _ *server.Connection) message.Message {
+	return message.NewPlayerFriendsMessage(block.PlayerFriends{})
+}
+
 func Start() {
 	fmt.Println("Menu Server starting")
-	server.Serve(MenuServer{}, 12882)
+	server.Serve(NewMenuServer(), 12882)
 }

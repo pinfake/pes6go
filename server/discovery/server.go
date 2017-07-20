@@ -11,6 +11,7 @@ import (
 )
 
 type DiscoveryServer struct {
+	connections server.Connections
 }
 
 var handlers = map[uint16]server.Handler{
@@ -18,21 +19,31 @@ var handlers = map[uint16]server.Handler{
 	0x2006: ServerTime,
 	0x2005: Servers,
 	0x2200: RankUrls,
-	0x0005: KeepAlive,
-	0x0003: Disconnect,
 }
 
-func (s DiscoveryServer) GetHandlers() map[uint16]server.Handler {
+func NewDiscoveryServer() DiscoveryServer {
+	return DiscoveryServer{connections: server.NewConnections()}
+}
+
+func (s DiscoveryServer) Config() server.ServerConfig {
+	return server.ServerConfig{}
+}
+
+func (s DiscoveryServer) Connections() server.Connections {
+	return s.connections
+}
+
+func (s DiscoveryServer) Handlers() map[uint16]server.Handler {
 	return handlers
 }
 
-func (s DiscoveryServer) GetStorage() storage.Storage {
+func (s DiscoveryServer) Storage() storage.Storage {
 	return storage.Forged{}
 }
 
 func Init(s server.Server, _ block.Block, _ *server.Connection) message.Message {
 	return message.NewServerNewsMessage(
-		s.GetStorage().GetServerNews(),
+		s.Storage().GetServerNews(),
 	)
 }
 
@@ -54,7 +65,7 @@ func Servers(_ server.Server, _ block.Block, _ *server.Connection) message.Messa
 
 func RankUrls(s server.Server, _ block.Block, _ *server.Connection) message.Message {
 	return message.NewRankUrlListMessage(
-		s.GetStorage().GetRankUrls(),
+		s.Storage().GetRankUrls(),
 	)
 }
 
@@ -64,19 +75,7 @@ func ServerTime(_ server.Server, _ block.Block, _ *server.Connection) message.Me
 	}
 }
 
-func KeepAlive(_ server.Server, _ block.Block, _ *server.Connection) message.Message {
-	return message.KeepAlive{}
-}
-
-func Disconnect(_ server.Server, _ block.Block, _ *server.Connection) message.Message {
-	return nil
-}
-
-func (s DiscoveryServer) GetConfig() server.ServerConfig {
-	return server.ServerConfig{}
-}
-
 func Start() {
 	fmt.Println("Discovery Server starting")
-	server.Serve(DiscoveryServer{}, 10881)
+	server.Serve(NewDiscoveryServer(), 10881)
 }

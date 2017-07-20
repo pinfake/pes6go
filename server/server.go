@@ -18,24 +18,22 @@ type Handler func(Server, block.Block, *Connection) message.Message
 type ServerConfig map[string]string
 
 type Server interface {
-	GetConfig() ServerConfig
-	GetStorage() storage.Storage
-	GetHandlers() map[uint16]Handler
+	Connections() Connections
+	Config() ServerConfig
+	Storage() storage.Storage
+	Handlers() map[uint16]Handler
 }
 
 func handleConnection(s Server, conn net.Conn) {
-	defer conn.Close()
-	c := Connection{
-		conn: conn,
-		seq:  0,
-	}
+	c := s.Connections().add(conn)
+	defer s.Connections().remove(c.id)
 	fmt.Println("New connection")
 	for {
 		b, err := c.readBlock()
 		if err != nil {
 			panic("Couldn't properly read")
 		}
-		m, err := handleBlock(s, b, &c)
+		m, err := handleBlock(s, b, c)
 		if err != nil {
 			panic(err)
 		}
@@ -50,7 +48,7 @@ func handleConnection(s Server, conn net.Conn) {
 }
 
 func handleBlock(s Server, block block.Block, c *Connection) (message.Message, error) {
-	var method, ok = s.GetHandlers()[block.Header.Query]
+	var method, ok = s.Handlers()[block.Header.Query]
 	if !ok {
 		method, ok = handlers[block.Header.Query]
 		if !ok {

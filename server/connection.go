@@ -11,6 +11,7 @@ import (
 )
 
 type Connection struct {
+	id        int
 	conn      net.Conn
 	seq       uint32
 	AccountId uint32
@@ -42,4 +43,35 @@ func (c *Connection) writeMessage(message message.Message) {
 		fmt.Printf("WRITE: % x\n", b.GetBytes())
 		c.conn.Write(network.Mutate(b.GetBytes()))
 	}
+}
+
+type Connections struct {
+	connections      map[int]*Connection
+	findByPlayerId   func(id uint32) *Connection
+	findByPlayerName func(name string) *Connection
+}
+
+func NewConnections() Connections {
+	return Connections{
+		connections: make(map[int]*Connection),
+	}
+}
+
+func (conns Connections) remove(id int) {
+	conns.connections[id].conn.Close()
+	delete(conns.connections, id)
+}
+
+func (conns Connections) add(c net.Conn) *Connection {
+	connection := Connection{
+		id:   conns.newId(),
+		seq:  0,
+		conn: c,
+	}
+	conns.connections[connection.id] = &connection
+	return &connection
+}
+
+func (conns Connections) newId() int {
+	return len(conns.connections) + 1
 }

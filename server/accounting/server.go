@@ -10,6 +10,7 @@ import (
 )
 
 type AccountingServer struct {
+	connections server.Connections
 }
 
 var handlers = map[uint16]server.Handler{
@@ -25,21 +26,29 @@ var handlers = map[uint16]server.Handler{
 	0x3120: Unknown3120,
 }
 
-func (s AccountingServer) GetHandlers() map[uint16]server.Handler {
+func NewAccountingServer() AccountingServer {
+	return AccountingServer{connections: server.NewConnections()}
+}
+
+func (s AccountingServer) Handlers() map[uint16]server.Handler {
 	return handlers
 }
 
-func (s AccountingServer) GetStorage() storage.Storage {
+func (s AccountingServer) Storage() storage.Storage {
 	return storage.Forged{}
 }
 
-func (s AccountingServer) GetConfig() server.ServerConfig {
+func (s AccountingServer) Config() server.ServerConfig {
 	return server.ServerConfig{}
+}
+
+func (s AccountingServer) Connections() server.Connections {
+	return s.connections
 }
 
 func CreateProfile(s server.Server, b block.Block, _ *server.Connection) message.Message {
 	playerCreate := block.NewPlayerCreate(b)
-	s.GetStorage().CreatePlayer(
+	s.Storage().CreatePlayer(
 		playerCreate.Position,
 		playerCreate.Name,
 	)
@@ -52,7 +61,7 @@ func CreateProfile(s server.Server, b block.Block, _ *server.Connection) message
 func PlayerSettings(s server.Server, b block.Block, _ *server.Connection) message.Message {
 	playerId := block.NewUint32(b)
 	return message.NewPlayerSettingsMessage(
-		playerId.Value, s.GetStorage().GetPlayerSettings(playerId.Value),
+		playerId.Value, s.Storage().GetPlayerSettings(playerId.Value),
 	)
 }
 
@@ -75,14 +84,14 @@ func Unknown3090(_ server.Server, _ block.Block, _ *server.Connection) message.M
 func GroupInfo(s server.Server, b block.Block, _ *server.Connection) message.Message {
 	groupId := block.NewUint32(b)
 	return message.NewGroupInfoMessage(
-		s.GetStorage().GetGroupInfo(groupId.Value),
+		s.Storage().GetGroupInfo(groupId.Value),
 	)
 }
 
 func PlayerGroupInfo(s server.Server, b block.Block, _ *server.Connection) message.Message {
 	playerId := block.NewUint32(b)
 	return message.NewPlayerGroupMessage(
-		s.GetStorage().GetPlayerGroup(playerId.Value),
+		s.Storage().GetPlayerGroup(playerId.Value),
 	)
 }
 
@@ -94,12 +103,12 @@ func QueryPlayerId(_ server.Server, b block.Block, _ *server.Connection) message
 func Profiles(s server.Server, _ block.Block, _ *server.Connection) message.Message {
 	return message.NewAccountProfilesMessage(
 		block.AccountPlayers{
-			s.GetStorage().GetAccountProfiles(0),
+			s.Storage().GetAccountProfiles(0),
 		},
 	)
 }
 
 func Start() {
 	fmt.Println("Accounting Server starting")
-	server.Serve(AccountingServer{}, 12881)
+	server.Serve(NewAccountingServer(), 12881)
 }
