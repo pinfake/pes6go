@@ -17,7 +17,7 @@ type Connection struct {
 	Player    *info.Player
 }
 
-func (c Connection) readBlock() (block.Block, error) {
+func (c *Connection) readBlock() (block.Block, error) {
 	var data [4096]byte
 	slice := data[:]
 
@@ -45,18 +45,18 @@ type Connections struct {
 	connections map[int]*Connection
 }
 
-func NewConnections() Connections {
-	return Connections{
+func NewConnections() *Connections {
+	return &Connections{
 		connections: make(map[int]*Connection),
 	}
 }
 
-func (conns Connections) remove(id int) {
+func (conns *Connections) remove(id int) {
 	conns.connections[id].conn.Close()
 	delete(conns.connections, id)
 }
 
-func (conns Connections) add(c net.Conn) *Connection {
+func (conns *Connections) add(c net.Conn) *Connection {
 	connection := Connection{
 		id:   conns.newId(),
 		seq:  0,
@@ -66,14 +66,14 @@ func (conns Connections) add(c net.Conn) *Connection {
 	return &connection
 }
 
-func (conns Connections) newId() int {
+func (conns *Connections) newId() int {
 	return len(conns.connections) + 1
 }
 
-func (conns Connections) findByPlayerId(id uint32) *Connection {
+func (conns *Connections) findByPlayerId(id uint32) *Connection {
 	return nil
 }
 
-func (conns Connections) findByPlayerName(name string) *Connection {
+func (conns *Connections) findByPlayerName(name string) *Connection {
 	return nil
 }

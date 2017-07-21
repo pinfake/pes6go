@@ -21,7 +21,7 @@ type ServerConfig map[string]string
 
 type Server struct {
 	logger      *log.Logger
-	connections Connections
+	connections *Connections
 	listener    net.Listener
 	ServerHandler
 }
