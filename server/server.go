@@ -33,11 +33,14 @@ type ServerHandler interface {
 }
 
 func (s *Server) Log(c *Connection, format string, v ...interface{}) {
-	prefix := c.conn.RemoteAddr().String() + " " + strconv.Itoa(c.id) + " "
+	prefix := ""
+	if c != nil {
+		prefix += c.conn.RemoteAddr().String() + " " + strconv.Itoa(c.id) + " "
+	}
 	s.logger.Printf(prefix+format, v...)
 }
 
-func (s *Server) handleConnection(conn net.Conn) {
+func (s *Server) handleConnection(conn net.Conn) error {
 	c := s.connections.add(conn)
 	defer s.connections.remove(c.id)
 	s.Log(c, "Incoming connection")
@@ -49,7 +52,7 @@ func (s *Server) handleConnection(conn net.Conn) {
 		s.Log(c, "R <- %x", b)
 		m, err := s.handleBlock(b, c)
 		if err != nil {
-			panic(err)
+			return fmt.Errorf("handleConnection: %s", err)
 		}
 		if m == nil {
 			break
@@ -59,6 +62,7 @@ func (s *Server) handleConnection(conn net.Conn) {
 		c.writeMessage(m)
 	}
 	s.Log(c, "Closing connection")
+	return nil
 }
 
 func (s *Server) handleBlock(block block.Block, c *Connection) (message.Message, error) {
@@ -75,17 +79,18 @@ func (s *Server) handleBlock(block block.Block, c *Connection) (message.Message,
 func (s *Server) Serve(port int) {
 	l, err := net.Listen("tcp", host+":"+strconv.Itoa(port))
 	if err != nil {
-		fmt.Println("Error listening:", err.Error())
+		s.Log(nil, "Error listening:", err.Error())
 		os.Exit(1)
 	}
 	s.listener = l
+	s.Log(nil, "Server listening on "+host+":"+strconv.Itoa(port))
 
-	defer l.Close()
+	defer s.Shutdown()
 	for {
-		conn, err := l.Accept()
+		conn, err := s.listener.Accept()
 		if err != nil {
-			fmt.Println("Error accepting: ", err)
-			os.Exit(1)
+			s.Log(nil, "Error accepting: ", err)
+			return
 		}
 		go s.handleConnection(conn)
 	}

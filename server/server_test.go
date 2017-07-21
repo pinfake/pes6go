@@ -50,22 +50,19 @@ func NewEmptyServer() *Server {
 func TestShouldConnect(t *testing.T) {
 	s := NewEmptyServer()
 	go s.Serve(19770)
-	time.Sleep(1000 * time.Millisecond)
 	t.Run("Should be able to connect", func(t *testing.T) {
 		c := client.Client{}
 		err := c.Connect("localhost", 19770)
 		if err != nil {
 			t.Error("Error connecting: %s", err.Error())
 		}
-		s.Shutdown()
 	})
-
+	s.Shutdown()
 }
 
 func TestSendInvalidData(t *testing.T) {
 	s := NewEmptyServer()
 	go s.Serve(19770)
-	time.Sleep(1000 * time.Millisecond)
 	t.Run("Should be able to connect", func(t *testing.T) {
 		c := client.Client{}
 		err := c.Connect("localhost", 19770)
@@ -73,6 +70,7 @@ func TestSendInvalidData(t *testing.T) {
 			t.Error("Error connecting: %s", err.Error())
 		}
 		c.Write([]byte{0x01, 0x02, 0x03})
+		time.Sleep(1000 * time.Millisecond)
 	})
 	s.Shutdown()
 }
