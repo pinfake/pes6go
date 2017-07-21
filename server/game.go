@@ -16,7 +16,7 @@ type GameServer struct {
 
 var gameHandlers = map[uint16]Handler{}
 
-func NewGameServer() GameServer {
+func NewGameServerHandler() GameServer {
 	return GameServer{
 		storage: storage.Forged{},
 		config: ServerConfig{
@@ -39,6 +39,6 @@ func (s GameServer) Config() ServerConfig {
 
 func StartGame() {
 	fmt.Println("Game Server starting")
-	s := NewServer(log.New(os.Stdout, "Game: ", log.LstdFlags), NewGameServer())
+	s := NewServer(log.New(os.Stdout, "Game: ", log.LstdFlags), NewGameServerHandler())
 	s.Serve(10887)
 }

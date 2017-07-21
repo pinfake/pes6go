@@ -33,7 +33,7 @@ func (s MenuServer) Config() ServerConfig {
 	return s.config
 }
 
-func NewMenuServer() MenuServer {
+func NewMenuServerHandler() MenuServer {
 	return MenuServer{
 		storage: storage.Forged{},
 		config: ServerConfig{
@@ -48,6 +48,6 @@ func PlayerFriends(_ *Server, _ block.Block, _ *Connection) message.Message {
 
 func StartMenu() {
 	fmt.Println("Menu Server starting")
-	s := NewServer(log.New(os.Stdout, "Menu: ", log.LstdFlags), NewMenuServer())
+	s := NewServer(log.New(os.Stdout, "Menu: ", log.LstdFlags), NewMenuServerHandler())
 	s.Serve(12882)
 }

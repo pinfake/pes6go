@@ -27,7 +27,7 @@ var accountingHandlers = map[uint16]Handler{
 	0x3120: Unknown3120,
 }
 
-func NewAccountingServer() AccountingServer {
+func NewAccountingServerHandler() AccountingServer {
 	return AccountingServer{
 		storage: storage.Forged{},
 		config:  ServerConfig{},
@@ -110,6 +110,6 @@ func Profiles(s *Server, _ block.Block, _ *Connection) message.Message {
 
 func StartAccounting() {
 	log.New(os.Stdout, "Accounting: ", log.LstdFlags)
-	s := NewServer(log.New(os.Stdout, "Accounting: ", log.LstdFlags), NewAccountingServer())
+	s := NewServer(log.New(os.Stdout, "Accounting: ", log.LstdFlags), NewAccountingServerHandler())
 	s.Serve(12881)
 }
