@@ -14,3 +14,7 @@ func (c Client) Connect(host string, port int) error {
 	c.conn = conn
 	return err
 }
+
+func (c Client) Write(b []byte) {
+	c.conn.Write(b)
+}

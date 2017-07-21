@@ -19,19 +19,19 @@ var handlers = map[uint16]Handler{
 	0x4202: JoinLobby,
 }
 
-func Init(_ Server, _ block.Block, _ *Connection) message.Message {
+func Init(_ *Server, _ block.Block, _ *Connection) message.Message {
 	return message.AccountingInit{}
 }
 
-func KeepAlive(_ Server, _ block.Block, _ *Connection) message.Message {
+func KeepAlive(_ *Server, _ block.Block, _ *Connection) message.Message {
 	return message.KeepAlive{}
 }
 
-func Disconnect(_ Server, _ block.Block, _ *Connection) message.Message {
+func Disconnect(_ *Server, _ block.Block, _ *Connection) message.Message {
 	return nil
 }
 
-func Login(s Server, b block.Block, c *Connection) message.Message {
+func Login(s *Server, b block.Block, c *Connection) message.Message {
 	auth := block.NewAthentication(b)
 
 	bl, _ := blowfish.NewCipher(BlowfishKey)
@@ -39,7 +39,7 @@ func Login(s Server, b block.Block, c *Connection) message.Message {
 	dst := make([]byte, len(auth.Key))
 	decrypter.CryptBlocks(dst, auth.Key)
 
-	Log(s, c, "LOGIN -> Key: %s, Pass: %x, Roster: %x", dst, auth.Password, auth.RosterHash)
+	s.Log(c, "LOGIN -> Key: %s, Pass: %x, Roster: %x", dst, auth.Password, auth.RosterHash)
 
 	c.AccountId = s.Storage().FindAccount(
 		string(dst[:20]), auth.Password,
@@ -54,7 +54,7 @@ func Login(s Server, b block.Block, c *Connection) message.Message {
 	}
 }
 
-func SelectPlayer(s Server, b block.Block, c *Connection) message.Message {
+func SelectPlayer(s *Server, b block.Block, c *Connection) message.Message {
 	playerSelected := block.NewPlayerSelected(b)
 	playerProfile := s.Storage().GetAccountProfiles(c.AccountId)[playerSelected.Position]
 	player := s.Storage().GetPlayer(playerProfile.Id)
@@ -66,7 +66,7 @@ func SelectPlayer(s Server, b block.Block, c *Connection) message.Message {
 	)
 }
 
-func ServerLobbies(s Server, _ block.Block, _ *Connection) message.Message {
+func ServerLobbies(s *Server, _ block.Block, _ *Connection) message.Message {
 	a, _ := strconv.ParseUint(s.Config()["serverId"], 10, 32)
 
 	return message.NewLobbiesMessage(
@@ -78,8 +78,8 @@ func ServerLobbies(s Server, _ block.Block, _ *Connection) message.Message {
 	)
 }
 
-func JoinLobby(s Server, b block.Block, c *Connection) message.Message {
+func JoinLobby(s *Server, b block.Block, c *Connection) message.Message {
 	playerIp := block.NewJoinLobby(b)
-	Log(s, c, "JOIN LOBBY -> %+v", playerIp)
+	s.Log(c, "JOIN LOBBY -> %+v", playerIp)
 	return message.IpInfoResponse{}
 }

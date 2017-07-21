@@ -10,21 +10,23 @@ import (
 )
 
 type GameServer struct {
-	logger      *log.Logger
-	connections Connections
+	config  ServerConfig
+	storage storage.Storage
 }
 
 var gameHandlers = map[uint16]Handler{}
 
 func NewGameServer() GameServer {
 	return GameServer{
-		logger:      log.New(os.Stdout, "Game: ", log.LstdFlags),
-		connections: NewConnections(),
+		storage: storage.Forged{},
+		config: ServerConfig{
+			"serverId": "1",
+		},
 	}
 }
 
 func (s GameServer) Storage() storage.Storage {
-	return storage.Forged{}
+	return s.storage
 }
 
 func (s GameServer) Handlers() map[uint16]Handler {
@@ -32,20 +34,11 @@ func (s GameServer) Handlers() map[uint16]Handler {
 }
 
 func (s GameServer) Config() ServerConfig {
-	return ServerConfig{
-		"serverId": "1",
-	}
-}
-
-func (s GameServer) Connections() Connections {
-	return s.connections
-}
-
-func (s GameServer) Logger() *log.Logger {
-	return s.logger
+	return s.config
 }
 
 func StartGame() {
 	fmt.Println("Game Server starting")
-	Serve(NewGameServer(), 10887)
+	s := NewServer(log.New(os.Stdout, "Game: ", log.LstdFlags), NewGameServer())
+	s.Serve(10887)
 }

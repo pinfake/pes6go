@@ -5,6 +5,8 @@ import (
 	"log"
 	"testing"
 
+	"time"
+
 	"github.com/pinfake/pes6go/client"
 	"github.com/pinfake/pes6go/storage"
 )
@@ -24,53 +26,53 @@ var mutated = []byte{
 }
 
 type emptyServer struct {
-	logger      *log.Logger
-	connections Connections
-}
-
-func (s emptyServer) Logger() *log.Logger {
-	return s.logger
-}
-
-func (s emptyServer) Connections() Connections {
-	return s.connections
 }
 
 func (s emptyServer) Config() ServerConfig {
-	return ServerConfig{}
+	return nil
 }
 
 func (s emptyServer) Storage() storage.Storage {
-	return storage.Forged{}
+	return nil
 }
 
 func (s emptyServer) Handlers() map[uint16]Handler {
 	return map[uint16]Handler{}
 }
 
-func NewEmptyServer() emptyServer {
-	return emptyServer{
-		logger:      log.New(ioutil.Discard, "empty: ", log.LstdFlags),
-		connections: NewConnections(),
-	}
+func NewEmptyServer() *Server {
+	return NewServer(
+		log.New(ioutil.Discard, "empty: ", log.LstdFlags),
+		emptyServer{},
+	)
 }
 
 func TestShouldConnect(t *testing.T) {
 	s := NewEmptyServer()
-	go Serve(s, 19770)
+	go s.Serve(19770)
+	time.Sleep(1000 * time.Millisecond)
 	t.Run("Should be able to connect", func(t *testing.T) {
 		c := client.Client{}
 		err := c.Connect("localhost", 19770)
 		if err != nil {
 			t.Error("Error connecting: %s", err.Error())
 		}
+		s.Shutdown()
 	})
+
 }
 
 func TestSendInvalidData(t *testing.T) {
 	s := NewEmptyServer()
-	go Serve(s, 19770)
-	t.Run("Should not crash on invalid data", func(t *testing.T) {
-
+	go s.Serve(19770)
+	time.Sleep(1000 * time.Millisecond)
+	t.Run("Should be able to connect", func(t *testing.T) {
+		c := client.Client{}
+		err := c.Connect("localhost", 19770)
+		if err != nil {
+			t.Error("Error connecting: %s", err.Error())
+		}
+		c.Write([]byte{0x01, 0x02, 0x03})
 	})
+	s.Shutdown()
 }

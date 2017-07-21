@@ -42,9 +42,7 @@ func (c *Connection) writeMessage(message message.Message) {
 }
 
 type Connections struct {
-	connections      map[int]*Connection
-	findByPlayerId   func(id uint32) *Connection
-	findByPlayerName func(name string) *Connection
+	connections map[int]*Connection
 }
 
 func NewConnections() Connections {
@@ -70,4 +68,12 @@ func (conns Connections) add(c net.Conn) *Connection {
 
 func (conns Connections) newId() int {
 	return len(conns.connections) + 1
+}
+
+func (conns Connections) findByPlayerId(id uint32) *Connection {
+	return nil
+}
+
+func (conns Connections) findByPlayerName(name string) *Connection {
+	return nil
 }

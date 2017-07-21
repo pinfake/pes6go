@@ -13,8 +13,8 @@ import (
 )
 
 type DiscoveryServer struct {
-	logger      *log.Logger
-	connections Connections
+	config  ServerConfig
+	storage storage.Storage
 }
 
 var discoveryHandlers = map[uint16]Handler{
@@ -26,17 +26,13 @@ var discoveryHandlers = map[uint16]Handler{
 
 func NewDiscoveryServer() DiscoveryServer {
 	return DiscoveryServer{
-		logger:      log.New(os.Stdout, "Discovery: ", log.LstdFlags),
-		connections: NewConnections(),
+		storage: storage.Forged{},
+		config:  ServerConfig{},
 	}
 }
 
 func (s DiscoveryServer) Config() ServerConfig {
-	return ServerConfig{}
-}
-
-func (s DiscoveryServer) Connections() Connections {
-	return s.connections
+	return s.config
 }
 
 func (s DiscoveryServer) Handlers() map[uint16]Handler {
@@ -44,20 +40,16 @@ func (s DiscoveryServer) Handlers() map[uint16]Handler {
 }
 
 func (s DiscoveryServer) Storage() storage.Storage {
-	return storage.Forged{}
+	return s.storage
 }
 
-func (s DiscoveryServer) Logger() *log.Logger {
-	return s.logger
-}
-
-func DiscoveryInit(s Server, _ block.Block, _ *Connection) message.Message {
+func DiscoveryInit(s *Server, _ block.Block, _ *Connection) message.Message {
 	return message.NewServerNewsMessage(
 		s.Storage().GetServerNews(),
 	)
 }
 
-func Servers(_ Server, _ block.Block, _ *Connection) message.Message {
+func Servers(_ *Server, _ block.Block, _ *Connection) message.Message {
 	return message.NewServerListMessage(
 		[]block.Server{
 			{7, "GROUP-SP/", "127.0.0.1", 10887, 0},
@@ -73,13 +65,13 @@ func Servers(_ Server, _ block.Block, _ *Connection) message.Message {
 	)
 }
 
-func RankUrls(s Server, _ block.Block, _ *Connection) message.Message {
+func RankUrls(s *Server, _ block.Block, _ *Connection) message.Message {
 	return message.NewRankUrlListMessage(
 		s.Storage().GetRankUrls(),
 	)
 }
 
-func ServerTime(_ Server, _ block.Block, _ *Connection) message.Message {
+func ServerTime(_ *Server, _ block.Block, _ *Connection) message.Message {
 	return message.ServerTime{
 		ServerTime: block.ServerTime{Time: time.Now()},
 	}
@@ -87,5 +79,9 @@ func ServerTime(_ Server, _ block.Block, _ *Connection) message.Message {
 
 func StartDiscovery() {
 	fmt.Println("Discovery Server starting")
-	Serve(NewDiscoveryServer(), 10881)
+	s := NewServer(
+		log.New(os.Stdout, "Discovery: ", log.LstdFlags),
+		NewDiscoveryServer(),
+	)
+	s.Serve(10881)
 }
