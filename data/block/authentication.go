@@ -7,7 +7,7 @@ type Authentication struct {
 	RosterHash []byte
 }
 
-func NewAthentication(b Block) Authentication {
+func NewAthentication(b *Block) Authentication {
 	return Authentication{
 		Key:        b.Body.GetBytes()[:32],
 		Password:   b.Body.GetBytes()[32:48],

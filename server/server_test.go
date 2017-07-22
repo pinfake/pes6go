@@ -1,29 +1,18 @@
 package server
 
 import (
-	"io/ioutil"
 	"log"
 	"testing"
 
-	"time"
+	"os"
 
 	"github.com/pinfake/pes6go/client"
 	"github.com/pinfake/pes6go/storage"
 )
 
-var clean = []byte{
-	0x84, 0x50, 0x04, 0x01, 0x00, 0x00, 0x86, 0x02, 0xe1, 0x5b, 0x1d, 0xaf, 0x4b, 0xc2, 0x39, 0x06,
-	0x6b, 0x25, 0x17, 0xd1, 0xcd, 0xdc, 0x39, 0x05, 0x00, 0x00, 0x5b, 0x30, 0x64, 0x61, 0x6c, 0x65,
-	0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-	0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-}
+const port = 19780
 
-var mutated = []byte{
-	0x22, 0x27, 0x91, 0x7d, 0xa6, 0x77, 0x13, 0x7e, 0x47, 0x2c, 0x88, 0xd3, 0xed, 0xb5, 0xac, 0x7a,
-	0xcd, 0x52, 0x82, 0xad, 0x6b, 0xab, 0xac, 0x79, 0xa6, 0x77, 0xce, 0x4c, 0xc2, 0x16, 0xf9, 0x19,
-	0xa6, 0x77, 0x95, 0x7c, 0xa6, 0x77, 0x95, 0x7c, 0xa6, 0x77, 0x95, 0x7c, 0xa6, 0x77, 0x95, 0x7c,
-	0xa6, 0x77, 0x95, 0x7c, 0xa6, 0x77, 0x95, 0x7c, 0xa6, 0x77, 0x95, 0x7c,
-}
+var s *Server
 
 type emptyServer struct {
 }
@@ -42,35 +31,55 @@ func (s emptyServer) Handlers() map[uint16]Handler {
 
 func NewEmptyServer() *Server {
 	return NewServer(
-		log.New(ioutil.Discard, "empty: ", log.LstdFlags),
+		log.New(os.Stdout, "test: ", log.LstdFlags),
 		emptyServer{},
 	)
 }
 
-func TestShouldConnect(t *testing.T) {
-	s := NewEmptyServer()
-	go s.Serve(19770)
+func init() {
+	s = NewEmptyServer()
+	go s.Serve(port)
+}
+
+func connect(c *client.Client, t *testing.T) {
+	err := c.Connect("localhost", port)
+	if err != nil {
+		t.Error("Error connecting: %s", err.Error())
+	}
+}
+
+func TestConnect(t *testing.T) {
 	t.Run("Should be able to connect", func(t *testing.T) {
-		c := client.Client{}
-		err := c.Connect("localhost", 19770)
-		if err != nil {
-			t.Error("Error connecting: %s", err.Error())
-		}
+		c := client.NewClient()
+		connect(&c, t)
+		c.Close()
 	})
-	s.Shutdown()
 }
 
 func TestSendInvalidData(t *testing.T) {
-	s := NewEmptyServer()
-	go s.Serve(19770)
-	t.Run("Should be able to connect", func(t *testing.T) {
+	t.Run("Shouldn't crash on invalid data", func(t *testing.T) {
 		c := client.Client{}
-		err := c.Connect("localhost", 19770)
-		if err != nil {
-			t.Error("Error connecting: %s", err.Error())
-		}
+		connect(&c, t)
 		c.Write([]byte{0x01, 0x02, 0x03})
-		time.Sleep(1000 * time.Millisecond)
+		c.Read()
+		c.Close()
+		connect(&c, t)
+		c.Close()
 	})
-	s.Shutdown()
+}
+
+func TestSendProperHeadShorterBody(t *testing.T) {
+
+}
+
+func TestSendProperHeadLongerBody(t *testing.T) {
+
+}
+
+func TestSendMoreThanReadBuffer(t *testing.T) {
+
+}
+
+func TestSendUnknownQuery(t *testing.T) {
+
 }

@@ -3,10 +3,11 @@ package server
 import (
 	"fmt"
 	"net"
-	"os"
 	"strconv"
 
 	"log"
+
+	"time"
 
 	"github.com/pinfake/pes6go/data/block"
 	"github.com/pinfake/pes6go/data/message"
@@ -15,7 +16,7 @@ import (
 
 const host = "0.0.0.0"
 
-type Handler func(*Server, block.Block, *Connection) message.Message
+type Handler func(*Server, *block.Block, *Connection) message.Message
 
 type ServerConfig map[string]string
 
@@ -47,11 +48,13 @@ func (s *Server) handleConnection(conn net.Conn) error {
 	for {
 		b, err := c.readBlock()
 		if err != nil {
-			panic("Couldn't properly read " + err.Error())
+			s.Log(c, "Cannot read block: %s", err)
+			return fmt.Errorf("Cannot read block: %s", err)
 		}
 		s.Log(c, "R <- %x", b)
 		m, err := s.handleBlock(b, c)
 		if err != nil {
+			s.Log(c, "handleConnection: %s", err)
 			return fmt.Errorf("handleConnection: %s", err)
 		}
 		if m == nil {
@@ -65,7 +68,7 @@ func (s *Server) handleConnection(conn net.Conn) error {
 	return nil
 }
 
-func (s *Server) handleBlock(block block.Block, c *Connection) (message.Message, error) {
+func (s *Server) handleBlock(block *block.Block, c *Connection) (message.Message, error) {
 	var method, ok = s.Handlers()[block.Header.Query]
 	if !ok {
 		method, ok = handlers[block.Header.Query]
@@ -79,8 +82,8 @@ func (s *Server) handleBlock(block block.Block, c *Connection) (message.Message,
 func (s *Server) Serve(port int) {
 	l, err := net.Listen("tcp", host+":"+strconv.Itoa(port))
 	if err != nil {
-		s.Log(nil, "Error listening:", err.Error())
-		os.Exit(1)
+		s.Log(nil, "Error listening: %s", err.Error())
+		panic("Error listening:" + err.Error())
 	}
 	s.listener = l
 	s.Log(nil, "Server listening on "+host+":"+strconv.Itoa(port))
@@ -109,4 +112,8 @@ func (s Server) Shutdown() {
 	if s.listener != nil {
 		s.listener.Close()
 	}
+}
+
+func (s Server) WaitUntilDone() {
+	time.Sleep(10000 * time.Millisecond)
 }

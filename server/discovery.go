@@ -43,13 +43,13 @@ func (s DiscoveryServer) Storage() storage.Storage {
 	return s.storage
 }
 
-func DiscoveryInit(s *Server, _ block.Block, _ *Connection) message.Message {
+func DiscoveryInit(s *Server, _ *block.Block, _ *Connection) message.Message {
 	return message.NewServerNewsMessage(
 		s.Storage().GetServerNews(),
 	)
 }
 
-func Servers(_ *Server, _ block.Block, _ *Connection) message.Message {
+func Servers(_ *Server, _ *block.Block, _ *Connection) message.Message {
 	return message.NewServerListMessage(
 		[]block.Server{
 			{7, "GROUP-SP/", "127.0.0.1", 10887, 0},
@@ -65,13 +65,13 @@ func Servers(_ *Server, _ block.Block, _ *Connection) message.Message {
 	)
 }
 
-func RankUrls(s *Server, _ block.Block, _ *Connection) message.Message {
+func RankUrls(s *Server, _ *block.Block, _ *Connection) message.Message {
 	return message.NewRankUrlListMessage(
 		s.Storage().GetRankUrls(),
 	)
 }
 
-func ServerTime(_ *Server, _ block.Block, _ *Connection) message.Message {
+func ServerTime(_ *Server, _ *block.Block, _ *Connection) message.Message {
 	return message.ServerTime{
 		ServerTime: block.ServerTime{Time: time.Now()},
 	}

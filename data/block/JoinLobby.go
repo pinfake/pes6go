@@ -31,7 +31,7 @@ func (info JoinLobby) buildInternal() PieceInternal {
 	return internal
 }
 
-func NewJoinLobby(b Block) JoinLobby {
+func NewJoinLobby(b *Block) JoinLobby {
 	bytes := b.Body.GetBytes()
 	return JoinLobby{
 		LobbyId: bytes[0],

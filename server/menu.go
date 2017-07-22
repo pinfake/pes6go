@@ -42,7 +42,7 @@ func NewMenuServerHandler() MenuServer {
 	}
 }
 
-func PlayerFriends(_ *Server, _ block.Block, _ *Connection) message.Message {
+func PlayerFriends(_ *Server, _ *block.Block, _ *Connection) message.Message {
 	return message.NewPlayerFriendsMessage(block.PlayerFriends{})
 }
 

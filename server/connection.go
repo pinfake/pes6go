@@ -3,6 +3,8 @@ package server
 import (
 	"net"
 
+	"sync"
+
 	"github.com/pinfake/pes6go/data/block"
 	"github.com/pinfake/pes6go/data/info"
 	"github.com/pinfake/pes6go/data/message"
@@ -17,17 +19,17 @@ type Connection struct {
 	Player    *info.Player
 }
 
-func (c *Connection) readBlock() (block.Block, error) {
+func (c *Connection) readBlock() (*block.Block, error) {
 	var data [4096]byte
 	slice := data[:]
 
 	n, err := c.conn.Read(slice)
 	if err != nil {
-		return block.Block{}, err
+		return nil, err
 	}
 	got, err := block.ReadBlock(slice[:n])
 	if err != nil {
-		return block.Block{}, err
+		return nil, err
 	}
 
 	return got, nil
@@ -42,6 +44,7 @@ func (c *Connection) writeMessage(message message.Message) {
 }
 
 type Connections struct {
+	mu          sync.RWMutex
 	connections map[int]*Connection
 }
 
@@ -52,11 +55,15 @@ func NewConnections() *Connections {
 }
 
 func (conns *Connections) remove(id int) {
+	defer conns.mu.Unlock()
+	conns.mu.Lock()
 	conns.connections[id].conn.Close()
 	delete(conns.connections, id)
 }
 
 func (conns *Connections) add(c net.Conn) *Connection {
+	defer conns.mu.Unlock()
+	conns.mu.Lock()
 	connection := Connection{
 		id:   conns.newId(),
 		seq:  0,
@@ -71,9 +78,25 @@ func (conns *Connections) newId() int {
 }
 
 func (conns *Connections) findByPlayerId(id uint32) *Connection {
+	defer conns.mu.RUnlock()
+	conns.mu.RLock()
 	return nil
 }
 
 func (conns *Connections) findByPlayerName(name string) *Connection {
+	defer conns.mu.RUnlock()
+	conns.mu.RLock()
+	return nil
+}
+
+func (conns *Connections) findInLobby(lobbyId byte) *Connections {
+	defer conns.mu.RUnlock()
+	conns.mu.RLock()
+	return nil
+}
+
+func (conns *Connections) findInRoom(lobbyId byte, roomId uint32) *Connections {
+	defer conns.mu.RUnlock()
+	conns.mu.RLock()
 	return nil
 }

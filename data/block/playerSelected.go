@@ -4,7 +4,7 @@ type PlayerSelected struct {
 	Position byte
 }
 
-func NewPlayerSelected(b Block) PlayerSelected {
+func NewPlayerSelected(b *Block) PlayerSelected {
 	return PlayerSelected{
 		Position: b.Body.GetBytes()[0],
 	}

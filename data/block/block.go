@@ -57,9 +57,9 @@ func (b Block) GetBytes() []byte {
 	return buf.Bytes()
 }
 
-func ReadBlock(data []byte) (Block, error) {
+func ReadBlock(data []byte) (*Block, error) {
 	if len(data) < headerSize {
-		return Block{}, errors.New("No Header found")
+		return nil, errors.New("No Header found")
 	}
 	decoded := network.Mutate(data)
 	var buf = bytes.NewBuffer(decoded[0:headerSize])
@@ -73,5 +73,8 @@ func ReadBlock(data []byte) (Block, error) {
 		fmt.Printf("%d headersize % x", header.Size, decoded)
 		panic("Smaller than a Header!")
 	}
-	return Block{header, GenericBody{decoded[headerSize : headerSize+header.Size]}}, nil
+	return &Block{
+		header,
+		GenericBody{decoded[headerSize : headerSize+header.Size]},
+	}, nil
 }

@@ -17,7 +17,7 @@ func (info PlayerCreate) buildInternal() PieceInternal {
 	return internal
 }
 
-func NewPlayerCreate(b Block) PlayerCreate {
+func NewPlayerCreate(b *Block) PlayerCreate {
 	return PlayerCreate{
 		Position: b.Body.GetBytes()[0],
 		Name:     string(b.Body.GetBytes()[1:]),

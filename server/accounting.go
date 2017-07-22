@@ -46,7 +46,7 @@ func (s AccountingServer) Config() ServerConfig {
 	return s.config
 }
 
-func CreateProfile(s *Server, b block.Block, _ *Connection) message.Message {
+func CreateProfile(s *Server, b *block.Block, _ *Connection) message.Message {
 	playerCreate := block.NewPlayerCreate(b)
 	s.Storage().CreatePlayer(
 		playerCreate.Position,
@@ -58,49 +58,49 @@ func CreateProfile(s *Server, b block.Block, _ *Connection) message.Message {
 	}
 }
 
-func PlayerSettings(s *Server, b block.Block, _ *Connection) message.Message {
+func PlayerSettings(s *Server, b *block.Block, _ *Connection) message.Message {
 	playerId := block.NewUint32(b)
 	return message.NewPlayerSettingsMessage(
 		playerId.Value, s.Storage().GetPlayerSettings(playerId.Value),
 	)
 }
 
-func Unknown3120(_ *Server, _ block.Block, _ *Connection) message.Message {
+func Unknown3120(_ *Server, _ *block.Block, _ *Connection) message.Message {
 	return message.NewUnknown3120Message()
 }
 
-func Unknown3100(_ *Server, _ block.Block, _ *Connection) message.Message {
+func Unknown3100(_ *Server, _ *block.Block, _ *Connection) message.Message {
 	return message.NewUnknown3100Message()
 }
 
-func Unknown3070(_ *Server, _ block.Block, _ *Connection) message.Message {
+func Unknown3070(_ *Server, _ *block.Block, _ *Connection) message.Message {
 	return message.NewUnknown3070Message()
 }
 
-func Unknown3090(_ *Server, _ block.Block, _ *Connection) message.Message {
+func Unknown3090(_ *Server, _ *block.Block, _ *Connection) message.Message {
 	return message.NewUnknown3090Message()
 }
 
-func GroupInfo(s *Server, b block.Block, _ *Connection) message.Message {
+func GroupInfo(s *Server, b *block.Block, _ *Connection) message.Message {
 	groupId := block.NewUint32(b)
 	return message.NewGroupInfoMessage(
 		s.Storage().GetGroupInfo(groupId.Value),
 	)
 }
 
-func PlayerGroupInfo(s *Server, b block.Block, _ *Connection) message.Message {
+func PlayerGroupInfo(s *Server, b *block.Block, _ *Connection) message.Message {
 	playerId := block.NewUint32(b)
 	return message.NewPlayerGroupMessage(
 		s.Storage().GetPlayerGroup(playerId.Value),
 	)
 }
 
-func QueryPlayerId(_ *Server, b block.Block, _ *Connection) message.Message {
+func QueryPlayerId(_ *Server, b *block.Block, _ *Connection) message.Message {
 	_ = block.NewUint32(b)
 	return message.NewPlayerIdResponseMessage()
 }
 
-func Profiles(s *Server, _ block.Block, _ *Connection) message.Message {
+func Profiles(s *Server, _ *block.Block, _ *Connection) message.Message {
 	return message.NewAccountProfilesMessage(
 		block.AccountPlayers{
 			s.Storage().GetAccountProfiles(0),
