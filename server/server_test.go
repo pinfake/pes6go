@@ -103,7 +103,7 @@ func connect(c *client.Client, t *testing.T) {
 }
 
 func TestConnect(t *testing.T) {
-	t.Run("Should be able to connect", func(t *testing.T) {
+	t.Run("Should connect", func(t *testing.T) {
 		c := client.NewClient()
 		connect(c, t)
 		c.Close()
@@ -111,16 +111,17 @@ func TestConnect(t *testing.T) {
 }
 
 func TestSendInvalidData(t *testing.T) {
-	t.Run("Shouldn't crash on invalid data", func(t *testing.T) {
-		c := client.NewClient()
-		connect(c, t)
-		c.Write([]byte{0x01, 0x02, 0x03})
+	c := client.NewClient()
+	connect(c, t)
+	c.Write([]byte{0x01, 0x02, 0x03})
+	assertDisconnected(c, t)
+	t.Run("Should be kicked out", func(t *testing.T) {
 		assertDisconnected(c, t)
 	})
 }
 
 func TestSendProperHeadLongerBody(t *testing.T) {
-	t.Run("Shouldn't crash on longer body that header says", func(t *testing.T) {
+	t.Run("Shouldn't crash", func(t *testing.T) {
 		b := craftBlock(0x3001, 10, getRandom(100))
 		c := client.NewClient()
 		connect(c, t)
@@ -130,30 +131,30 @@ func TestSendProperHeadLongerBody(t *testing.T) {
 }
 
 func TestSendProperHeadShorterBody(t *testing.T) {
-	t.Run("Shouldn't crash on shorter body that header says", func(t *testing.T) {
-		b := craftBlock(0x3001, 100, getRandom(10))
-		c := client.NewClient()
-		connect(c, t)
-		c.WriteBlock(b)
+	b := craftBlock(0x3001, 100, getRandom(10))
+	c := client.NewClient()
+	connect(c, t)
+	c.WriteBlock(b)
+	t.Run("Should be kicked out", func(t *testing.T) {
 		assertDisconnected(c, t)
 	})
 }
 
 func TestSendMoreThanReadBuffer(t *testing.T) {
-	t.Run("Shouldn't crash on more data than actual buffer", func(t *testing.T) {
-		c := client.NewClient()
-		connect(c, t)
-		c.Write(getRandom(10000))
+	c := client.NewClient()
+	connect(c, t)
+	c.Write(getRandom(10000))
+	t.Run("Should be kicked out", func(t *testing.T) {
 		assertDisconnected(c, t)
 	})
 }
 
 func TestSendUnknownQuery(t *testing.T) {
-	t.Run("Shouldn't crash on unknown query", func(t *testing.T) {
-		b := craftBlock(0x1234, 100, getRandom(100))
-		c := client.NewClient()
-		connect(c, t)
-		c.WriteBlock(b)
+	b := craftBlock(0x1234, 100, getRandom(100))
+	c := client.NewClient()
+	connect(c, t)
+	c.WriteBlock(b)
+	t.Run("Should be kicked out", func(t *testing.T) {
 		assertDisconnected(c, t)
 	})
 }
