@@ -3,14 +3,18 @@ package client
 import (
 	"net"
 	"strconv"
+
+	"github.com/pinfake/pes6go/data/block"
+	"github.com/pinfake/pes6go/network"
 )
 
 type Client struct {
+	seq  uint32
 	conn net.Conn
 }
 
-func NewClient() Client {
-	return Client{}
+func NewClient() *Client {
+	return &Client{}
 }
 
 func (c *Client) Connect(host string, port int) error {
@@ -33,6 +37,12 @@ func (c *Client) Read() ([]byte, error) {
 	}
 
 	return slice[:n], nil
+}
+
+func (c *Client) WriteBlock(b *block.Block) {
+	c.seq++
+	b.Header.Sequence = c.seq
+	c.conn.Write(network.Mutate(b.GetBytes()))
 }
 
 func (c *Client) Close() {

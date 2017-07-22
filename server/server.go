@@ -43,7 +43,7 @@ func (s *Server) Log(c *Connection, format string, v ...interface{}) {
 
 func (s *Server) handleConnection(conn net.Conn) error {
 	c := s.connections.add(conn)
-	defer s.connections.remove(c.id)
+	defer s.closeConnection(c)
 	s.Log(c, "Incoming connection")
 	for {
 		b, err := c.readBlock()
@@ -64,8 +64,13 @@ func (s *Server) handleConnection(conn net.Conn) error {
 		s.Log(c, "W -> %x", bs)
 		c.writeMessage(m)
 	}
-	s.Log(c, "Closing connection")
 	return nil
+}
+
+func (s *Server) closeConnection(c *Connection) {
+	s.Log(c, "Closing connection")
+	s.connections.remove(c.id)
+	c.conn.Close()
 }
 
 func (s *Server) handleBlock(block *block.Block, c *Connection) (message.Message, error) {
