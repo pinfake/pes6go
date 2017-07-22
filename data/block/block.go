@@ -70,7 +70,6 @@ func ReadBlock(data []byte) (*Block, error) {
 	}
 
 	if len(decoded) < int(headerSize+header.Size) {
-		fmt.Printf("%d headersize % x", header.Size, decoded)
 		return nil, fmt.Errorf(
 			"Smaller body than header said, header: %d, body: %d",
 			header.Size, len(decoded),

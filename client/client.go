@@ -4,6 +4,8 @@ import (
 	"net"
 	"strconv"
 
+	"time"
+
 	"github.com/pinfake/pes6go/data/block"
 	"github.com/pinfake/pes6go/network"
 )
@@ -31,6 +33,7 @@ func (c *Client) Read() ([]byte, error) {
 	var data [4096]byte
 	slice := data[:]
 
+	c.conn.SetReadDeadline(time.Now().Add(1 * time.Second))
 	n, err := c.conn.Read(slice)
 	if err != nil {
 		return nil, err

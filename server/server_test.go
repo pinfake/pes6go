@@ -8,6 +8,10 @@ import (
 
 	"crypto/rand"
 
+	"io"
+
+	"net"
+
 	"github.com/pinfake/pes6go/client"
 	"github.com/pinfake/pes6go/data/block"
 	"github.com/pinfake/pes6go/storage"
@@ -67,6 +71,30 @@ func craftBlock(query uint16, size uint16, data []byte) *block.Block {
 	return &b
 }
 
+func assertDisconnected(c *client.Client, t *testing.T) {
+	defer c.Close()
+	_, err := c.Read()
+	if err == nil {
+		t.Error("still connected: no error reading")
+	} else {
+		//errType := reflect.TypeOf(err)
+		//fmt.Printf(errType.String())
+		//fmt.Printf("ERROR!: %s\n", err.Error())
+
+		if err == io.EOF {
+			return
+		}
+
+		if !err.(*net.OpError).Timeout() {
+			return
+		}
+
+		//if err.(net.Error).Timeout() {
+		t.Error("still connected")
+		//}
+	}
+}
+
 func connect(c *client.Client, t *testing.T) {
 	err := c.Connect("localhost", port)
 	if err != nil {
@@ -87,8 +115,7 @@ func TestSendInvalidData(t *testing.T) {
 		c := client.NewClient()
 		connect(c, t)
 		c.Write([]byte{0x01, 0x02, 0x03})
-		c.Read()
-		c.Close()
+		assertDisconnected(c, t)
 	})
 }
 
@@ -98,7 +125,6 @@ func TestSendProperHeadLongerBody(t *testing.T) {
 		c := client.NewClient()
 		connect(c, t)
 		c.WriteBlock(b)
-		c.Read()
 		c.Close()
 	})
 }
@@ -109,8 +135,7 @@ func TestSendProperHeadShorterBody(t *testing.T) {
 		c := client.NewClient()
 		connect(c, t)
 		c.WriteBlock(b)
-		c.Read()
-		c.Close()
+		assertDisconnected(c, t)
 	})
 }
 
@@ -119,8 +144,7 @@ func TestSendMoreThanReadBuffer(t *testing.T) {
 		c := client.NewClient()
 		connect(c, t)
 		c.Write(getRandom(10000))
-		c.Read()
-		c.Close()
+		assertDisconnected(c, t)
 	})
 }
 
@@ -130,7 +154,6 @@ func TestSendUnknownQuery(t *testing.T) {
 		c := client.NewClient()
 		connect(c, t)
 		c.WriteBlock(b)
-		c.Read()
-		c.Close()
+		assertDisconnected(c, t)
 	})
 }
