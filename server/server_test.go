@@ -89,8 +89,6 @@ func TestSendInvalidData(t *testing.T) {
 		c.Write([]byte{0x01, 0x02, 0x03})
 		c.Read()
 		c.Close()
-		connect(c, t)
-		c.Close()
 	})
 }
 
@@ -101,8 +99,6 @@ func TestSendProperHeadLongerBody(t *testing.T) {
 		connect(c, t)
 		c.WriteBlock(b)
 		c.Read()
-		c.Close()
-		connect(c, t)
 		c.Close()
 	})
 }
@@ -115,8 +111,6 @@ func TestSendProperHeadShorterBody(t *testing.T) {
 		c.WriteBlock(b)
 		c.Read()
 		c.Close()
-		connect(c, t)
-		c.Close()
 	})
 }
 
@@ -126,8 +120,6 @@ func TestSendMoreThanReadBuffer(t *testing.T) {
 		connect(c, t)
 		c.Write(getRandom(10000))
 		c.Read()
-		c.Close()
-		connect(c, t)
 		c.Close()
 	})
 }
@@ -139,8 +131,6 @@ func TestSendUnknownQuery(t *testing.T) {
 		connect(c, t)
 		c.WriteBlock(b)
 		c.Read()
-		c.Close()
-		connect(c, t)
 		c.Close()
 	})
 }
