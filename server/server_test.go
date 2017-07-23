@@ -12,6 +12,8 @@ import (
 
 	"net"
 
+	"time"
+
 	"github.com/pinfake/pes6go/client"
 	"github.com/pinfake/pes6go/data/block"
 	"github.com/pinfake/pes6go/storage"
@@ -160,9 +162,13 @@ func TestSendUnknownQuery(t *testing.T) {
 	})
 }
 
-//func Test1KConnections(t *testing.T) {
-//	for i := 0; i < 1000; i++ {
-//		c := client.NewClient()
-//		connect(c, t)
-//	}
-//}
+func Test1KConnections(t *testing.T) {
+	for i := 0; i < 1000; i++ {
+		go func() {
+			c := client.NewClient()
+			connect(c, t)
+			select {}
+		}()
+	}
+	time.Sleep(1 * time.Second)
+}

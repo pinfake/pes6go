@@ -57,7 +57,6 @@ func NewConnections() *Connections {
 func (conns *Connections) remove(id int) {
 	defer conns.mu.Unlock()
 	conns.mu.Lock()
-	conns.connections[id].conn.Close()
 	delete(conns.connections, id)
 }
 

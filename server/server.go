@@ -70,7 +70,9 @@ func (s *Server) handleConnection(conn net.Conn) error {
 func (s *Server) closeConnection(c *Connection) {
 	s.Log(c, "Closing connection")
 	s.connections.remove(c.id)
-	c.conn.Close()
+	if c.conn != nil {
+		c.conn.Close()
+	}
 }
 
 func (s *Server) handleBlock(block *block.Block, c *Connection) (message.Message, error) {
