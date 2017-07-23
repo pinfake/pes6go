@@ -7,8 +7,8 @@ import (
 type AccountingInit struct {
 }
 
-func (r AccountingInit) GetBlocks() []block.Block {
-	return []block.Block{
+func (r AccountingInit) GetBlocks() []*block.Block {
+	return []*block.Block{
 		block.NewBlock(0x3002, block.GenericBody{
 			Data: []byte{
 				// THIS AFFECTS HOW A PASSWORD IS BLOWFISHED, IF ITS ZEROS

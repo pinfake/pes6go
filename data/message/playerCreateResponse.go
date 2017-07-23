@@ -6,7 +6,7 @@ type PlayerCreateResponse struct {
 	Code uint32
 }
 
-func (m PlayerCreateResponse) GetBlocks() []block.Block {
+func (m PlayerCreateResponse) GetBlocks() []*block.Block {
 	return block.GetBlocks(0x3022, []block.Piece{
 		block.Uint32{m.Code},
 	})

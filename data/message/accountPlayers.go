@@ -10,8 +10,8 @@ type AccountPlayers struct {
 	Profiles []block.Piece
 }
 
-func (r AccountPlayers) GetBlocks() []block.Block {
-	var blocks []block.Block
+func (r AccountPlayers) GetBlocks() []*block.Block {
+	var blocks []*block.Block
 
 	blocks = append(blocks, block.GetBlocks(0x3012, r.Profiles)...)
 

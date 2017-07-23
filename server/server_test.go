@@ -77,21 +77,13 @@ func assertDisconnected(c *client.Client, t *testing.T) {
 	if err == nil {
 		t.Error("still connected: no error reading")
 	} else {
-		//errType := reflect.TypeOf(err)
-		//fmt.Printf(errType.String())
-		//fmt.Printf("ERROR!: %s\n", err.Error())
-
 		if err == io.EOF {
 			return
 		}
-
 		if !err.(*net.OpError).Timeout() {
 			return
 		}
-
-		//if err.(net.Error).Timeout() {
 		t.Error("still connected")
-		//}
 	}
 }
 
@@ -149,6 +141,15 @@ func TestSendMoreThanReadBuffer(t *testing.T) {
 	})
 }
 
+func TestSend1Megabyte(t *testing.T) {
+	c := client.NewClient()
+	connect(c, t)
+	c.Write(getRandom(1 * 1024 * 1024))
+	t.Run("Should be kicked out", func(t *testing.T) {
+		assertDisconnected(c, t)
+	})
+}
+
 func TestSendUnknownQuery(t *testing.T) {
 	b := craftBlock(0x1234, 100, getRandom(100))
 	c := client.NewClient()
@@ -158,3 +159,10 @@ func TestSendUnknownQuery(t *testing.T) {
 		assertDisconnected(c, t)
 	})
 }
+
+//func Test1KConnections(t *testing.T) {
+//	for i := 0; i < 1000; i++ {
+//		c := client.NewClient()
+//		connect(c, t)
+//	}
+//}

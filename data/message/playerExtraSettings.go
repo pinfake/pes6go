@@ -10,8 +10,8 @@ type PlayerExtraSettings struct {
 	PlayerExtraSettings []block.Piece
 }
 
-func (r PlayerExtraSettings) GetBlocks() []block.Block {
-	var blocks []block.Block
+func (r PlayerExtraSettings) GetBlocks() []*block.Block {
+	var blocks []*block.Block
 
 	blocks = append(blocks, block.GetBlocks(0x4101, r.PlayerExtraSettings)...)
 

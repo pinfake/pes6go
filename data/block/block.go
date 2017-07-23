@@ -42,19 +42,26 @@ func NewHeader(query uint16, size uint16, hash [16]byte) Header {
 	return Header{Query: query, Size: size, Hash: hash}
 }
 
-func NewBlock(query uint16, body Body) Block {
-	return Block{NewHeader(
+func NewBlock(query uint16, body Body) *Block {
+	return &Block{NewHeader(
 		query,
 		uint16(len(body.GetBytes())),
 		md5.Sum(body.GetBytes()),
 	), body}
 }
 
-func (b Block) GetBytes() []byte {
+func (b *Block) GetBytes() []byte {
 	buf := new(bytes.Buffer)
 	binary.Write(buf, binary.BigEndian, b.Header)
 	buf.Write(b.Body.GetBytes())
 	return buf.Bytes()
+}
+
+func (b *Block) hash() [16]byte {
+	raw := make([]byte, headerSize-16+b.Header.Size)
+	copy(raw[:headerSize-16], b.GetBytes()[:headerSize-16])
+	copy(raw[headerSize-16:], b.GetBytes()[headerSize:])
+	return md5.Sum(raw)
 }
 
 func ReadBlock(data []byte) (*Block, error) {
@@ -65,8 +72,9 @@ func ReadBlock(data []byte) (*Block, error) {
 	var buf = bytes.NewBuffer(decoded[0:headerSize])
 	header := Header{}
 	err := binary.Read(buf, binary.BigEndian, &header)
+
 	if err != nil {
-		panic(err)
+		return nil, fmt.Errorf("unable to read: %s", err)
 	}
 
 	if len(decoded) < int(headerSize+header.Size) {
@@ -75,8 +83,18 @@ func ReadBlock(data []byte) (*Block, error) {
 			header.Size, len(decoded),
 		)
 	}
-	return &Block{
+
+	b := Block{
 		header,
 		GenericBody{decoded[headerSize : headerSize+header.Size]},
-	}, nil
+	}
+
+	if b.hash() != header.Hash {
+		return nil, fmt.Errorf(
+			"invalid hash, expected: %x got: %x",
+			b.hash(), header.Hash,
+		)
+	}
+
+	return &b, nil
 }

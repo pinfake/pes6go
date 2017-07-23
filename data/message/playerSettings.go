@@ -11,8 +11,8 @@ type PlayerSettings struct {
 	PlayerSettings []block.Piece
 }
 
-func (r PlayerSettings) GetBlocks() []block.Block {
-	var blocks []block.Block
+func (r PlayerSettings) GetBlocks() []*block.Block {
+	var blocks []*block.Block
 
 	blocks = append(blocks, block.GetBlocks(0x3087,
 		[]block.Piece{block.PlayerSettingsHeader{r.PlayerId}})...,

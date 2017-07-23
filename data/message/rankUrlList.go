@@ -10,8 +10,8 @@ type RankUrlList struct {
 	RankUrls []block.Piece
 }
 
-func (r RankUrlList) GetBlocks() []block.Block {
-	var blocks []block.Block
+func (r RankUrlList) GetBlocks() []*block.Block {
+	var blocks []*block.Block
 
 	blocks = append(blocks, block.NewBlock(0x2201, block.GenericBody{
 		Data: []byte{0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x55},

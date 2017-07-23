@@ -5,5 +5,5 @@ import (
 )
 
 type Message interface {
-	GetBlocks() []block.Block
+	GetBlocks() []*block.Block
 }

@@ -7,8 +7,8 @@ import (
 type Unknown3100 struct {
 }
 
-func (r Unknown3100) GetBlocks() []block.Block {
-	var blocks []block.Block
+func (r Unknown3100) GetBlocks() []*block.Block {
+	var blocks []*block.Block
 	blocks = append(blocks, block.NewBlock(0x3101, block.Zero{}))
 	return blocks
 }

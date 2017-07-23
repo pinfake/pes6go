@@ -10,8 +10,8 @@ type PlayerGroup struct {
 	PlayerGroup []block.Piece
 }
 
-func (r PlayerGroup) GetBlocks() []block.Block {
-	var blocks []block.Block
+func (r PlayerGroup) GetBlocks() []*block.Block {
+	var blocks []*block.Block
 
 	blocks = append(blocks, block.GetBlocks(0x3042, r.PlayerGroup)...)
 

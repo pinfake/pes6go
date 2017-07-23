@@ -10,8 +10,8 @@ type GroupInfo struct {
 	GroupInfo []block.Piece
 }
 
-func (r GroupInfo) GetBlocks() []block.Block {
-	var blocks []block.Block
+func (r GroupInfo) GetBlocks() []*block.Block {
+	var blocks []*block.Block
 
 	blocks = append(blocks, block.GetBlocks(0x3052, r.GroupInfo)...)
 
