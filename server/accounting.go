@@ -46,6 +46,10 @@ func (s AccountingServer) Config() ServerConfig {
 	return s.config
 }
 
+func (s AccountingServer) Data() interface{} {
+	return nil
+}
+
 func CreateProfile(s *Server, b *block.Block, _ *Connection) message.Message {
 	playerCreate := block.NewPlayerCreate(b)
 	s.Storage().CreatePlayer(

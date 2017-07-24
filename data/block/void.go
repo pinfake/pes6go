@@ -1,10 +1,11 @@
 package block
 
 type Void struct {
-	Body
 }
 
-func (void Void) GetBytes() []byte {
-	ret := [0]byte{}
-	return ret[:]
+type VoidInternal struct {
+}
+
+func (info Void) buildInternal() PieceInternal {
+	return VoidInternal{}
 }

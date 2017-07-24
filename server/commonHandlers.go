@@ -14,6 +14,7 @@ var handlers = map[uint16]Handler{
 	0x0005: KeepAlive,
 	0x3001: Init,
 	0x3003: Login,
+	0x3080: PlayerFriends,
 	0x4100: SelectPlayer,
 	0x4200: ServerLobbies,
 	0x4202: JoinLobby,
@@ -58,7 +59,7 @@ func SelectPlayer(s *Server, b *block.Block, c *Connection) message.Message {
 	playerSelected := block.NewPlayerSelected(b)
 	playerProfile := s.Storage().GetAccountProfiles(c.AccountId)[playerSelected.Position]
 	player := s.Storage().GetPlayer(playerProfile.Id)
-	c.Player = &player
+	c.Player = player
 	return message.NewPlayerExtraSettingsMessage(
 		block.PlayerExtraSettings{
 			PlayerId: playerProfile.Id,
@@ -79,7 +80,12 @@ func ServerLobbies(s *Server, _ *block.Block, _ *Connection) message.Message {
 }
 
 func JoinLobby(s *Server, b *block.Block, c *Connection) message.Message {
-	playerIp := block.NewJoinLobby(b)
-	s.Log(c, "JOIN LOBBY -> %+v", playerIp)
+	joinLobby := block.NewJoinLobby(b)
+	c.LobbyId = joinLobby.LobbyId
+	s.Log(c, "JOIN LOBBY -> %+v", joinLobby)
 	return message.IpInfoResponse{}
+}
+
+func PlayerFriends(_ *Server, _ *block.Block, _ *Connection) message.Message {
+	return message.NewPlayerFriendsMessage(block.PlayerFriends{})
 }

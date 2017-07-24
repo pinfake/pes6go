@@ -2,7 +2,6 @@ package storage
 
 import (
 	"github.com/pinfake/pes6go/data/block"
-	"github.com/pinfake/pes6go/data/info"
 )
 
 type Storage interface {
@@ -15,6 +14,6 @@ type Storage interface {
 	GetPlayerGroup(id uint32) block.PlayerGroup
 	GetGroupInfo(id uint32) block.GroupInfo
 	GetPlayerSettings(id uint32) block.PlayerSettings
-	GetPlayer(id uint32) info.Player
+	GetPlayer(id uint32) *block.Player
 	GetLobbies(serverId uint32) []block.Lobby
 }

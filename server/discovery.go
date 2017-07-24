@@ -43,6 +43,10 @@ func (s DiscoveryServer) Storage() storage.Storage {
 	return s.storage
 }
 
+func (s DiscoveryServer) Data() interface{} {
+	return nil
+}
+
 func DiscoveryInit(s *Server, _ *block.Block, _ *Connection) message.Message {
 	return message.NewServerNewsMessage(
 		s.Storage().GetServerNews(),

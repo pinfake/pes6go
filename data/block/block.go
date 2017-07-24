@@ -57,6 +57,10 @@ func (b *Block) GetBytes() []byte {
 	return buf.Bytes()
 }
 
+func (b *Block) String() string {
+	return fmt.Sprintf("%x %x", b.Header, b.Body)
+}
+
 func (b *Block) hash() [16]byte {
 	raw := make([]byte, headerSize-16+b.Header.Size)
 	copy(raw[:headerSize-16], b.GetBytes()[:headerSize-16])

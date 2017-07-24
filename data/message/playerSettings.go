@@ -18,7 +18,9 @@ func (r PlayerSettings) GetBlocks() []*block.Block {
 		[]block.Piece{block.PlayerSettingsHeader{r.PlayerId}})...,
 	)
 	blocks = append(blocks, block.GetBlocks(0x3088, r.PlayerSettings)...)
-	blocks = append(blocks, block.NewBlock(0x3089, block.Zero{}))
+	blocks = append(blocks, block.GetBlocks(0x3089, []block.Piece{
+		block.Uint32{0},
+	})...)
 	return blocks
 }
 

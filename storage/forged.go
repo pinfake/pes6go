@@ -6,7 +6,6 @@ import (
 	"bytes"
 
 	"github.com/pinfake/pes6go/data/block"
-	"github.com/pinfake/pes6go/data/info"
 )
 
 type Forged struct {
@@ -131,8 +130,8 @@ func (_ Forged) GetLobbies(serverId uint32) []block.Lobby {
 	}
 }
 
-func (_ Forged) GetPlayer(id uint32) info.Player {
-	return info.Player{
+func (_ Forged) GetPlayer(id uint32) *block.Player {
+	return &block.Player{
 		Position:      1,
 		Id:            12345,
 		Name:          "PadreJohn",

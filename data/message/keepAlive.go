@@ -7,10 +7,8 @@ import (
 type KeepAlive struct {
 }
 
-const keepAliveResponseQuery = 0x0005
-
 func (m KeepAlive) GetBlocks() []*block.Block {
-	return []*block.Block{
-		block.NewBlock(keepAliveResponseQuery, block.Void{}),
-	}
+	return block.GetBlocks(0x0005, []block.Piece{
+		block.Void{},
+	})
 }

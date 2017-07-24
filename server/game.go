@@ -6,15 +6,26 @@ import (
 	"log"
 	"os"
 
+	"github.com/pinfake/pes6go/data/block"
+	"github.com/pinfake/pes6go/data/message"
 	"github.com/pinfake/pes6go/storage"
 )
 
+type GameServerData struct {
+	rooms []*block.Room
+}
+
 type GameServer struct {
+	data    GameServerData
 	config  ServerConfig
 	storage storage.Storage
 }
 
-var gameHandlers = map[uint16]Handler{}
+var gameHandlers = map[uint16]Handler{
+	//	0x4102:
+	0x4210: PlayersInLobby,
+	0x4300: RoomsInLobby,
+}
 
 func NewGameServerHandler() GameServer {
 	return GameServer{
@@ -35,6 +46,22 @@ func (s GameServer) Handlers() map[uint16]Handler {
 
 func (s GameServer) Config() ServerConfig {
 	return s.config
+}
+
+func (s GameServer) Data() interface{} {
+	return s.data
+}
+
+func PlayersInLobby(s *Server, _ *block.Block, c *Connection) message.Message {
+	return message.NewPlayersInLobbyMessage(
+		s.connections.playersInLobby(c.LobbyId),
+	)
+}
+
+func RoomsInLobby(s *Server, _ *block.Block, _ *Connection) message.Message {
+	return message.NewRoomsInLobbyMessage(
+		s.Data().(GameServerData).rooms,
+	)
 }
 
 func StartGame() {

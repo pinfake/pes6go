@@ -39,9 +39,8 @@ func getBlocksFromInternals(query uint16, internals []PieceInternal) []*Block {
 		blocks = append(blocks, NewBlock(query, GenericBody{chunk}))
 	}
 
-	if len(data) > 0 {
-		blocks = append(blocks, NewBlock(query, GenericBody{data}))
-	}
+	blocks = append(blocks, NewBlock(query, GenericBody{data}))
+
 	return blocks
 }
 
@@ -72,13 +71,13 @@ func GetBlocks(query uint16, pieces []Piece) []*Block {
 	return getBlocksFromInternals(query, internals)
 }
 
-func GetPieces(slice reflect.Value) []Piece {
-	if slice.Kind() != reflect.Slice {
-		return []Piece{slice.Interface().(Piece)}
+func GetPieces(data reflect.Value) []Piece {
+	if data.Kind() != reflect.Slice {
+		return []Piece{data.Interface().(Piece)}
 	}
-	ret := make([]Piece, slice.Len())
-	for i := 0; i < slice.Len(); i++ {
-		ret[i] = slice.Index(i).Interface().(Piece)
+	ret := make([]Piece, data.Len())
+	for i := 0; i < data.Len(); i++ {
+		ret[i] = data.Index(i).Interface().(Piece)
 	}
 	return ret
 }

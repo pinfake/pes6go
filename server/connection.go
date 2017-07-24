@@ -6,7 +6,6 @@ import (
 	"sync"
 
 	"github.com/pinfake/pes6go/data/block"
-	"github.com/pinfake/pes6go/data/info"
 	"github.com/pinfake/pes6go/data/message"
 	"github.com/pinfake/pes6go/network"
 )
@@ -16,7 +15,9 @@ type Connection struct {
 	conn      net.Conn
 	seq       uint32
 	AccountId uint32
-	Player    *info.Player
+	LobbyId   byte
+	RoomId    uint32
+	Player    *block.Player
 }
 
 func (c *Connection) readBlock() (*block.Block, error) {
@@ -88,14 +89,34 @@ func (conns *Connections) findByPlayerName(name string) *Connection {
 	return nil
 }
 
-func (conns *Connections) findInLobby(lobbyId byte) *Connections {
+func (conns *Connections) playersInLobby(lobbyId byte) []*block.Player {
 	defer conns.mu.RUnlock()
 	conns.mu.RLock()
-	return nil
+	var ret []*block.Player
+	for _, conn := range conns.connections {
+		if conn.LobbyId == lobbyId {
+			ret = append(ret, conn.Player)
+		}
+	}
+	return ret
 }
 
-func (conns *Connections) findInRoom(lobbyId byte, roomId uint32) *Connections {
-	defer conns.mu.RUnlock()
-	conns.mu.RLock()
-	return nil
+func (conns *Connections) sendToLobby(lobbyId byte, m message.Message) {
+	defer conns.mu.Unlock()
+	conns.mu.Lock()
+	for _, conn := range conns.connections {
+		if conn.LobbyId == lobbyId {
+			conn.writeMessage(m)
+		}
+	}
+}
+
+func (conns *Connections) sendToRoom(roomId uint32, m message.Message) {
+	defer conns.mu.Unlock()
+	conns.mu.Lock()
+	for _, conn := range conns.connections {
+		if conn.RoomId == roomId {
+			conn.writeMessage(m)
+		}
+	}
 }

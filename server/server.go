@@ -31,6 +31,7 @@ type ServerHandler interface {
 	Handlers() map[uint16]Handler
 	Storage() storage.Storage
 	Config() ServerConfig
+	Data() interface{}
 }
 
 func (s *Server) Log(c *Connection, format string, v ...interface{}) {
@@ -51,7 +52,7 @@ func (s *Server) handleConnection(conn net.Conn) error {
 			s.Log(c, "Cannot read block: %s", err)
 			return fmt.Errorf("Cannot read block: %s", err)
 		}
-		s.Log(c, "R <- %x", b)
+		s.Log(c, "R <- %v", b)
 		m, err := s.handleBlock(b, c)
 		if err != nil {
 			s.Log(c, "handleConnection: %s", err)
@@ -61,7 +62,7 @@ func (s *Server) handleConnection(conn net.Conn) error {
 			break
 		}
 		bs := m.GetBlocks()
-		s.Log(c, "W -> %x", bs)
+		s.Log(c, "W -> %v", bs)
 		c.writeMessage(m)
 	}
 	return nil

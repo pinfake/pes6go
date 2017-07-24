@@ -12,10 +12,13 @@ type ServerNews struct {
 
 func (r ServerNews) GetBlocks() []*block.Block {
 	var blocks []*block.Block
-	blocks = append(blocks, block.NewBlock(0x2009, block.Zero{}))
+	blocks = append(blocks, block.GetBlocks(0x2009, []block.Piece{
+		block.Uint32{0},
+	})...)
 	blocks = append(blocks, block.GetBlocks(0x200a, r.News)...)
-	blocks = append(blocks, block.NewBlock(0x200b, block.Zero{}))
-
+	blocks = append(blocks, block.GetBlocks(0x200b, []block.Piece{
+		block.Uint32{0},
+	})...)
 	return blocks
 }
 

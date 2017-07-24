@@ -17,7 +17,9 @@ func (r RankUrlList) GetBlocks() []*block.Block {
 		Data: []byte{0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x55},
 	}))
 	blocks = append(blocks, block.GetBlocks(0x2202, r.RankUrls)...)
-	blocks = append(blocks, block.NewBlock(0x2203, block.Zero{}))
+	blocks = append(blocks, block.GetBlocks(0x2203, []block.Piece{
+		block.Uint32{0},
+	})...)
 
 	return blocks
 }
