@@ -22,7 +22,8 @@ type GameServer struct {
 }
 
 var gameHandlers = map[uint16]Handler{
-	//	0x4102:
+	0x308c: Unknown308c,
+	0x4102: GamePlayerInfo,
 	0x4210: PlayersInLobby,
 	0x4300: RoomsInLobby,
 }
@@ -62,6 +63,18 @@ func RoomsInLobby(s *Server, _ *block.Block, _ *Connection) message.Message {
 	return message.NewRoomsInLobbyMessage(
 		s.Data().(GameServerData).rooms,
 	)
+}
+
+func GamePlayerInfo(s *Server, b *block.Block, _ *Connection) message.Message {
+	playerId := block.NewUint32(b)
+	return message.NewGamePlayerInfo(
+		block.PlayerInfo{s.Storage().GetPlayer(playerId.Value)},
+	)
+}
+
+func Unknown308c(_ *Server, _ *block.Block, _ *Connection) message.Message {
+	// Contains a byte with a 1 in my records
+	return message.NewUnknown308cMessage()
 }
 
 func StartGame() {

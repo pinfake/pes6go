@@ -74,14 +74,6 @@ func (_ Forged) GetAccountProfiles(id uint32) [3]block.AccountPlayer {
 	}
 }
 
-func (_ Forged) GetPlayerGroup(id uint32) block.PlayerGroup {
-	return block.PlayerGroup{
-		PlayerName: "PadreJohn",
-		GroupId:    1234,
-		GroupName:  "Outlaws in law",
-	}
-}
-
 func (_ Forged) GetGroupInfo(id uint32) block.GroupInfo {
 	return block.GroupInfo{
 		Time: time.Date(2016, 1, 1, 12, 0, 0, 0, time.UTC),

@@ -17,7 +17,7 @@ type AccountingServer struct {
 var accountingHandlers = map[uint16]Handler{
 	0x3010: Profiles,
 	0x3020: CreateProfile,
-	0x3040: PlayerGroupInfo,
+	0x3040: AccountingPlayerInfo,
 	0x3050: GroupInfo,
 	0x3060: QueryPlayerId,
 	0x3070: Unknown3070,
@@ -92,10 +92,10 @@ func GroupInfo(s *Server, b *block.Block, _ *Connection) message.Message {
 	)
 }
 
-func PlayerGroupInfo(s *Server, b *block.Block, _ *Connection) message.Message {
+func AccountingPlayerInfo(s *Server, b *block.Block, _ *Connection) message.Message {
 	playerId := block.NewUint32(b)
-	return message.NewPlayerGroupMessage(
-		s.Storage().GetPlayerGroup(playerId.Value),
+	return message.NewAccountingPlayerInfoMessage(
+		block.PlayerInfo{s.Storage().GetPlayer(playerId.Value)},
 	)
 }
 

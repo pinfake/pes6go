@@ -6,17 +6,17 @@ type Player struct {
 	Points   uint32
 
 	MatchPoints   uint32
-	MatchesPlayed uint32
+	MatchesPlayed uint16
 	Victories     uint16
 	Defeats       uint16
 	Draws         uint16
 
-	WinningStreak  uint32
-	BestStreak     uint32
-	Disconnections uint32
+	WinningStreak  uint16
+	BestStreak     uint16
+	Disconnections uint16
 	Division       byte
 
-	Teams         []uint32
+	Teams         [5]uint16
 	GoalsScored   uint32
 	GoalsReceived uint32
 	TimePlayed    uint32
@@ -27,6 +27,7 @@ type Player struct {
 
 	Name     string
 	Comment  string
+	Lang     uint16
 	Settings []byte
 	LoggedIn bool
 	Admin    int
