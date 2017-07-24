@@ -10,8 +10,8 @@ type PlayerInfoInternal struct {
 	Name           [48]byte
 	GroupId        uint32
 	GroupName      [48]byte
-	Unknown1       byte
 	GroupStatus    byte
+	Division       byte
 	Points         uint32
 	Category       uint16
 	MatchesPlayed  uint16
@@ -38,6 +38,7 @@ func (info PlayerInfo) buildInternal() PieceInternal {
 	internal.GroupId = info.GroupId
 	copy(internal.GroupName[:], info.GroupName)
 	internal.GroupStatus = info.GroupStatus
+	internal.Division = info.Division
 	internal.Points = info.Points
 	internal.Category = info.Category
 	internal.MatchesPlayed = info.MatchesPlayed
