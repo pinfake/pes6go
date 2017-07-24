@@ -38,6 +38,10 @@ func (s emptyServer) Handlers() map[uint16]Handler {
 	return map[uint16]Handler{}
 }
 
+func (s emptyServer) Data() interface{} {
+	return nil
+}
+
 func NewEmptyServer() *Server {
 	return NewServer(
 		log.New(os.Stdout, "test: ", log.LstdFlags),
