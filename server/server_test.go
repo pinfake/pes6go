@@ -166,8 +166,8 @@ func TestSendUnknownQuery(t *testing.T) {
 	})
 }
 
-func Test1KConnections(t *testing.T) {
-	for i := 0; i < 1000; i++ {
+func Test100Connections(t *testing.T) {
+	for i := 0; i < 100; i++ {
 		go func() {
 			c := client.NewClient()
 			connect(c, t)
