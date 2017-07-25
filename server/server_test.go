@@ -96,7 +96,7 @@ func assertDisconnected(c *client.Client, t *testing.T) {
 func connect(c *client.Client, t *testing.T) {
 	err := c.Connect("localhost", port)
 	if err != nil {
-		t.Error("Error connecting: %s", err.Error())
+		t.Error("Error connecting: ", err)
 	}
 }
 

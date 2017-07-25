@@ -100,8 +100,8 @@ func (s *Server) Serve(port int) {
 	for {
 		conn, err := s.listener.Accept()
 		if err != nil {
-			s.Log(nil, "Error accepting: ", err)
-			return
+			s.Log(nil, "Error accepting: %s", err)
+			continue
 		}
 		go s.handleConnection(conn)
 	}
