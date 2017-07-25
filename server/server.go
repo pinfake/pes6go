@@ -59,7 +59,7 @@ func (s *Server) handleConnection(conn net.Conn) error {
 			return fmt.Errorf("handleConnection: %s", err)
 		}
 		if m == nil {
-			break
+			continue
 		}
 		bs := m.GetBlocks()
 		s.Log(c, "W -> %v", bs)

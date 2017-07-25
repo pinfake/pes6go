@@ -26,6 +26,7 @@ var gameHandlers = map[uint16]Handler{
 	0x4102: GamePlayerInfo,
 	0x4210: PlayersInLobby,
 	0x4300: RoomsInLobby,
+	0x4400: Chat,
 }
 
 func NewGameServerHandler() GameServer {
@@ -75,6 +76,16 @@ func GamePlayerInfo(s *Server, b *block.Block, _ *Connection) message.Message {
 func Unknown308c(_ *Server, _ *block.Block, _ *Connection) message.Message {
 	// Contains a byte with a 1 in my records
 	return message.NewUnknown308cMessage()
+}
+
+func Chat(s *Server, b *block.Block, c *Connection) message.Message {
+	chatMessage := block.NewChatMessage(b, c.Player.Name)
+	s.Log(c, "Received chat message: %v", chatMessage)
+	// for now just broadcast the message to everyone
+	s.connections.sendToLobby(c.LobbyId, message.NewChatMessage(
+		chatMessage,
+	))
+	return nil
 }
 
 func StartGame() {
