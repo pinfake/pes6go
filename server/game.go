@@ -29,9 +29,9 @@ var gameHandlers = map[uint16]Handler{
 	0x4400: Chat,
 }
 
-func NewGameServerHandler() GameServer {
+func NewGameServerHandler(stor storage.Storage) GameServer {
 	return GameServer{
-		storage: storage.Forged{},
+		storage: stor,
 		config: ServerConfig{
 			"serverId": "1",
 		},
@@ -68,8 +68,12 @@ func RoomsInLobby(s *Server, _ *block.Block, _ *Connection) message.Message {
 
 func GamePlayerInfo(s *Server, b *block.Block, _ *Connection) message.Message {
 	playerId := block.NewUint32(b)
+	player, err := s.Storage().GetPlayer(playerId.Value)
+	if err != nil {
+		panic(err)
+	}
 	return message.NewGamePlayerInfo(
-		block.PlayerInfo{s.Storage().GetPlayer(playerId.Value)},
+		block.PlayerInfo{player},
 	)
 }
 
@@ -88,8 +92,8 @@ func Chat(s *Server, b *block.Block, c *Connection) message.Message {
 	return nil
 }
 
-func StartGame() {
+func StartGame(stor storage.Storage) {
 	fmt.Println("Game Server starting")
-	s := NewServer(log.New(os.Stdout, "Game: ", log.LstdFlags), NewGameServerHandler())
+	s := NewServer(log.New(os.Stdout, "Game: ", log.LstdFlags), NewGameServerHandler(stor))
 	s.Serve(10887)
 }

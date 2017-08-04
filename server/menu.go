@@ -33,17 +33,17 @@ func (s MenuServer) Data() interface{} {
 	return nil
 }
 
-func NewMenuServerHandler() MenuServer {
+func NewMenuServerHandler(stor storage.Storage) MenuServer {
 	return MenuServer{
-		storage: storage.Forged{},
+		storage: stor,
 		config: ServerConfig{
 			"serverId": "2",
 		},
 	}
 }
 
-func StartMenu() {
+func StartMenu(stor storage.Storage) {
 	fmt.Println("Menu Server starting")
-	s := NewServer(log.New(os.Stdout, "Menu: ", log.LstdFlags), NewMenuServerHandler())
+	s := NewServer(log.New(os.Stdout, "Menu: ", log.LstdFlags), NewMenuServerHandler(stor))
 	s.Serve(12882)
 }

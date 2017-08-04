@@ -8,7 +8,7 @@ import (
 
 	"fmt"
 
-	"encoding/binary"
+	"strconv"
 
 	"github.com/boltdb/bolt"
 	"github.com/pinfake/pes6go/data/block"
@@ -19,9 +19,7 @@ type Bolt struct {
 }
 
 func uint32ToBytes(data uint32) []byte {
-	buf := new(bytes.Buffer)
-	binary.Write(buf, binary.BigEndian, data)
-	return buf.Bytes()
+	return []byte(strconv.Itoa(int(data)))
 }
 
 func NewBolt() (*Bolt, error) {
@@ -102,17 +100,34 @@ func (b Bolt) GetLobbies(serverId uint32) []block.Lobby {
 	}
 }
 
-func (b Bolt) GetPlayer(id uint32) *block.Player {
-	return &block.Player{
-		Position:      1,
-		Id:            12345,
-		Name:          "PadreJohn",
-		TimePlayed:    1000,
-		Division:      2,
-		Points:        0,
-		Category:      500,
-		MatchesPlayed: 20,
-	}
+func (b Bolt) GetPlayer(id uint32) (*block.Player, error) {
+	var player *block.Player
+	err := b.db.View(func(tx *bolt.Tx) error {
+		bucket := tx.Bucket([]byte("players"))
+		v := bucket.Get(uint32ToBytes(id))
+		if v == nil {
+			return fmt.Errorf("Player with id %d not found", id)
+		}
+		player = &block.Player{}
+		err := json.Unmarshal(v, player)
+		if err != nil {
+			return err
+		}
+		return nil
+	})
+
+	return player, err
+
+	//return &block.Player{
+	//	Position:      1,
+	//	Id:            12345,
+	//	Name:          "PadreJohn",
+	//	TimePlayed:    1000,
+	//	Division:      2,
+	//	Points:        0,
+	//	Category:      500,
+	//	MatchesPlayed: 20,
+	//}
 }
 
 func (b Bolt) GetServerNews() []block.News {
@@ -143,39 +158,60 @@ func (b Bolt) GetRankUrls() []block.RankUrl {
 	}
 }
 
-func (b Bolt) GetAccountProfiles(id uint32) [3]block.AccountPlayer {
-	return [3]block.AccountPlayer{
-		{
-			Position:      0,
-			Id:            12345,
-			Name:          "PadreJohn",
-			TimePlayed:    1000,
-			Division:      2,
-			Points:        0,
-			Category:      500,
-			MatchesPlayed: 20,
-		},
-		{
-			Position:      1,
-			Id:            2345,
-			Name:          "Danilo",
-			TimePlayed:    500,
-			Division:      1,
-			Points:        50000,
-			Category:      1000,
-			MatchesPlayed: 90,
-		},
-		{
-			Position:      2,
-			Id:            0,
-			Name:          "",
-			TimePlayed:    0,
-			Division:      2,
-			Points:        0,
-			Category:      500,
-			MatchesPlayed: 0,
-		},
-	}
+func (b Bolt) GetAccountPlayers(account *Account) ([3]*block.Player, error) {
+	var players [3]*block.Player
+	err := b.db.View(func(tx *bolt.Tx) error {
+		bucket := tx.Bucket([]byte("players"))
+		for i := range account.Players {
+			v := bucket.Get(uint32ToBytes(account.Players[i]))
+			var player block.Player
+			if v == nil {
+				player = block.Player{}
+			} else {
+				err := json.Unmarshal(v, &player)
+				if err != nil {
+					return err
+				}
+			}
+			players[i] = &player
+		}
+		return nil
+	})
+
+	return players, err
+
+	//return [3]*block.Player{
+	//	{
+	//		Position:      0,
+	//		Id:            12345,
+	//		Name:          "PadreJohn",
+	//		TimePlayed:    1000,
+	//		Division:      2,
+	//		Points:        0,
+	//		Category:      500,
+	//		MatchesPlayed: 20,
+	//	},
+	//	{
+	//		Position:      1,
+	//		Id:            2345,
+	//		Name:          "Danilo",
+	//		TimePlayed:    500,
+	//		Division:      1,
+	//		Points:        50000,
+	//		Category:      1000,
+	//		MatchesPlayed: 90,
+	//	},
+	//	{
+	//		Position:      2,
+	//		Id:            0,
+	//		Name:          "",
+	//		TimePlayed:    0,
+	//		Division:      2,
+	//		Points:        0,
+	//		Category:      500,
+	//		MatchesPlayed: 0,
+	//	},
+	//}
 }
 
 func (b Bolt) GetGroupInfo(id uint32) block.GroupInfo {

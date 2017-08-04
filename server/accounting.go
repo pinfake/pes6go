@@ -96,8 +96,12 @@ func GroupInfo(s *Server, b *block.Block, _ *Connection) message.Message {
 
 func AccountingPlayerInfo(s *Server, b *block.Block, _ *Connection) message.Message {
 	playerId := block.NewUint32(b)
+	player, err := s.Storage().GetPlayer(playerId.Value)
+	if err != nil {
+		panic(err)
+	}
 	return message.NewAccountingPlayerInfoMessage(
-		block.PlayerInfo{s.Storage().GetPlayer(playerId.Value)},
+		block.PlayerInfo{player},
 	)
 }
 
@@ -106,16 +110,19 @@ func QueryPlayerId(_ *Server, b *block.Block, _ *Connection) message.Message {
 	return message.NewPlayerIdResponseMessage()
 }
 
-func Profiles(s *Server, _ *block.Block, _ *Connection) message.Message {
+func Profiles(s *Server, _ *block.Block, c *Connection) message.Message {
+	players, err := s.Storage().GetAccountPlayers(c.Account)
+	if err != nil {
+		panic(err)
+	}
 	return message.NewAccountProfilesMessage(
 		block.AccountPlayers{
-			s.Storage().GetAccountProfiles(0),
+			players,
 		},
 	)
 }
 
 func StartAccounting(stor storage.Storage) {
-	log.New(os.Stdout, "Accounting: ", log.LstdFlags)
 	s := NewServer(
 		log.New(os.Stdout, "Accounting: ", log.LstdFlags),
 		NewAccountingServerHandler(stor),

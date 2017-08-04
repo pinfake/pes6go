@@ -41,8 +41,8 @@ func (_ Forged) GetRankUrls() []block.RankUrl {
 	}
 }
 
-func (_ Forged) GetAccountProfiles(id uint32) [3]block.AccountPlayer {
-	return [3]block.AccountPlayer{
+func (_ Forged) GetAccountPlayers(account *Account) ([3]*block.Player, error) {
+	return [3]*block.Player{
 		{
 			Position:      0,
 			Id:            12345,
@@ -73,7 +73,7 @@ func (_ Forged) GetAccountProfiles(id uint32) [3]block.AccountPlayer {
 			Category:      500,
 			MatchesPlayed: 0,
 		},
-	}
+	}, nil
 }
 
 func (_ Forged) GetGroupInfo(id uint32) block.GroupInfo {
@@ -130,7 +130,7 @@ func (_ Forged) GetLobbies(serverId uint32) []block.Lobby {
 	}
 }
 
-func (_ Forged) GetPlayer(id uint32) *block.Player {
+func (_ Forged) GetPlayer(id uint32) (*block.Player, error) {
 	return &block.Player{
 		Position:      1,
 		Id:            12345,
@@ -140,5 +140,5 @@ func (_ Forged) GetPlayer(id uint32) *block.Player {
 		Points:        0,
 		Category:      500,
 		MatchesPlayed: 20,
-	}
+	}, nil
 }

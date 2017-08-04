@@ -1,18 +1,7 @@
 package block
 
 type AccountPlayers struct {
-	Players [3]AccountPlayer
-}
-
-type AccountPlayer struct {
-	Position      byte
-	Id            uint32
-	Name          string
-	TimePlayed    uint32
-	Division      byte
-	Points        uint32
-	Category      uint16
-	MatchesPlayed uint16
+	Players [3]*Player
 }
 
 type AccountPlayersInternal struct {

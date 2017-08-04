@@ -62,8 +62,15 @@ func Login(s *Server, b *block.Block, c *Connection) message.Message {
 
 func SelectPlayer(s *Server, b *block.Block, c *Connection) message.Message {
 	playerSelected := block.NewPlayerSelected(b)
-	playerProfile := s.Storage().GetAccountProfiles(c.Account.Id)[playerSelected.Position]
-	player := s.Storage().GetPlayer(playerProfile.Id)
+	players, err := s.Storage().GetAccountPlayers(c.Account)
+	if err != nil {
+		panic(err)
+	}
+	playerProfile := players[playerSelected.Position]
+	player, err := s.Storage().GetPlayer(playerProfile.Id)
+	if err != nil {
+		panic(err)
+	}
 	c.Player = player
 	return message.NewPlayerExtraSettingsMessage(
 		block.PlayerExtraSettings{

@@ -48,8 +48,8 @@ func main() {
 		go server.StartAdmin(stor)
 		go server.StartDiscovery()
 		go server.StartAccounting(stor)
-		go server.StartMenu()
-		go server.StartGame()
+		go server.StartMenu(stor)
+		go server.StartGame(stor)
 		select {}
 	case "admin":
 		server.StartAdmin(stor)
@@ -58,9 +58,9 @@ func main() {
 	case "accounting":
 		server.StartAccounting(stor)
 	case "menu":
-		server.StartMenu()
+		server.StartMenu(stor)
 	case "game":
-		server.StartGame()
+		server.StartGame(stor)
 	default:
 		flag.Usage()
 	}
