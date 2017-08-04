@@ -27,9 +27,9 @@ var accountingHandlers = map[uint16]Handler{
 	0x3120: Unknown3120,
 }
 
-func NewAccountingServerHandler() AccountingServer {
+func NewAccountingServerHandler(stor storage.Storage) AccountingServer {
 	return AccountingServer{
-		storage: storage.Forged{},
+		storage: stor,
 		config:  ServerConfig{},
 	}
 }
@@ -50,15 +50,17 @@ func (s AccountingServer) Data() interface{} {
 	return nil
 }
 
-func CreateProfile(s *Server, b *block.Block, _ *Connection) message.Message {
+func CreateProfile(s *Server, b *block.Block, c *Connection) message.Message {
 	playerCreate := block.NewPlayerCreate(b)
-	s.Storage().CreatePlayer(
-		playerCreate.Position,
-		playerCreate.Name,
-	)
+	player := block.NewPlayer(playerCreate.Name)
+	responseCode := block.Ok
+	_, err := s.Storage().CreatePlayer(c.Account, playerCreate.Position, player)
+	if err != nil {
+		responseCode = block.ServiceUnavailableError
+	}
 
 	return message.PlayerCreateResponse{
-		block.Ok,
+		uint32(responseCode),
 	}
 }
 
@@ -112,8 +114,11 @@ func Profiles(s *Server, _ *block.Block, _ *Connection) message.Message {
 	)
 }
 
-func StartAccounting() {
+func StartAccounting(stor storage.Storage) {
 	log.New(os.Stdout, "Accounting: ", log.LstdFlags)
-	s := NewServer(log.New(os.Stdout, "Accounting: ", log.LstdFlags), NewAccountingServerHandler())
+	s := NewServer(
+		log.New(os.Stdout, "Accounting: ", log.LstdFlags),
+		NewAccountingServerHandler(stor),
+	)
 	s.Serve(12881)
 }

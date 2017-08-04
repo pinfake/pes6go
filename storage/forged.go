@@ -5,6 +5,8 @@ import (
 
 	"bytes"
 
+	"fmt"
+
 	"github.com/pinfake/pes6go/data/block"
 )
 
@@ -86,23 +88,29 @@ func (_ Forged) GetPlayerSettings(id uint32) block.PlayerSettings {
 	}
 }
 
-func (_ Forged) FindAccount(key string, hash []byte) uint32 {
-	if key == "RFLJY34DRE993HX3ER94" && bytes.Equal(
-		hash, []byte{
+func (_ Forged) Login(account *Account) (*Account, error) {
+	if account.Key == "RFLJY34DRE993HX3ER94" && bytes.Equal(
+		account.Hash, []byte{
 			0xac, 0x04, 0x6e, 0x00, 0x7a, 0x40, 0x06, 0x17,
 			0x0e, 0x9a, 0xc7, 0x3f, 0x66, 0x53, 0x31, 0x71,
 		}) {
-		return 1234
+		return &Account{
+			Id:      1234,
+			Key:     account.Key,
+			Hash:    account.Hash,
+			Players: [3]uint32{12345, 2345},
+		}, nil
 	} else {
-		return 0
+		return nil, fmt.Errorf("Invalid password (hashes don't match)")
 	}
 }
 
-func (_ Forged) CreateAccount(key string, hash []byte) uint32 {
-	return 1234
+func (_ Forged) CreateAccount(account *Account) (uint32, error) {
+	return 1234, nil
 }
 
-func (_ Forged) CreatePlayer(position byte, name string) {
+func (_ Forged) CreatePlayer(account *Account, position byte, player *block.Player) (uint32, error) {
+	return 12982, nil
 }
 
 func (_ Forged) GetLobbies(serverId uint32) []block.Lobby {

@@ -8,16 +8,17 @@ import (
 	"github.com/pinfake/pes6go/data/block"
 	"github.com/pinfake/pes6go/data/message"
 	"github.com/pinfake/pes6go/network"
+	"github.com/pinfake/pes6go/storage"
 )
 
 type Connection struct {
-	id        int
-	conn      net.Conn
-	seq       uint32
-	AccountId uint32
-	LobbyId   byte
-	RoomId    uint32
-	Player    *block.Player
+	id      int
+	conn    net.Conn
+	seq     uint32
+	Account *storage.Account
+	LobbyId byte
+	RoomId  uint32
+	Player  *block.Player
 }
 
 func (c *Connection) readBlock() (*block.Block, error) {

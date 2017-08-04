@@ -6,6 +6,7 @@ import (
 	"github.com/andreburgaud/crypt2go/ecb"
 	"github.com/pinfake/pes6go/data/block"
 	"github.com/pinfake/pes6go/data/message"
+	"github.com/pinfake/pes6go/storage"
 	"golang.org/x/crypto/blowfish"
 )
 
@@ -41,15 +42,19 @@ func Login(s *Server, b *block.Block, c *Connection) message.Message {
 	decrypter.CryptBlocks(dst, auth.Key)
 
 	s.Log(c, "LOGIN -> Key: %s, Pass: %x, Roster: %x", dst, auth.Password, auth.RosterHash)
-
-	c.AccountId = s.Storage().FindAccount(
-		string(dst[:20]), auth.Password,
-	)
-
-	code := block.Ok
-	if c.AccountId < 1 {
-		code = block.ServiceUnavailableError
+	acc := storage.Account{
+		Key:  string(dst[:20]),
+		Hash: auth.Password,
 	}
+	found, err := s.Storage().Login(&acc)
+	code := block.Ok
+	if err != nil {
+		s.Log(c, "Cannot login: %s", err)
+		code = block.ServiceUnavailableError
+	} else {
+		c.Account = found
+	}
+
 	return message.LoginResponse{
 		uint32(code),
 	}
@@ -57,7 +62,7 @@ func Login(s *Server, b *block.Block, c *Connection) message.Message {
 
 func SelectPlayer(s *Server, b *block.Block, c *Connection) message.Message {
 	playerSelected := block.NewPlayerSelected(b)
-	playerProfile := s.Storage().GetAccountProfiles(c.AccountId)[playerSelected.Position]
+	playerProfile := s.Storage().GetAccountProfiles(c.Account.Id)[playerSelected.Position]
 	player := s.Storage().GetPlayer(playerProfile.Id)
 	c.Player = player
 	return message.NewPlayerExtraSettingsMessage(

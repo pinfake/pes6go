@@ -20,6 +20,7 @@ type AdminServer struct {
 }
 
 func (s AdminServer) account(w http.ResponseWriter, req *http.Request) {
+	fmt.Printf("Hey im receiving a request\n")
 	switch req.Method {
 	case "POST":
 		key := req.FormValue("key")
@@ -41,12 +42,20 @@ func (s AdminServer) account(w http.ResponseWriter, req *http.Request) {
 		encrypter.CryptBlocks(dst, md5sum[:])
 		fmt.Fprintf(w, "% x\n", dst)
 
-		s.storage.CreateAccount(key, dst)
+		id, err := s.storage.CreateAccount(&storage.Account{
+			Key:  key,
+			Hash: dst,
+		})
+		if err != nil {
+			fmt.Fprintf(w, "Cannot store account: %s", err.Error())
+			return
+		}
+		fmt.Fprintf(w, "id: %d\n", id)
 	}
 }
 
-func StartAdmin() {
-	s := AdminServer{storage.Forged{}}
+func StartAdmin(stor storage.Storage) {
+	s := AdminServer{stor}
 	fmt.Println("Administration Server starting")
 	mux := http.NewServeMux()
 	mux.Handle("/account", http.HandlerFunc(s.account))

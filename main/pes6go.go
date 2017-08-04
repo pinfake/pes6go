@@ -6,7 +6,18 @@ import (
 	"os"
 
 	"github.com/pinfake/pes6go/server"
+	"github.com/pinfake/pes6go/storage"
 )
+
+var stor storage.Storage
+
+func init() {
+	var err error
+	stor, err = storage.NewBolt()
+	if err != nil {
+		panic("Cannot initialize the bolt database: " + err.Error())
+	}
+}
 
 func main() {
 	_ = flag.Bool("d", false, "Run in detached mode")
@@ -34,18 +45,18 @@ func main() {
 
 	switch args[0] {
 	case "fullhouse":
-		go server.StartAdmin()
+		go server.StartAdmin(stor)
 		go server.StartDiscovery()
-		go server.StartAccounting()
+		go server.StartAccounting(stor)
 		go server.StartMenu()
 		go server.StartGame()
 		select {}
 	case "admin":
-		server.StartAdmin()
+		server.StartAdmin(stor)
 	case "discovery":
 		server.StartDiscovery()
 	case "accounting":
-		server.StartAccounting()
+		server.StartAccounting(stor)
 	case "menu":
 		server.StartMenu()
 	case "game":

@@ -78,3 +78,9 @@ func (info Player) buildInternal() PieceInternal {
 
 	return internal
 }
+
+func NewPlayer(name string) *Player {
+	return &Player{
+		Name: name,
+	}
+}

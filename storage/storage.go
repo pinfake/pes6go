@@ -4,10 +4,17 @@ import (
 	"github.com/pinfake/pes6go/data/block"
 )
 
+type Account struct {
+	Id      uint32
+	Key     string
+	Hash    []byte
+	Players [3]uint32
+}
+
 type Storage interface {
-	CreateAccount(key string, hash []byte) uint32
-	FindAccount(key string, hash []byte) uint32
-	CreatePlayer(position byte, name string)
+	CreateAccount(account *Account) (uint32, error)
+	Login(account *Account) (*Account, error)
+	CreatePlayer(account *Account, position byte, player *block.Player) (uint32, error)
 	GetServerNews() []block.News
 	GetRankUrls() []block.RankUrl
 	GetAccountProfiles(id uint32) [3]block.AccountPlayer
