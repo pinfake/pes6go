@@ -95,7 +95,8 @@ func JoinLobby(s *Server, b *block.Block, c *Connection) message.Message {
 	joinLobby := block.NewJoinLobby(b)
 	c.LobbyId = joinLobby.LobbyId
 	s.Log(c, "JOIN LOBBY -> %+v", joinLobby)
-	return message.IpInfoResponse{}
+	s.connections.sendToLobby(c.LobbyId, message.NewPlayerUpdateMessage(*c.Player))
+	return message.JoinLobbyResponse{block.Ok}
 }
 
 func PlayerFriends(_ *Server, _ *block.Block, _ *Connection) message.Message {

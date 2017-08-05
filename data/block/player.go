@@ -46,17 +46,16 @@ type PlayerInternal struct {
 	GroupName   [48]byte
 	GroupStatus byte
 	Division    byte
-	RoomId      uint32
-	Unknown1    uint16
-	// My self from the past says this could tell about the group level
-	Unknown2 uint16
-	Category uint16
-	// My self from the past says this could tell about the group level as well
-	Unknown3  uint16
-	Victories uint16
-	Defeats   uint16
-	Draws     uint16
-	Unknown4  [3]byte
+	// Not clear whether this could be the room id, we will fill it with ff's
+	RoomId        uint32
+	Points        uint32
+	Category      uint16
+	MatchesPlayed uint16
+	Victories     uint16
+	Defeats       uint16
+	Draws         uint16
+	Lang          uint16
+	Unknown1      byte
 }
 
 func (info Player) buildInternal() PieceInternal {
@@ -67,15 +66,15 @@ func (info Player) buildInternal() PieceInternal {
 	copy(internal.GroupName[:], info.GroupName)
 	internal.GroupStatus = info.GroupStatus
 	internal.Division = info.Division
-	internal.RoomId = info.RoomId
-	internal.Unknown1 = 0x0000
-	internal.Unknown2 = 0x3fff
+	internal.RoomId = 0xffffffff
+	internal.Points = info.Points
 	internal.Category = info.Category
-	internal.Unknown3 = 0x3fff
+	internal.MatchesPlayed = info.MatchesPlayed
 	internal.Victories = info.Victories
 	internal.Defeats = info.Defeats
 	internal.Draws = info.Draws
-
+	internal.Lang = info.Lang
+	internal.Unknown1 = 0x00
 	return internal
 }
 
