@@ -21,5 +21,5 @@ type Storage interface {
 	GetGroupInfo(id uint32) block.GroupInfo
 	GetPlayerSettings(id uint32) block.PlayerSettings
 	GetPlayer(id uint32) (*block.Player, error)
-	GetLobbies(serverId uint32) []block.Lobby
+	GetLobbies(serverId uint32) []*block.Lobby
 }

@@ -113,16 +113,16 @@ func (_ Forged) CreatePlayer(account *Account, position byte, player *block.Play
 	return 12982, nil
 }
 
-func (_ Forged) GetLobbies(serverId uint32) []block.Lobby {
+func (_ Forged) GetLobbies(serverId uint32) []*block.Lobby {
 	switch serverId {
 	case 1:
-		return []block.Lobby{
+		return []*block.Lobby{
 			{63, "Lobby 1 Kenobi", 23},
 			{63, "Lobby 2 testá3", 43},
 			{63, "Lobby 3 testñ3", 42},
 		}
 	case 2:
-		return []block.Lobby{
+		return []*block.Lobby{
 			{0x1f, "", 0},
 		}
 	default:

@@ -57,6 +57,21 @@ func NewConnections() *Connections {
 	}
 }
 
+// WRONG, WE SHOULD NOT BE COUNTING PEOPLE IN LOBBIES EVERYTIME, THERE SHOULD
+// BE A LOBBIES THING LIVING ON THE SERVER WITH AN UPDATED COUNT OR SOMETHING
+// SIMILAR
+func (conns *Connections) countInLobby(lobbyId byte) uint16 {
+	defer conns.mu.Unlock()
+	conns.mu.Lock()
+	var count uint16 = 0
+	for _, conn := range conns.connections {
+		if conn.LobbyId == lobbyId {
+			count++
+		}
+	}
+	return count
+}
+
 func (conns *Connections) remove(c *Connection) {
 	defer conns.mu.Unlock()
 	conns.mu.Lock()
@@ -70,8 +85,9 @@ func (conns *Connections) add(c net.Conn) *Connection {
 	defer conns.mu.Unlock()
 	conns.mu.Lock()
 	connection := Connection{
-		seq:  0,
-		conn: c,
+		LobbyId: 0xff, // 0xff meaning no lobby
+		seq:     0,
+		conn:    c,
 	}
 	conns.connections[c] = &connection
 	return &connection

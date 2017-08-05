@@ -80,13 +80,13 @@ func SelectPlayer(s *Server, b *block.Block, c *Connection) message.Message {
 
 func ServerLobbies(s *Server, _ *block.Block, _ *Connection) message.Message {
 	a, _ := strconv.ParseUint(s.Config()["serverId"], 10, 32)
-
+	// No!, lobbies should be a part of the server configuration, not the database.
+	lobbies := s.Storage().GetLobbies(uint32(a))
+	for id, lobby := range lobbies {
+		lobby.NumClients = s.connections.countInLobby(byte(id))
+	}
 	return message.NewLobbiesMessage(
-		block.Lobbies{
-			s.Storage().GetLobbies(
-				uint32(a),
-			),
-		},
+		block.Lobbies{lobbies},
 	)
 }
 

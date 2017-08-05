@@ -83,17 +83,17 @@ func (b Bolt) CreatePlayer(account *Account, position byte, player *block.Player
 	return player.Id, err
 }
 
-func (b Bolt) GetLobbies(serverId uint32) []block.Lobby {
+func (b Bolt) GetLobbies(serverId uint32) []*block.Lobby {
 	switch serverId {
 	case 1:
-		return []block.Lobby{
-			{63, "Lobby 1 Kenobi", 23},
-			{63, "Lobby 2 testá3", 43},
-			{63, "Lobby 3 testñ3", 42},
+		return []*block.Lobby{
+			{Type: 63, Name: "Lobby 1 Kenobi"},
+			{Type: 63, Name: "Lobby 2 testá3"},
+			{Type: 63, Name: "Lobby 3 testñ3"},
 		}
 	case 2:
-		return []block.Lobby{
-			{0x1f, "", 0},
+		return []*block.Lobby{
+			{Type: 0x1f},
 		}
 	default:
 		return nil

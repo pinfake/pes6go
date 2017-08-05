@@ -1,7 +1,7 @@
 package block
 
 type Lobbies struct {
-	Lobbies []Lobby
+	Lobbies []*Lobby
 }
 
 type Lobby struct {
