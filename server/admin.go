@@ -20,7 +20,6 @@ type AdminServer struct {
 }
 
 func (s AdminServer) account(w http.ResponseWriter, req *http.Request) {
-	fmt.Printf("Hey im receiving a request\n")
 	switch req.Method {
 	case "POST":
 		key := req.FormValue("key")

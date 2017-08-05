@@ -5,8 +5,6 @@ import (
 
 	"sync"
 
-	"fmt"
-
 	"github.com/pinfake/pes6go/data/block"
 	"github.com/pinfake/pes6go/data/message"
 	"github.com/pinfake/pes6go/network"
@@ -75,9 +73,6 @@ func (conns *Connections) countInLobby(lobbyId byte) uint16 {
 func (conns *Connections) remove(c *Connection) {
 	defer conns.mu.Unlock()
 	conns.mu.Lock()
-	if c.Player != nil {
-		fmt.Printf("Going to delete con with player: %s\n", c.Player.Name)
-	}
 	delete(conns.connections, c.conn)
 }
 
@@ -120,10 +115,7 @@ func (conns *Connections) playersInLobby(lobbyId byte) []*block.Player {
 func (conns *Connections) sendToLobby(lobbyId byte, m message.Message) {
 	defer conns.mu.Unlock()
 	conns.mu.Lock()
-	fmt.Printf("Sending to lobby: %d\n", lobbyId)
 	for _, conn := range conns.connections {
-		fmt.Printf("Found player: %s in lobby: %d\n",
-			conn.Player.Name, conn.LobbyId)
 		if conn.LobbyId == lobbyId {
 			conn.writeMessage(m)
 		}

@@ -10,6 +10,8 @@ import (
 
 	"strconv"
 
+	"os"
+
 	"github.com/boltdb/bolt"
 	"github.com/pinfake/pes6go/data/block"
 )
@@ -23,7 +25,8 @@ func uint32ToBytes(data uint32) []byte {
 }
 
 func NewBolt() (*Bolt, error) {
-	db, err := bolt.Open("./pes6godb.bolt", 0600, nil)
+	_ = os.Mkdir("./db", 0700)
+	db, err := bolt.Open("./db/pes6godb.bolt", 0600, nil)
 	if err != nil {
 		return nil, err
 	}
