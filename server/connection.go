@@ -5,6 +5,8 @@ import (
 
 	"sync"
 
+	"fmt"
+
 	"github.com/pinfake/pes6go/data/block"
 	"github.com/pinfake/pes6go/data/message"
 	"github.com/pinfake/pes6go/network"
@@ -12,7 +14,6 @@ import (
 )
 
 type Connection struct {
-	id      int
 	conn    net.Conn
 	seq     uint32
 	Account *storage.Account
@@ -47,35 +48,33 @@ func (c *Connection) writeMessage(message message.Message) {
 
 type Connections struct {
 	mu          sync.RWMutex
-	connections map[int]*Connection
+	connections map[net.Conn]*Connection
 }
 
 func NewConnections() *Connections {
 	return &Connections{
-		connections: make(map[int]*Connection),
+		connections: make(map[net.Conn]*Connection),
 	}
 }
 
-func (conns *Connections) remove(id int) {
+func (conns *Connections) remove(c *Connection) {
 	defer conns.mu.Unlock()
 	conns.mu.Lock()
-	delete(conns.connections, id)
+	if c.Player != nil {
+		fmt.Printf("Going to delete con with player: %s\n", c.Player.Name)
+	}
+	delete(conns.connections, c.conn)
 }
 
 func (conns *Connections) add(c net.Conn) *Connection {
 	defer conns.mu.Unlock()
 	conns.mu.Lock()
 	connection := Connection{
-		id:   conns.newId(),
 		seq:  0,
 		conn: c,
 	}
-	conns.connections[connection.id] = &connection
+	conns.connections[c] = &connection
 	return &connection
-}
-
-func (conns *Connections) newId() int {
-	return len(conns.connections) + 1
 }
 
 func (conns *Connections) findByPlayerId(id uint32) *Connection {
@@ -105,7 +104,10 @@ func (conns *Connections) playersInLobby(lobbyId byte) []*block.Player {
 func (conns *Connections) sendToLobby(lobbyId byte, m message.Message) {
 	defer conns.mu.Unlock()
 	conns.mu.Lock()
+	fmt.Printf("Sending to lobby: %d\n", lobbyId)
 	for _, conn := range conns.connections {
+		fmt.Printf("Found player: %s in lobby: %d\n",
+			conn.Player.Name, conn.LobbyId)
 		if conn.LobbyId == lobbyId {
 			conn.writeMessage(m)
 		}

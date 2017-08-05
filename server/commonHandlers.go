@@ -29,7 +29,11 @@ func KeepAlive(_ *Server, _ *block.Block, _ *Connection) message.Message {
 	return message.KeepAlive{}
 }
 
-func Disconnect(_ *Server, _ *block.Block, _ *Connection) message.Message {
+func Disconnect(s *Server, _ *block.Block, c *Connection) message.Message {
+	s.Log(c, "I am leaving the lobby, and my lobby id is: %d", c.LobbyId)
+	if c.Player != nil {
+		s.connections.sendToLobby(c.LobbyId, message.LeaveLobby{c.Player.Id})
+	}
 	return nil
 }
 

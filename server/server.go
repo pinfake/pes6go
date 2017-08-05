@@ -37,7 +37,7 @@ type ServerHandler interface {
 func (s *Server) Log(c *Connection, format string, v ...interface{}) {
 	prefix := ""
 	if c != nil {
-		prefix += c.conn.RemoteAddr().String() + " " + strconv.Itoa(c.id) + " "
+		prefix += c.conn.RemoteAddr().String() + " "
 	}
 	s.logger.Printf(prefix+format, v...)
 }
@@ -70,7 +70,7 @@ func (s *Server) handleConnection(conn net.Conn) error {
 
 func (s *Server) closeConnection(c *Connection) {
 	s.Log(c, "Closing connection")
-	s.connections.remove(c.id)
+	s.connections.remove(c)
 	if c.conn != nil {
 		c.conn.Close()
 	}

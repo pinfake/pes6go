@@ -32,7 +32,8 @@ type Player struct {
 	LoggedIn bool
 	Admin    int
 
-	RoomId uint32
+	RoomId     uint32
+	GameStatus byte
 
 	GroupId     uint32
 	GroupName   string
@@ -40,14 +41,13 @@ type Player struct {
 }
 
 type PlayerInternal struct {
-	Id          uint32
-	Name        [48]byte
-	GroupId     uint32
-	GroupName   [48]byte
-	GroupStatus byte
-	Division    byte
-	// Not clear whether this could be the room id, we will fill it with ff's
-	RoomId        uint32
+	Id            uint32
+	Name          [48]byte
+	GroupId       uint32
+	GroupName     [48]byte
+	GroupStatus   byte
+	Division      byte
+	RoomId        uint32 // Not clear whether this could be the room id, we will fill it with ff's
 	Points        uint32
 	Category      uint16
 	MatchesPlayed uint16
@@ -55,7 +55,7 @@ type PlayerInternal struct {
 	Defeats       uint16
 	Draws         uint16
 	Lang          uint16
-	Unknown1      byte
+	GameStatus    byte // 0 = idle, 1 = competition
 }
 
 func (info Player) buildInternal() PieceInternal {
@@ -74,7 +74,7 @@ func (info Player) buildInternal() PieceInternal {
 	internal.Defeats = info.Defeats
 	internal.Draws = info.Draws
 	internal.Lang = info.Lang
-	internal.Unknown1 = 0x00
+	internal.GameStatus = info.GameStatus
 	return internal
 }
 
