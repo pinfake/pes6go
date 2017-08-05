@@ -66,11 +66,12 @@ func RoomsInLobby(s *Server, _ *block.Block, _ *Connection) message.Message {
 	)
 }
 
-func GamePlayerInfo(s *Server, b *block.Block, _ *Connection) message.Message {
+func GamePlayerInfo(s *Server, b *block.Block, c *Connection) message.Message {
 	playerId := block.NewUint32(b)
 	player, err := s.Storage().GetPlayer(playerId.Value)
 	if err != nil {
-		panic(err)
+		s.Log(c, "Unable to get player %d: %s", playerId.Value, err)
+		return nil
 	}
 	return message.NewGamePlayerInfo(
 		block.PlayerInfo{player},

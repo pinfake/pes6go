@@ -94,11 +94,13 @@ func GroupInfo(s *Server, b *block.Block, _ *Connection) message.Message {
 	)
 }
 
-func AccountingPlayerInfo(s *Server, b *block.Block, _ *Connection) message.Message {
+func AccountingPlayerInfo(s *Server, b *block.Block, c *Connection) message.Message {
 	playerId := block.NewUint32(b)
+
 	player, err := s.Storage().GetPlayer(playerId.Value)
 	if err != nil {
-		panic(err)
+		s.Log(c, "Unable to get player %d: %s", playerId.Value, err)
+		return nil
 	}
 	return message.NewAccountingPlayerInfoMessage(
 		block.PlayerInfo{player},
@@ -113,7 +115,8 @@ func QueryPlayerId(_ *Server, b *block.Block, _ *Connection) message.Message {
 func Profiles(s *Server, _ *block.Block, c *Connection) message.Message {
 	players, err := s.Storage().GetAccountPlayers(c.Account)
 	if err != nil {
-		panic(err)
+		s.Log(c, "Unable to players for account %d: %s", c.Account.Id, err)
+		return nil
 	}
 	return message.NewAccountProfilesMessage(
 		block.AccountPlayers{
