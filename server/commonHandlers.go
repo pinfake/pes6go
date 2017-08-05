@@ -30,7 +30,6 @@ func KeepAlive(_ *Server, _ *block.Block, _ *Connection) message.Message {
 }
 
 func Disconnect(s *Server, _ *block.Block, c *Connection) message.Message {
-	s.Log(c, "I am leaving the lobby, and my lobby id is: %d", c.LobbyId)
 	if c.Player != nil {
 		s.connections.sendToLobby(c.LobbyId, message.LeaveLobby{c.Player.Id})
 	}
@@ -68,17 +67,13 @@ func SelectPlayer(s *Server, b *block.Block, c *Connection) message.Message {
 	playerSelected := block.NewPlayerSelected(b)
 	players, err := s.Storage().GetAccountPlayers(c.Account)
 	if err != nil {
-		panic(err)
+		s.Log(c, "Unable to get player profiles for %s: %s", c.Account.Id, err)
+		return nil
 	}
-	playerProfile := players[playerSelected.Position]
-	player, err := s.Storage().GetPlayer(playerProfile.Id)
-	if err != nil {
-		panic(err)
-	}
-	c.Player = player
+	c.Player = players[playerSelected.Position]
 	return message.NewPlayerExtraSettingsMessage(
 		block.PlayerExtraSettings{
-			PlayerId: playerProfile.Id,
+			PlayerId: c.Player.Id,
 		},
 	)
 }
@@ -98,7 +93,6 @@ func ServerLobbies(s *Server, _ *block.Block, _ *Connection) message.Message {
 func JoinLobby(s *Server, b *block.Block, c *Connection) message.Message {
 	joinLobby := block.NewJoinLobby(b)
 	c.LobbyId = joinLobby.LobbyId
-	s.Log(c, "JOIN LOBBY -> %+v", joinLobby)
 	s.connections.sendToLobby(c.LobbyId, message.NewPlayerUpdateMessage(*c.Player))
 	return message.JoinLobbyResponse{block.Ok}
 }

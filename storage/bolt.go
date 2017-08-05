@@ -117,17 +117,6 @@ func (b Bolt) GetPlayer(id uint32) (*block.Player, error) {
 	})
 
 	return player, err
-
-	//return &block.Player{
-	//	Position:      1,
-	//	Id:            12345,
-	//	Name:          "PadreJohn",
-	//	TimePlayed:    1000,
-	//	Division:      2,
-	//	Points:        0,
-	//	Category:      500,
-	//	MatchesPlayed: 20,
-	//}
 }
 
 func (b Bolt) GetServerNews() []block.News {
@@ -179,39 +168,6 @@ func (b Bolt) GetAccountPlayers(account *Account) ([3]*block.Player, error) {
 	})
 
 	return players, err
-
-	//return [3]*block.Player{
-	//	{
-	//		Position:      0,
-	//		Id:            12345,
-	//		Name:          "PadreJohn",
-	//		TimePlayed:    1000,
-	//		Division:      2,
-	//		Points:        0,
-	//		Category:      500,
-	//		MatchesPlayed: 20,
-	//	},
-	//	{
-	//		Position:      1,
-	//		Id:            2345,
-	//		Name:          "Danilo",
-	//		TimePlayed:    500,
-	//		Division:      1,
-	//		Points:        50000,
-	//		Category:      1000,
-	//		MatchesPlayed: 90,
-	//	},
-	//	{
-	//		Position:      2,
-	//		Id:            0,
-	//		Name:          "",
-	//		TimePlayed:    0,
-	//		Division:      2,
-	//		Points:        0,
-	//		Category:      500,
-	//		MatchesPlayed: 0,
-	//	},
-	//}
 }
 
 func (b Bolt) GetGroupInfo(id uint32) block.GroupInfo {
@@ -228,7 +184,6 @@ func (b Bolt) GetPlayerSettings(id uint32) block.PlayerSettings {
 
 func (b Bolt) Login(account *Account) (*Account, error) {
 	var ret *Account
-	fmt.Printf("Here we go, account.Key: %v\n", account.Key)
 	err := b.db.View(func(tx *bolt.Tx) error {
 		bucket := tx.Bucket([]byte("accounts"))
 		v := bucket.Get([]byte(account.Key))
