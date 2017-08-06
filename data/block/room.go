@@ -13,17 +13,32 @@ type RoomTeam struct {
 }
 
 type Room struct {
-	Id        uint32
-	Type      byte
-	Phase     byte
-	Name      string
-	Time      byte
-	Players   [4]*RoomPlayer
-	Teams     [2]RoomTeam
-	Password  string
-	MatchType byte
-	ChatLevel byte
+	Id          uint32
+	Type        byte
+	Phase       byte
+	Name        string
+	Time        byte
+	Players     [4]*RoomPlayer
+	Teams       [2]RoomTeam
+	HasPassword byte
+	Password    string
+	MatchType   byte
+	ChatLevel   byte
 }
+
+//type RoomList map[uint32]*Room
+//
+//func (list RoomList) Remove(id uint32) {
+//	delete(list, id)
+//}
+//
+//func (list RoomList) getNewId() {
+//
+//}
+//
+//func (list RoomList) Add(room *Room) {
+//
+//}
 
 type RoomPlayerInternal struct {
 	Id        uint32
@@ -80,4 +95,13 @@ func (info Room) buildInternal() PieceInternal {
 	internal.MatchType = info.MatchType
 	internal.ChatLevel = info.ChatLevel
 	return internal
+}
+
+func NewRoomPlayer(player *Player) *RoomPlayer {
+	return &RoomPlayer{
+		Id:        player.Id,
+		Team:      0,
+		Spectator: 0,
+		Ready:     0,
+	}
 }

@@ -12,6 +12,12 @@ import (
 )
 
 type GameServerData struct {
+	lastRoomId uint32
+}
+
+func (data GameServerData) getNewRoomId() uint32 {
+	data.lastRoomId++
+	return data.lastRoomId
 }
 
 type GameServer struct {
@@ -61,7 +67,23 @@ func (s GameServer) Data() interface{} {
 func CreateRoom(s *Server, b *block.Block, c *Connection) message.Message {
 	createRoom := block.NewCreateRoom(b)
 	s.Log(c, "Create room: %v", createRoom)
-	return nil
+	room := block.Room{
+		Id:          s.Data().(GameServerData).getNewRoomId(),
+		Name:        createRoom.Name,
+		HasPassword: createRoom.HasPassword,
+		Password:    createRoom.Password,
+		Players: [4]*block.RoomPlayer{
+			block.NewRoomPlayer(c.Player),
+			block.NewRoomPlayer(&block.Player{}),
+			block.NewRoomPlayer(&block.Player{}),
+			block.NewRoomPlayer(&block.Player{}),
+		},
+	}
+	s.lobbies[c.LobbyId].Rooms = append(s.lobbies[c.LobbyId].Rooms, &room)
+	c.Player.RoomId = room.Id
+	c.writeMessage(message.NewRoomUpdateMessage(room))
+	//c.writeMessage(message.NewPlayerUpdateMessage(*c.Player))
+	return message.NewPlayerUpdateMessage(*c.Player)
 }
 
 func PlayersInLobby(s *Server, _ *block.Block, c *Connection) message.Message {
@@ -70,9 +92,9 @@ func PlayersInLobby(s *Server, _ *block.Block, c *Connection) message.Message {
 	)
 }
 
-func RoomsInLobby(s *Server, _ *block.Block, _ *Connection) message.Message {
+func RoomsInLobby(s *Server, _ *block.Block, c *Connection) message.Message {
 	return message.NewRoomsInLobbyMessage(
-		[]*block.Room{},
+		s.lobbies[c.LobbyId].Rooms,
 	)
 }
 

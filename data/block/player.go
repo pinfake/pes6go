@@ -66,7 +66,7 @@ func (info Player) buildInternal() PieceInternal {
 	copy(internal.GroupName[:], info.GroupName)
 	internal.GroupStatus = info.GroupStatus
 	internal.Division = info.Division
-	internal.RoomId = 0xffffffff
+	internal.RoomId = info.RoomId
 	internal.Points = info.Points
 	internal.Category = info.Category
 	internal.MatchesPlayed = info.MatchesPlayed
