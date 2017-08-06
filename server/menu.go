@@ -38,6 +38,7 @@ func NewMenuServerHandler(stor storage.Storage) MenuServer {
 		storage: stor,
 		config: ServerConfig{
 			"serverId": "2",
+			"lobbies":  "[{\"Type\":31}]",
 		},
 	}
 }

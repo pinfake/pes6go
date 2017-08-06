@@ -46,7 +46,7 @@ func main() {
 	switch args[0] {
 	case "fullhouse":
 		go server.StartAdmin(stor)
-		go server.StartDiscovery()
+		go server.StartDiscovery(stor)
 		go server.StartAccounting(stor)
 		go server.StartMenu(stor)
 		go server.StartGame(stor)
@@ -54,7 +54,7 @@ func main() {
 	case "admin":
 		server.StartAdmin(stor)
 	case "discovery":
-		server.StartDiscovery()
+		server.StartDiscovery(stor)
 	case "accounting":
 		server.StartAccounting(stor)
 	case "menu":

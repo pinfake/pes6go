@@ -24,9 +24,9 @@ var discoveryHandlers = map[uint16]Handler{
 	0x2200: RankUrls,
 }
 
-func NewDiscoveryServerHandler() DiscoveryServer {
+func NewDiscoveryServerHandler(stor storage.Storage) DiscoveryServer {
 	return DiscoveryServer{
-		storage: storage.Forged{},
+		storage: stor,
 		config:  ServerConfig{},
 	}
 }
@@ -81,11 +81,11 @@ func ServerTime(_ *Server, _ *block.Block, _ *Connection) message.Message {
 	}
 }
 
-func StartDiscovery() {
+func StartDiscovery(stor storage.Storage) {
 	fmt.Println("Discovery Server starting")
 	s := NewServer(
 		log.New(os.Stdout, "Discovery: ", log.LstdFlags),
-		NewDiscoveryServerHandler(),
+		NewDiscoveryServerHandler(stor),
 	)
 	s.Serve(10881)
 }

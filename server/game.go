@@ -12,7 +12,6 @@ import (
 )
 
 type GameServerData struct {
-	rooms []*block.Room
 }
 
 type GameServer struct {
@@ -26,6 +25,7 @@ var gameHandlers = map[uint16]Handler{
 	0x4102: GamePlayerInfo,
 	0x4210: PlayersInLobby,
 	0x4300: RoomsInLobby,
+	0x4310: CreateRoom,
 	0x4400: Chat,
 }
 
@@ -34,6 +34,10 @@ func NewGameServerHandler(stor storage.Storage) GameServer {
 		storage: stor,
 		config: ServerConfig{
 			"serverId": "1",
+			"lobbies": "[" +
+				"{\"Type\":63, \"Name\":\"Lobby #1\"}," +
+				"{\"Type\":63, \"Name\":\"Lobby #2\"}" +
+				"]",
 		},
 	}
 }
@@ -54,6 +58,12 @@ func (s GameServer) Data() interface{} {
 	return s.data
 }
 
+func CreateRoom(s *Server, b *block.Block, c *Connection) message.Message {
+	createRoom := block.NewCreateRoom(b)
+	s.Log(c, "Create room: %v", createRoom)
+	return nil
+}
+
 func PlayersInLobby(s *Server, _ *block.Block, c *Connection) message.Message {
 	return message.NewPlayersInLobbyMessage(
 		s.connections.playersInLobby(c.LobbyId),
@@ -62,7 +72,7 @@ func PlayersInLobby(s *Server, _ *block.Block, c *Connection) message.Message {
 
 func RoomsInLobby(s *Server, _ *block.Block, _ *Connection) message.Message {
 	return message.NewRoomsInLobbyMessage(
-		s.Data().(GameServerData).rooms,
+		[]*block.Room{},
 	)
 }
 

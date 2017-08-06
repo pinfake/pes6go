@@ -7,7 +7,7 @@ import (
 
 	"log"
 
-	"time"
+	"encoding/json"
 
 	"github.com/pinfake/pes6go/data/block"
 	"github.com/pinfake/pes6go/data/message"
@@ -24,6 +24,7 @@ type Server struct {
 	logger      *log.Logger
 	connections *Connections
 	listener    net.Listener
+	lobbies     []*block.Lobby
 	ServerHandler
 }
 
@@ -107,21 +108,27 @@ func (s *Server) Serve(port int) {
 	}
 }
 
+func (s *Server) initializeLobbies() {
+	if lobbies, ok := s.Config()["lobbies"]; ok {
+		err := json.Unmarshal([]byte(lobbies), &s.lobbies)
+		if err != nil {
+			panic(err)
+		}
+	}
+}
+
 func NewServer(logger *log.Logger, handler ServerHandler) *Server {
 	s := Server{
 		logger:        logger,
 		connections:   NewConnections(),
 		ServerHandler: handler,
 	}
+	s.initializeLobbies()
 	return &s
 }
 
-func (s Server) Shutdown() {
+func (s *Server) Shutdown() {
 	if s.listener != nil {
 		s.listener.Close()
 	}
-}
-
-func (s Server) WaitUntilDone() {
-	time.Sleep(10000 * time.Millisecond)
 }

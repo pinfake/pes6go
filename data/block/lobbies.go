@@ -8,6 +8,7 @@ type Lobby struct {
 	Type       byte
 	Name       string
 	NumClients uint16
+	Rooms      []*Room
 }
 
 type LobbyInternal struct {
