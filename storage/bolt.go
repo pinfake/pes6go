@@ -190,6 +190,9 @@ func (b Bolt) Login(account *Account) (*Account, error) {
 	err := b.db.View(func(tx *bolt.Tx) error {
 		bucket := tx.Bucket([]byte("accounts"))
 		v := bucket.Get([]byte(account.Key))
+		if v == nil {
+			return fmt.Errorf("Account key '%s' not found!", account.Key)
+		}
 		var acc Account
 		err := json.Unmarshal(v, &acc)
 		if err != nil {
