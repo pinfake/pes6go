@@ -103,7 +103,7 @@ func AccountingPlayerInfo(s *Server, b *block.Block, c *Connection) message.Mess
 		return nil
 	}
 	return message.NewAccountingPlayerInfoMessage(
-		block.PlayerInfo{player},
+		block.PlayerExtended{player},
 	)
 }
 

@@ -18,7 +18,7 @@ func (r AccountingPlayerInfo) GetBlocks() []*block.Block {
 	return blocks
 }
 
-func NewAccountingPlayerInfoMessage(info block.PlayerInfo) AccountingPlayerInfo {
+func NewAccountingPlayerInfoMessage(info block.PlayerExtended) AccountingPlayerInfo {
 	return AccountingPlayerInfo{
 		PlayerInfo: block.GetPieces(reflect.ValueOf(info)),
 	}

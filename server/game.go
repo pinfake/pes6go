@@ -79,6 +79,7 @@ func CreateRoom(s *Server, b *block.Block, c *Connection) message.Message {
 	//s.lobbies[c.LobbyId].Rooms = append(s.lobbies[c.LobbyId].Rooms, &room)
 	c.Player.RoomId = room.Id
 	c.writeMessage(message.NewRoomUpdateMessage(room))
+	c.writeMessage(message.NewPlayerUpdateMessage(*c.Player))
 	//c.writeMessage(message.NewPlayerUpdateMessage(*c.Player))
 	return message.NewPlayerUpdateMessage(*c.Player)
 }
@@ -103,7 +104,7 @@ func GamePlayerInfo(s *Server, b *block.Block, c *Connection) message.Message {
 		return nil
 	}
 	return message.NewGamePlayerInfo(
-		block.PlayerInfo{player},
+		block.PlayerExtended{player},
 	)
 }
 

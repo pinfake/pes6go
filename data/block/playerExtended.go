@@ -1,10 +1,10 @@
 package block
 
-type PlayerInfo struct {
+type PlayerExtended struct {
 	*Player
 }
 
-type PlayerInfoInternal struct {
+type PlayerExtendedInternal struct {
 	Zero           uint32
 	Id             uint32
 	Name           [48]byte
@@ -31,8 +31,8 @@ type PlayerInfoInternal struct {
 	LastTeams [5]uint16
 }
 
-func (info PlayerInfo) buildInternal() PieceInternal {
-	var internal PlayerInfoInternal
+func (info PlayerExtended) buildInternal() PieceInternal {
+	var internal PlayerExtendedInternal
 	internal.Id = info.Id
 	copy(internal.Name[:], info.Name)
 	internal.GroupId = info.GroupId

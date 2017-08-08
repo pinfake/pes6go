@@ -18,7 +18,7 @@ func (r GamePlayerInfo) GetBlocks() []*block.Block {
 	return blocks
 }
 
-func NewGamePlayerInfo(info block.PlayerInfo) GamePlayerInfo {
+func NewGamePlayerInfo(info block.PlayerExtended) GamePlayerInfo {
 	return GamePlayerInfo{
 		PlayerGroup: block.GetPieces(reflect.ValueOf(info)),
 	}
