@@ -12,12 +12,7 @@ import (
 )
 
 type GameServerData struct {
-	lastRoomId uint32
-}
-
-func (data GameServerData) getNewRoomId() uint32 {
-	data.lastRoomId++
-	return data.lastRoomId
+	rooms *IdMap
 }
 
 type GameServer struct {
@@ -38,6 +33,7 @@ var gameHandlers = map[uint16]Handler{
 func NewGameServerHandler(stor storage.Storage) GameServer {
 	return GameServer{
 		storage: stor,
+		data:    GameServerData{NewIdMap()},
 		config: ServerConfig{
 			"serverId": "1",
 			"lobbies": "[" +
@@ -68,7 +64,7 @@ func CreateRoom(s *Server, b *block.Block, c *Connection) message.Message {
 	createRoom := block.NewCreateRoom(b)
 	s.Log(c, "Create room: %v", createRoom)
 	room := block.Room{
-		Id:          s.Data().(GameServerData).getNewRoomId(),
+		Id:          s.Data().(GameServerData).rooms.GetNewId(),
 		Name:        createRoom.Name,
 		HasPassword: createRoom.HasPassword,
 		Password:    createRoom.Password,
@@ -79,7 +75,8 @@ func CreateRoom(s *Server, b *block.Block, c *Connection) message.Message {
 			block.NewRoomPlayer(&block.Player{}),
 		},
 	}
-	s.lobbies[c.LobbyId].Rooms = append(s.lobbies[c.LobbyId].Rooms, &room)
+	s.Data().(GameServerData).rooms.Add(room.Id, room)
+	//s.lobbies[c.LobbyId].Rooms = append(s.lobbies[c.LobbyId].Rooms, &room)
 	c.Player.RoomId = room.Id
 	c.writeMessage(message.NewRoomUpdateMessage(room))
 	//c.writeMessage(message.NewPlayerUpdateMessage(*c.Player))
@@ -88,7 +85,7 @@ func CreateRoom(s *Server, b *block.Block, c *Connection) message.Message {
 
 func PlayersInLobby(s *Server, _ *block.Block, c *Connection) message.Message {
 	return message.NewPlayersInLobbyMessage(
-		s.connections.playersInLobby(c.LobbyId),
+		playersInLobby(s.connections, c.LobbyId),
 	)
 }
 
@@ -119,7 +116,7 @@ func Chat(s *Server, b *block.Block, c *Connection) message.Message {
 	chatMessage := block.NewChatMessage(b, c.Player.Name)
 	s.Log(c, "Received chat message: %v", chatMessage)
 	// for now just broadcast the message to everyone
-	s.connections.sendToLobby(c.LobbyId, message.NewChatMessage(
+	sendToLobby(s.connections, c.LobbyId, message.NewChatMessage(
 		chatMessage,
 	))
 	return nil

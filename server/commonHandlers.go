@@ -29,7 +29,7 @@ func KeepAlive(_ *Server, _ *block.Block, _ *Connection) message.Message {
 
 func Disconnect(s *Server, _ *block.Block, c *Connection) message.Message {
 	if c.Player != nil {
-		s.connections.sendToLobby(c.LobbyId, message.LeaveLobby{c.Player.Id})
+		sendToLobby(s.connections, c.LobbyId, message.LeaveLobby{c.Player.Id})
 	}
 	return nil
 }
@@ -77,12 +77,6 @@ func SelectPlayer(s *Server, b *block.Block, c *Connection) message.Message {
 }
 
 func ServerLobbies(s *Server, _ *block.Block, _ *Connection) message.Message {
-	//a, _ := strconv.ParseUint(s.Config()["serverId"], 10, 32)
-	//// No!, lobbies should be a part of the server configuration, not the database.
-	//lobbies := s.Storage().GetLobbies(uint32(a))
-	//for id, lobby := range lobbies {
-	//	lobby.NumClients = s.connections.countInLobby(byte(id))
-	//}
 	return message.NewLobbiesMessage(
 		block.Lobbies{s.lobbies},
 	)
@@ -91,7 +85,7 @@ func ServerLobbies(s *Server, _ *block.Block, _ *Connection) message.Message {
 func JoinLobby(s *Server, b *block.Block, c *Connection) message.Message {
 	joinLobby := block.NewJoinLobby(b)
 	c.LobbyId = joinLobby.LobbyId
-	s.connections.sendToLobby(c.LobbyId, message.NewPlayerUpdateMessage(*c.Player))
+	sendToLobby(s.connections, c.LobbyId, message.NewPlayerUpdateMessage(*c.Player))
 	return message.JoinLobbyResponse{block.Ok}
 }
 

@@ -22,7 +22,7 @@ type ServerConfig map[string]string
 
 type Server struct {
 	logger      *log.Logger
-	connections *Connections
+	connections *IdMap
 	listener    net.Listener
 	lobbies     []*block.Lobby
 	ServerHandler
@@ -44,7 +44,13 @@ func (s *Server) Log(c *Connection, format string, v ...interface{}) {
 }
 
 func (s *Server) handleConnection(conn net.Conn) error {
-	c := s.connections.add(conn)
+	c := &Connection{
+		id:      s.connections.GetNewId(),
+		LobbyId: 0xff, // 0xff meaning no lobby
+		seq:     0,
+		conn:    conn,
+	}
+	s.connections.Add(c.id, c)
 	defer s.closeConnection(c)
 	s.Log(c, "Incoming connection")
 	for {
@@ -71,7 +77,7 @@ func (s *Server) handleConnection(conn net.Conn) error {
 
 func (s *Server) closeConnection(c *Connection) {
 	s.Log(c, "Closing connection")
-	s.connections.remove(c)
+	s.connections.Delete(c.id)
 	if c.conn != nil {
 		c.conn.Close()
 	}
@@ -120,7 +126,7 @@ func (s *Server) initializeLobbies() {
 func NewServer(logger *log.Logger, handler ServerHandler) *Server {
 	s := Server{
 		logger:        logger,
-		connections:   NewConnections(),
+		connections:   NewIdMap(),
 		ServerHandler: handler,
 	}
 	s.initializeLobbies()
