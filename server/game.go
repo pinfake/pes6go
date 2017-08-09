@@ -27,6 +27,7 @@ var gameHandlers = map[uint16]Handler{
 	0x4210: PlayersInLobby,
 	0x4300: RoomsInLobby,
 	0x4310: CreateRoom,
+	0x4345: GetRoomPlayerLinks,
 	0x4400: Chat,
 }
 
@@ -60,6 +61,8 @@ func (s GameServer) Data() interface{} {
 	return s.data
 }
 
+// TODO: Prevent creation of rooms with an existing name (in the same lobby)
+
 func CreateRoom(s *Server, b *block.Block, c *Connection) message.Message {
 	createRoom := block.NewCreateRoom(b)
 	s.Log(c, "Create room: %v", createRoom)
@@ -76,12 +79,14 @@ func CreateRoom(s *Server, b *block.Block, c *Connection) message.Message {
 		},
 	}
 	s.Data().(GameServerData).rooms.Add(room.Id, room)
-	//s.lobbies[c.LobbyId].Rooms = append(s.lobbies[c.LobbyId].Rooms, &room)
 	c.Player.RoomId = room.Id
 	c.writeMessage(message.NewRoomUpdateMessage(room))
 	c.writeMessage(message.NewPlayerUpdateMessage(*c.Player))
-	//c.writeMessage(message.NewPlayerUpdateMessage(*c.Player))
-	return message.NewCreateRoomResponse(
+	return message.NewCreateRoomResponse()
+}
+
+func GetRoomPlayerLinks(s *Server, b *block.Block, c *Connection) message.Message {
+	return message.NewRoomPlayerLinks(
 		[]block.RoomPlayerLink{
 			{
 				Player:   c.Player,
