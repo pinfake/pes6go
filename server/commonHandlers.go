@@ -85,6 +85,12 @@ func ServerLobbies(s *Server, _ *block.Block, _ *Connection) message.Message {
 func JoinLobby(s *Server, b *block.Block, c *Connection) message.Message {
 	joinLobby := block.NewJoinLobby(b)
 	c.LobbyId = joinLobby.LobbyId
+	c.Player.Link = &block.PlayerLink{
+		Ip1: joinLobby.Ip1,
+		Port1: joinLobby.Port1,
+		Ip2: joinLobby.Ip2,
+		Port2: joinLobby.Port2,
+	}
 	sendToLobby(s.connections, c.LobbyId, message.NewPlayerUpdateMessage(*c.Player))
 	return message.JoinLobbyResponse{block.Ok}
 }

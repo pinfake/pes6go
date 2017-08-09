@@ -38,6 +38,15 @@ type Player struct {
 	GroupId     uint32
 	GroupName   string
 	GroupStatus byte
+
+	Link *PlayerLink
+}
+
+type PlayerLink struct {
+	Ip1   string
+	Port1 uint16
+	Ip2   string
+	Port2 uint16
 }
 
 type PlayerInternal struct {
