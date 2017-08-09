@@ -20,9 +20,8 @@ func (r CreateRoomResponse) GetBlocks() []*block.Block {
 	return blocks
 }
 
-func NewCreateRoomResponse(playerId uint32, playerSettings block.PlayerSettings) PlayerSettings {
-	return PlayerSettings{
-		PlayerId:       playerId,
-		PlayerSettings: block.GetPieces(reflect.ValueOf(playerSettings)),
+func NewCreateRoomResponse(playerLinks []block.RoomPlayerLink) CreateRoomResponse {
+	return CreateRoomResponse{
+		RoomLinks: block.GetPieces(reflect.ValueOf(playerLinks)),
 	}
 }

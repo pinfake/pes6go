@@ -81,7 +81,15 @@ func CreateRoom(s *Server, b *block.Block, c *Connection) message.Message {
 	c.writeMessage(message.NewRoomUpdateMessage(room))
 	c.writeMessage(message.NewPlayerUpdateMessage(*c.Player))
 	//c.writeMessage(message.NewPlayerUpdateMessage(*c.Player))
-	return message.NewPlayerUpdateMessage(*c.Player)
+	return message.NewCreateRoomResponse(
+		[]block.RoomPlayerLink{
+			{
+				Player:   c.Player,
+				Position: 0,
+				Color:    0,
+			},
+		},
+	)
 }
 
 func PlayersInLobby(s *Server, _ *block.Block, c *Connection) message.Message {
