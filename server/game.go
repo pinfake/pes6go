@@ -29,6 +29,7 @@ var gameHandlers = map[uint16]Handler{
 	0x4310: CreateRoom,
 	0x4345: GetRoomPlayerLinks,
 	0x4400: Chat,
+	0x4b00: GetPlayerLink,
 }
 
 func NewGameServerHandler(stor storage.Storage) GameServer {
@@ -134,6 +135,23 @@ func Chat(s *Server, b *block.Block, c *Connection) message.Message {
 		chatMessage,
 	))
 	return nil
+}
+
+func GetPlayerLink(s *Server, b *block.Block, c *Connection) message.Message {
+	playerId := block.NewUint32(b)
+	targetConn := findByPlayerId(s.connections, playerId.Value)
+	if targetConn == nil {
+		// Sixservers sends the expected 0x4b01 with 0xff, 0xff, 0xff, 0xff
+		return nil
+	} else {
+		return message.NewPlayerLinkResponse(
+			block.RoomPlayerLink{
+				Player:   targetConn.Player,
+				Position: 0,
+				Color:    0,
+			},
+		)
+	}
 }
 
 func StartGame(stor storage.Storage) {

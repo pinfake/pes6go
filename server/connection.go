@@ -43,6 +43,21 @@ func (c *Connection) writeMessage(message message.Message) {
 	}
 }
 
+func findByPlayerId(idmap *IdMap, playerId uint32) *Connection {
+	defer idmap.RUnlock()
+	idmap.RLock()
+	for _, e := range idmap.data {
+		c := e.(*Connection)
+		if c.Player == nil {
+			continue
+		}
+		if c.Player.Id == playerId {
+			return c
+		}
+	}
+	return nil
+}
+
 func playersInLobby(idmap *IdMap, lobbyId byte) []*block.Player {
 	var ret []*block.Player
 	defer idmap.RUnlock()
