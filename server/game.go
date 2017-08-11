@@ -72,7 +72,7 @@ func CreateRoom(s *Server, b *block.Block, c *Connection) message.Message {
 		Name:        createRoom.Name,
 		HasPassword: createRoom.HasPassword,
 		Password:    createRoom.Password,
-		Players: [4]*block.RoomPlayer{
+		Players: [4]block.RoomPlayer{
 			block.NewRoomPlayer(c.Player),
 			block.NewRoomPlayer(&block.Player{}),
 			block.NewRoomPlayer(&block.Player{}),
@@ -81,8 +81,11 @@ func CreateRoom(s *Server, b *block.Block, c *Connection) message.Message {
 	}
 	s.Data().(GameServerData).rooms.Add(room.Id, room)
 	c.Player.RoomId = room.Id
-	c.writeMessage(message.NewRoomUpdateMessage(room))
-	c.writeMessage(message.NewPlayerUpdateMessage(*c.Player))
+	sendToLobby(s.connections, c.LobbyId, message.NewRoomUpdateMessage(room))
+	// Maybe just to me?, pes6j says to send this info for every player in the room to me when "entering"
+	sendToLobby(s.connections, c.LobbyId, message.NewPlayerUpdate(*c.Player))
+	//c.writeMessage(message.NewRoomUpdateMessage(room))
+	//c.writeMessage(message.NewPlayerUpdate(*c.Player))
 	return message.NewCreateRoomResponse()
 }
 
@@ -145,10 +148,8 @@ func GetPlayerLink(s *Server, b *block.Block, c *Connection) message.Message {
 		return nil
 	} else {
 		return message.NewPlayerLinkResponse(
-			block.RoomPlayerLink{
-				Player:   targetConn.Player,
-				Position: 0,
-				Color:    0,
+			block.PlayerLink{
+				Player: targetConn.Player,
 			},
 		)
 	}

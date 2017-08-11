@@ -1,9 +1,5 @@
 package block
 
-type RoomPlayerLinks struct {
-	PlayerLinks []*RoomPlayerLink
-}
-
 type RoomPlayerLink struct {
 	Player   *Player
 	Position byte

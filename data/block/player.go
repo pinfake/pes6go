@@ -39,10 +39,10 @@ type Player struct {
 	GroupName   string
 	GroupStatus byte
 
-	Link *PlayerLink
+	Link *Link
 }
 
-type PlayerLink struct {
+type Link struct {
 	Ip1   string
 	Port1 uint16
 	Ip2   string

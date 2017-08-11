@@ -4,7 +4,7 @@ type RoomPlayer struct {
 	Id        uint32
 	Team      byte
 	Spectator byte
-	Ready     byte
+	Color     byte
 }
 
 type RoomTeam struct {
@@ -18,7 +18,7 @@ type Room struct {
 	Phase       byte
 	Name        string
 	Time        byte
-	Players     [4]*RoomPlayer
+	Players     [4]RoomPlayer
 	Teams       [2]RoomTeam
 	HasPassword byte
 	Password    string
@@ -47,7 +47,7 @@ type RoomPlayerInternal struct {
 	Team      byte
 	Spectator byte
 	Position  byte
-	Ready     byte
+	Color     byte
 }
 
 type RoomInternal struct {
@@ -76,7 +76,7 @@ func (info Room) buildInternal() PieceInternal {
 	for i, player := range info.Players {
 		var owner byte
 		if i == 0 {
-			owner = 1
+			owner = 0x01
 		}
 		internal.Players[i] = RoomPlayerInternal{
 			Id:        player.Id,
@@ -84,7 +84,7 @@ func (info Room) buildInternal() PieceInternal {
 			Team:      player.Team,
 			Spectator: player.Spectator,
 			Position:  byte(i),
-			Ready:     player.Ready,
+			Color:     player.Color,
 		}
 	}
 
@@ -97,11 +97,11 @@ func (info Room) buildInternal() PieceInternal {
 	return internal
 }
 
-func NewRoomPlayer(player *Player) *RoomPlayer {
-	return &RoomPlayer{
+func NewRoomPlayer(player *Player) RoomPlayer {
+	return RoomPlayer{
 		Id:        player.Id,
 		Team:      0,
 		Spectator: 0,
-		Ready:     0,
+		Color:     0,
 	}
 }

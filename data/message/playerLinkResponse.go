@@ -18,7 +18,7 @@ func (r PlayerLinkResponse) GetBlocks() []*block.Block {
 	return blocks
 }
 
-func NewPlayerLinkResponse(info block.RoomPlayerLink) PlayerLinkResponse {
+func NewPlayerLinkResponse(info block.PlayerLink) PlayerLinkResponse {
 	return PlayerLinkResponse{
 		PlayerLink: block.GetPieces(reflect.ValueOf(info)),
 	}
