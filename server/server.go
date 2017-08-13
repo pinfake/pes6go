@@ -11,6 +11,7 @@ import (
 
 	"github.com/pinfake/pes6go/data/block"
 	"github.com/pinfake/pes6go/data/message"
+	"github.com/pinfake/pes6go/data/types"
 	"github.com/pinfake/pes6go/storage"
 )
 
@@ -22,7 +23,7 @@ type ServerConfig map[string]string
 
 type Server struct {
 	logger      *log.Logger
-	connections *IdMap
+	connections *types.IdMap
 	listener    net.Listener
 	lobbies     []*block.Lobby
 	ServerHandler
@@ -121,12 +122,15 @@ func (s *Server) initializeLobbies() {
 			panic(err)
 		}
 	}
+	for _, lobby := range s.lobbies {
+		lobby.Rooms = types.NewIdMap()
+	}
 }
 
 func NewServer(logger *log.Logger, handler ServerHandler) *Server {
 	s := Server{
 		logger:        logger,
-		connections:   NewIdMap(),
+		connections:   types.NewIdMap(),
 		ServerHandler: handler,
 	}
 	s.initializeLobbies()

@@ -8,11 +8,12 @@ import (
 
 	"github.com/pinfake/pes6go/data/block"
 	"github.com/pinfake/pes6go/data/message"
+	"github.com/pinfake/pes6go/data/types"
 	"github.com/pinfake/pes6go/storage"
 )
 
 type GameServerData struct {
-	rooms *IdMap
+	rooms *types.IdMap
 }
 
 type GameServer struct {
@@ -28,6 +29,7 @@ var gameHandlers = map[uint16]Handler{
 	0x4300: RoomsInLobby,
 	0x4310: CreateRoom,
 	0x4345: GetRoomPlayerLinks,
+	0x4350: RoomSettings,
 	0x4400: Chat,
 	0x4b00: GetPlayerLink,
 }
@@ -35,7 +37,7 @@ var gameHandlers = map[uint16]Handler{
 func NewGameServerHandler(stor storage.Storage) GameServer {
 	return GameServer{
 		storage: stor,
-		data:    GameServerData{NewIdMap()},
+		data:    GameServerData{types.NewIdMap()},
 		config: ServerConfig{
 			"serverId": "1",
 			"lobbies": "[" +
@@ -69,6 +71,7 @@ func CreateRoom(s *Server, b *block.Block, c *Connection) message.Message {
 	s.Log(c, "Create room: %v", createRoom)
 	room := block.Room{
 		Id:          s.Data().(GameServerData).rooms.GetNewId(),
+		Type:        1,
 		Name:        createRoom.Name,
 		HasPassword: createRoom.HasPassword,
 		Password:    createRoom.Password,
@@ -79,7 +82,7 @@ func CreateRoom(s *Server, b *block.Block, c *Connection) message.Message {
 			block.NewRoomPlayer(&block.Player{}),
 		},
 	}
-	s.Data().(GameServerData).rooms.Add(room.Id, room)
+	s.lobbies[c.LobbyId].Rooms.Add(room.Id, &room)
 	c.Player.RoomId = room.Id
 	sendToLobby(s.connections, c.LobbyId, message.NewRoomUpdateMessage(room))
 	// Maybe just to me?, pes6j says to send this info for every player in the room to me when "entering"
@@ -87,6 +90,11 @@ func CreateRoom(s *Server, b *block.Block, c *Connection) message.Message {
 	//c.writeMessage(message.NewRoomUpdateMessage(room))
 	//c.writeMessage(message.NewPlayerUpdate(*c.Player))
 	return message.NewCreateRoomResponse()
+}
+
+func RoomSettings(s *Server, b *block.Block, c *Connection) message.Message {
+	sendToRoom(s.connections, c.Player.RoomId, message.NewReplayBlockMessage(b))
+	return nil
 }
 
 func GetRoomPlayerLinks(s *Server, b *block.Block, c *Connection) message.Message {
@@ -109,7 +117,7 @@ func PlayersInLobby(s *Server, _ *block.Block, c *Connection) message.Message {
 
 func RoomsInLobby(s *Server, _ *block.Block, c *Connection) message.Message {
 	return message.NewRoomsInLobbyMessage(
-		s.lobbies[c.LobbyId].Rooms,
+		block.GetRoomsSlice(s.lobbies[c.LobbyId].Rooms),
 	)
 }
 

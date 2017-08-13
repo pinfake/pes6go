@@ -5,6 +5,7 @@ import (
 
 	"github.com/pinfake/pes6go/data/block"
 	"github.com/pinfake/pes6go/data/message"
+	"github.com/pinfake/pes6go/data/types"
 	"github.com/pinfake/pes6go/network"
 	"github.com/pinfake/pes6go/storage"
 )
@@ -43,10 +44,10 @@ func (c *Connection) writeMessage(message message.Message) {
 	}
 }
 
-func findByPlayerId(idmap *IdMap, playerId uint32) *Connection {
+func findByPlayerId(idmap *types.IdMap, playerId uint32) *Connection {
 	defer idmap.RUnlock()
 	idmap.RLock()
-	for _, e := range idmap.data {
+	for _, e := range idmap.Data {
 		c := e.(*Connection)
 		if c.Player == nil {
 			continue
@@ -58,11 +59,11 @@ func findByPlayerId(idmap *IdMap, playerId uint32) *Connection {
 	return nil
 }
 
-func playersInLobby(idmap *IdMap, lobbyId byte) []*block.Player {
+func playersInLobby(idmap *types.IdMap, lobbyId byte) []*block.Player {
 	var ret []*block.Player
 	defer idmap.RUnlock()
 	idmap.RLock()
-	for _, e := range idmap.data {
+	for _, e := range idmap.Data {
 		c := e.(*Connection)
 		if c.LobbyId == lobbyId {
 			ret = append(ret, c.Player)
@@ -71,12 +72,23 @@ func playersInLobby(idmap *IdMap, lobbyId byte) []*block.Player {
 	return ret
 }
 
-func sendToLobby(idmap *IdMap, lobbyId byte, m message.Message) {
+func sendToLobby(idmap *types.IdMap, lobbyId byte, m message.Message) {
 	defer idmap.RUnlock()
 	idmap.RLock()
-	for _, e := range idmap.data {
+	for _, e := range idmap.Data {
 		c := e.(*Connection)
 		if c.LobbyId == lobbyId {
+			c.writeMessage(m)
+		}
+	}
+}
+
+func sendToRoom(idmap *types.IdMap, roomId uint32, m message.Message) {
+	defer idmap.RUnlock()
+	idmap.RLock()
+	for _, e := range idmap.Data {
+		c := e.(*Connection)
+		if c.Player != nil && c.Player.RoomId == roomId {
 			c.writeMessage(m)
 		}
 	}

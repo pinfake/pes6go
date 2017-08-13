@@ -1,5 +1,9 @@
 package block
 
+import (
+	"github.com/pinfake/pes6go/data/types"
+)
+
 type Lobbies struct {
 	Lobbies []*Lobby
 }
@@ -8,7 +12,21 @@ type Lobby struct {
 	Type       byte
 	Name       string
 	NumClients uint16
-	Rooms      []*Room
+	Rooms      *types.IdMap
+}
+
+func GetRoomsSlice(rooms *types.IdMap) []*Room {
+	rooms.RLock()
+	defer rooms.RUnlock()
+	arr := make([]*Room, len(rooms.Data))
+
+	i := 0
+	for _, value := range rooms.Data {
+		arr[i] = value.(*Room)
+		i++
+	}
+
+	return arr
 }
 
 type LobbyInternal struct {
