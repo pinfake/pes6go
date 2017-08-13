@@ -26,20 +26,6 @@ type Room struct {
 	ChatLevel   byte
 }
 
-//type RoomList map[uint32]*Room
-//
-//func (list RoomList) Remove(id uint32) {
-//	delete(list, id)
-//}
-//
-//func (list RoomList) getNewId() {
-//
-//}
-//
-//func (list RoomList) Add(room *Room) {
-//
-//}
-
 type RoomPlayerInternal struct {
 	Id        uint32
 	Owner     byte
