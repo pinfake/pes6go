@@ -1,5 +1,7 @@
 package block
 
+import "fmt"
+
 type RoomPlayer struct {
 	Id        uint32
 	Team      byte
@@ -18,7 +20,7 @@ type Room struct {
 	Phase       byte
 	Name        string
 	Time        byte
-	Players     [4]RoomPlayer
+	Players     []*RoomPlayer
 	Teams       [2]RoomTeam
 	HasPassword byte
 	Password    string
@@ -59,10 +61,21 @@ func (info Room) buildInternal() PieceInternal {
 	internal.Phase = info.Phase
 	copy(internal.Name[:], info.Name)
 	internal.Time = info.Time
-	for i, player := range info.Players {
+	for i := 0; i < 4; i++ {
 		var owner byte
 		if i == 0 {
 			owner = 0x01
+		}
+		var player *RoomPlayer
+		if len(info.Players) > i {
+			player = info.Players[i]
+		} else {
+			player = &RoomPlayer{
+				Id:        0,
+				Team:      0xff,
+				Spectator: 0,
+				Color:     0xff,
+			}
 		}
 		internal.Players[i] = RoomPlayerInternal{
 			Id:        player.Id,
@@ -81,11 +94,34 @@ func (info Room) buildInternal() PieceInternal {
 	return internal
 }
 
-func NewRoomPlayer(player *Player) RoomPlayer {
-	return RoomPlayer{
+func (info Room) hasPlayers() bool {
+	return len(info.Players) > 0
+}
+
+func (info Room) getPlayerIdx(playerId uint32) (int, error) {
+	for i, player := range info.Players {
+		if player.Id == playerId {
+			return i, nil
+		}
+	}
+	return 0, fmt.Errorf("player not found")
+}
+
+func (info Room) removePlayer(playerId uint32) error {
+	i, err := info.getPlayerIdx(playerId)
+	if err != nil {
+		// Log something here, the player wasnt found
+		return err
+	}
+	info.Players = append(info.Players[:i], info.Players[i+1:]...)
+	return nil
+}
+
+func NewRoomPlayer(player *Player) *RoomPlayer {
+	return &RoomPlayer{
 		Id:        player.Id,
-		Team:      0,
+		Team:      0xff,
 		Spectator: 0,
-		Color:     0,
+		Color:     0xff,
 	}
 }

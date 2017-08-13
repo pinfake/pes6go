@@ -29,6 +29,7 @@ var gameHandlers = map[uint16]Handler{
 	0x4300: RoomsInLobby,
 	0x4310: CreateRoom,
 	0x4345: GetRoomPlayerLinks,
+	0x434d: ChangeRoom,
 	0x4350: RoomSettings,
 	0x4400: Chat,
 	0x4b00: GetPlayerLink,
@@ -64,8 +65,18 @@ func (s GameServer) Data() interface{} {
 	return s.data
 }
 
-// TODO: Prevent creation of rooms with an existing name (in the same lobby)
+// TODO: Do this.
+func ChangeRoom(s *Server, b *block.Block, c *Connection) message.Message {
+	changeRoom := block.NewCreateRoom(b)
+	room := s.lobbies[c.LobbyId].Rooms.Get(c.Player.RoomId).(*block.Room)
+	room.HasPassword = changeRoom.HasPassword
+	room.Name = changeRoom.Name
+	room.HasPassword = changeRoom.HasPassword
+	sendToLobby(s.connections, c.LobbyId, message.NewRoomUpdateMessage(*room))
+	return message.NewChangeRoomResponse(0)
+}
 
+// TODO: Prevent creation of rooms with an existing name (in the same lobby)
 func CreateRoom(s *Server, b *block.Block, c *Connection) message.Message {
 	createRoom := block.NewCreateRoom(b)
 	s.Log(c, "Create room: %v", createRoom)
@@ -75,11 +86,8 @@ func CreateRoom(s *Server, b *block.Block, c *Connection) message.Message {
 		Name:        createRoom.Name,
 		HasPassword: createRoom.HasPassword,
 		Password:    createRoom.Password,
-		Players: [4]block.RoomPlayer{
+		Players: []*block.RoomPlayer{
 			block.NewRoomPlayer(c.Player),
-			block.NewRoomPlayer(&block.Player{}),
-			block.NewRoomPlayer(&block.Player{}),
-			block.NewRoomPlayer(&block.Player{}),
 		},
 	}
 	s.lobbies[c.LobbyId].Rooms.Add(room.Id, &room)
