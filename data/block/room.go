@@ -89,9 +89,7 @@ func (info Room) buildInternal() PieceInternal {
 	}
 
 	internal.RoomTeams = info.Teams
-	if info.Password != "" {
-		internal.HasPassword = 1
-	}
+	internal.HasPassword = info.HasPassword
 	internal.MatchType = info.MatchType
 	internal.ChatLevel = info.ChatLevel
 	return internal
