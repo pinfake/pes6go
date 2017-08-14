@@ -30,7 +30,16 @@ func KeepAlive(_ *Server, _ *block.Block, _ *Connection) message.Message {
 func Disconnect(s *Server, _ *block.Block, c *Connection) message.Message {
 	if c.Player != nil {
 		sendToLobby(s.connections, c.LobbyId, message.LeaveLobby{c.Player.Id})
+		if c.Player.RoomId != 0 {
+			lobby := s.lobbies[c.LobbyId]
+			room := lobby.Rooms.Get(c.Player.RoomId).(*block.Room)
+			room.RemovePlayer(c.Player.Id)
+			if !room.HasPlayers() {
+				lobby.RemoveRoom(c.Player.RoomId)
+			}
+		}
 	}
+
 	return nil
 }
 

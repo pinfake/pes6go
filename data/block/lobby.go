@@ -29,6 +29,10 @@ func GetRoomsSlice(rooms *types.IdMap) []*Room {
 	return arr
 }
 
+func (l Lobby) RemoveRoom(roomId uint32) {
+	l.Rooms.Delete(roomId)
+}
+
 type LobbyInternal struct {
 	Type       byte
 	Name       [32]byte

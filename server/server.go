@@ -89,6 +89,7 @@ func (s *Server) handleBlock(block *block.Block, c *Connection) (message.Message
 	if !ok {
 		method, ok = handlers[block.Header.Query]
 		if !ok {
+			Disconnect(s, block, c)
 			return nil, fmt.Errorf("Unknown query!")
 		}
 	}

@@ -94,7 +94,7 @@ func (info Room) buildInternal() PieceInternal {
 	return internal
 }
 
-func (info Room) hasPlayers() bool {
+func (info Room) HasPlayers() bool {
 	return len(info.Players) > 0
 }
 
@@ -107,7 +107,42 @@ func (info Room) getPlayerIdx(playerId uint32) (int, error) {
 	return 0, fmt.Errorf("player not found")
 }
 
-func (info Room) removePlayer(playerId uint32) error {
+func (info Room) ToggleParticipation(playerId uint32) (byte, error) {
+	i, err := info.getPlayerIdx(playerId)
+	if err != nil {
+		// Log something here, the player wasnt found
+		return 0, err
+	}
+	if info.Players[i].Color == 0xff {
+		// Set participation
+		info.Players[i].Color = info.getNextAvailableParticipation()
+	} else {
+		info.Players[i].Color = 0xff
+		info.moveDownParticipations(i)
+	}
+	return info.Players[i].Color, nil
+}
+
+func (info Room) moveDownParticipations(i int) {
+	for _, player := range info.Players[i:] {
+		if player.Color != 0xff {
+			player.Color--
+		}
+	}
+}
+
+// TODO: Has to be synchronized, i probably missed many more
+func (info Room) getNextAvailableParticipation() byte {
+	var participation byte = 0
+	for _, player := range info.Players {
+		if player.Color != 0xff {
+			participation++
+		}
+	}
+	return participation
+}
+
+func (info Room) RemovePlayer(playerId uint32) error {
 	i, err := info.getPlayerIdx(playerId)
 	if err != nil {
 		// Log something here, the player wasnt found

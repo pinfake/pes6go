@@ -31,6 +31,7 @@ var gameHandlers = map[uint16]Handler{
 	0x4345: GetRoomPlayerLinks,
 	0x434d: ChangeRoom,
 	0x4350: RoomSettings,
+	0x4363: Participate,
 	0x4400: Chat,
 	0x4b00: GetPlayerLink,
 }
@@ -65,7 +66,17 @@ func (s GameServer) Data() interface{} {
 	return s.data
 }
 
-// TODO: Do this.
+func Participate(s *Server, b *block.Block, c *Connection) message.Message {
+	//participation := block.NewByte(b)
+	room := s.lobbies[c.LobbyId].Rooms.Get(c.Player.RoomId).(*block.Room)
+	color, err := room.ToggleParticipation(c.Player.Id)
+	if err != nil {
+		panic(err)
+	}
+	// TODO: missing a 4365 says pes6j
+	return nil
+}
+
 func ChangeRoom(s *Server, b *block.Block, c *Connection) message.Message {
 	changeRoom := block.NewCreateRoom(b)
 	room := s.lobbies[c.LobbyId].Rooms.Get(c.Player.RoomId).(*block.Room)
