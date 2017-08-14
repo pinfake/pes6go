@@ -67,9 +67,9 @@ func (s GameServer) Data() interface{} {
 }
 
 func Participate(s *Server, b *block.Block, c *Connection) message.Message {
-	//participation := block.NewByte(b)
+	participation := block.NewByte(b)
 	room := s.lobbies[c.LobbyId].Rooms.Get(c.Player.RoomId).(*block.Room)
-	color, err := room.ToggleParticipation(c.Player.Id)
+	newParticipation, err := room.ToggleParticipation(c.Player.Id)
 	if err != nil {
 		panic(err)
 	}
@@ -120,9 +120,9 @@ func GetRoomPlayerLinks(s *Server, b *block.Block, c *Connection) message.Messag
 	return message.NewRoomPlayerLinks(
 		[]block.RoomPlayerLink{
 			{
-				Player:   c.Player,
-				Position: 0,
-				Color:    0,
+				Player:        c.Player,
+				Position:      0,
+				Participation: 0,
 			},
 		},
 	)

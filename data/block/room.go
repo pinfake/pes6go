@@ -2,18 +2,6 @@ package block
 
 import "fmt"
 
-type RoomPlayer struct {
-	Id        uint32
-	Team      byte
-	Spectator byte
-	Color     byte
-}
-
-type RoomTeam struct {
-	Id          uint16
-	GoalsByPart [5]byte
-}
-
 type Room struct {
 	Id          uint32
 	Type        byte
@@ -26,6 +14,80 @@ type Room struct {
 	Password    string
 	MatchType   byte
 	ChatLevel   byte
+}
+
+type RoomShort struct {
+	Room
+}
+
+type RoomShortInternal struct {
+	Players [4]RoomPlayerShortInternal
+}
+
+type RoomPlayerShortInternal struct {
+	Id uint32
+	Position byte
+	Participation byte
+}
+
+func (info RoomShort) buildInternal() PieceInternal {
+	for i := 0; i < 4; i++ {
+		if len(info.Players) > i {
+
+		} else {
+
+		}
+	}
+	return nil
+}
+
+type RoomPlayer struct {
+	Id            uint32
+	Team          byte
+	Spectator     byte
+	Participation byte
+}
+
+type RoomTeam struct {
+	Id          uint16
+	GoalsByPart [5]byte
+}
+
+type RoomPlayerLink struct {
+	Player        *Player
+	Position      byte
+	Participation byte
+}
+
+type RoomPlayerLinkInternal struct {
+	Unknown1  [32]byte
+	Ip1       [16]byte
+	Port1     uint16
+	Ip2       [16]byte
+	Port2     uint16
+	PlayerId  uint32
+	Position1 byte // Why two positions? idk
+	Position2 byte
+	Color     byte
+}
+
+func (info RoomPlayerLink) buildInternal() PieceInternal {
+	var internal RoomPlayerLinkInternal
+	internal.Unknown1 = [32]byte{
+		0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0x80,
+		0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
+		0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xc0,
+		0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01,
+	}
+	copy(internal.Ip1[:], []byte(info.Player.Link.Ip1))
+	copy(internal.Ip2[:], []byte(info.Player.Link.Ip2))
+	internal.Port1 = info.Player.Link.Port1
+	internal.Port2 = info.Player.Link.Port2
+	internal.PlayerId = info.Player.Id
+	internal.Position1 = info.Position
+	internal.Position2 = info.Position
+	internal.Color = info.Participation
+	return internal
 }
 
 type RoomPlayerInternal struct {
@@ -71,10 +133,10 @@ func (info Room) buildInternal() PieceInternal {
 			player = info.Players[i]
 		} else {
 			player = &RoomPlayer{
-				Id:        0,
-				Team:      0xff,
-				Spectator: 0,
-				Color:     0xff,
+				Id:            0,
+				Team:          0xff,
+				Spectator:     0,
+				Participation: 0xff,
 			}
 		}
 		internal.Players[i] = RoomPlayerInternal{
@@ -83,7 +145,7 @@ func (info Room) buildInternal() PieceInternal {
 			Team:      player.Team,
 			Spectator: player.Spectator,
 			Position:  byte(i),
-			Color:     player.Color,
+			Color:     player.Participation,
 		}
 	}
 
@@ -113,20 +175,20 @@ func (info Room) ToggleParticipation(playerId uint32) (byte, error) {
 		// Log something here, the player wasnt found
 		return 0, err
 	}
-	if info.Players[i].Color == 0xff {
+	if info.Players[i].Participation == 0xff {
 		// Set participation
-		info.Players[i].Color = info.getNextAvailableParticipation()
+		info.Players[i].Participation = info.getNextAvailableParticipation()
 	} else {
-		info.Players[i].Color = 0xff
+		info.Players[i].Participation = 0xff
 		info.moveDownParticipations(i)
 	}
-	return info.Players[i].Color, nil
+	return info.Players[i].Participation, nil
 }
 
 func (info Room) moveDownParticipations(i int) {
 	for _, player := range info.Players[i:] {
-		if player.Color != 0xff {
-			player.Color--
+		if player.Participation != 0xff {
+			player.Participation--
 		}
 	}
 }
@@ -135,7 +197,7 @@ func (info Room) moveDownParticipations(i int) {
 func (info Room) getNextAvailableParticipation() byte {
 	var participation byte = 0
 	for _, player := range info.Players {
-		if player.Color != 0xff {
+		if player.Participation != 0xff {
 			participation++
 		}
 	}
@@ -154,9 +216,9 @@ func (info Room) RemovePlayer(playerId uint32) error {
 
 func NewRoomPlayer(player *Player) *RoomPlayer {
 	return &RoomPlayer{
-		Id:        player.Id,
-		Team:      0xff,
-		Spectator: 0,
-		Color:     0xff,
+		Id:            player.Id,
+		Team:          0xff,
+		Spectator:     0,
+		Participation: 0xff,
 	}
 }
