@@ -16,29 +16,36 @@ type Room struct {
 	ChatLevel   byte
 }
 
-type RoomShort struct {
-	Room
+type RoomParticipation Room
+
+type RoomParticipationInternal struct {
+	Players [4]RoomPlayerParticipationInternal
 }
 
-type RoomShortInternal struct {
-	Players [4]RoomPlayerShortInternal
-}
-
-type RoomPlayerShortInternal struct {
-	Id uint32
-	Position byte
+type RoomPlayerParticipationInternal struct {
+	Id            uint32
+	Position      byte
 	Participation byte
 }
 
-func (info RoomShort) buildInternal() PieceInternal {
+func (info RoomParticipation) buildInternal() PieceInternal {
+	var internal RoomParticipationInternal
 	for i := 0; i < 4; i++ {
 		if len(info.Players) > i {
-
+			internal.Players[i] = RoomPlayerParticipationInternal{
+				Id:            info.Players[i].Id,
+				Position:      byte(i),
+				Participation: info.Players[i].Participation,
+			}
 		} else {
-
+			internal.Players[i] = RoomPlayerParticipationInternal{
+				Id:            0,
+				Position:      byte(i),
+				Participation: 0xff,
+			}
 		}
 	}
-	return nil
+	return internal
 }
 
 type RoomPlayer struct {
@@ -139,6 +146,7 @@ func (info Room) buildInternal() PieceInternal {
 				Participation: 0xff,
 			}
 		}
+		fmt.Printf("position: %x, participation, %x\n", byte(i), player.Participation)
 		internal.Players[i] = RoomPlayerInternal{
 			Id:        player.Id,
 			Owner:     owner,

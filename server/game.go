@@ -74,7 +74,18 @@ func Participate(s *Server, b *block.Block, c *Connection) message.Message {
 		panic(err)
 	}
 	// TODO: missing a 4365 says pes6j
-	return nil
+
+	sendToRoom(s.connections, room.Id, message.NewRoomParticipation(
+		block.RoomParticipation(*room),
+	), nil)
+
+	return message.NewPlayerParticipateResponse(
+		block.PlayerParticipateResponse{
+			Code:          0,
+			Selection:     participation.Value,
+			Participation: newParticipation,
+		},
+	)
 }
 
 func ChangeRoom(s *Server, b *block.Block, c *Connection) message.Message {
@@ -112,17 +123,19 @@ func CreateRoom(s *Server, b *block.Block, c *Connection) message.Message {
 }
 
 func RoomSettings(s *Server, b *block.Block, c *Connection) message.Message {
-	sendToRoom(s.connections, c.Player.RoomId, message.NewReplayBlockMessage(b))
+	sendToRoom(s.connections, c.Player.RoomId, message.NewReplayBlockMessage(b), c)
 	return nil
 }
 
 func GetRoomPlayerLinks(s *Server, b *block.Block, c *Connection) message.Message {
+
+	// TODO: Yeah, you're so bright tonight... you forgot about all this
 	return message.NewRoomPlayerLinks(
 		[]block.RoomPlayerLink{
 			{
 				Player:        c.Player,
 				Position:      0,
-				Participation: 0,
+				Participation: 0xff,
 			},
 		},
 	)

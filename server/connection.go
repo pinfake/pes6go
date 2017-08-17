@@ -83,11 +83,14 @@ func sendToLobby(idmap *types.IdMap, lobbyId byte, m message.Message) {
 	}
 }
 
-func sendToRoom(idmap *types.IdMap, roomId uint32, m message.Message) {
+func sendToRoom(idmap *types.IdMap, roomId uint32, m message.Message, me *Connection) {
 	defer idmap.RUnlock()
 	idmap.RLock()
 	for _, e := range idmap.Data {
 		c := e.(*Connection)
+		if c == me {
+			continue
+		}
 		if c.Player != nil && c.Player.RoomId == roomId {
 			c.writeMessage(m)
 		}
