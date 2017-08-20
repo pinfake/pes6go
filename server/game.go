@@ -152,7 +152,7 @@ func JoinRoom(s *Server, b *block.Block, c *Connection) message.Message {
 	room := getRoom(s, c, joinData.Id)
 	if room == nil {
 		s.Log(c, "Non existing %d room, cannot join", joinData.Id)
-		return nil
+		return message.NewJoinRoomResponse(block.GeneralError, 0)
 	}
 
 	if room.GetNumPlayers() == 4 {
@@ -162,8 +162,23 @@ func JoinRoom(s *Server, b *block.Block, c *Connection) message.Message {
 	if room.HasPassword == 1 && room.Password != joinData.Password {
 		return message.NewJoinRoomResponse(block.BadPassword, 0)
 	}
+	c.Player.RoomId = joinData.Id
+	position := room.AddPlayer(c.Player)
 
-	return nil
+	sendToLobby(s.connections, c.LobbyId, message.NewRoomUpdateMessage(*room))
+	sendToLobby(s.connections, c.LobbyId, message.NewPlayerUpdate(*c.Player))
+
+	c.writeMessage(message.NewJoinRoomResponse(block.Ok, position))
+	//
+	//c.writeMessage(message.NewRoomPlayerLinks(
+	//	block.RoomPlayerLinks(*room),
+	//))
+
+	// TODO: Something is wrong here, the other player doesn't get updated!
+
+	return message.NewRoomPlayerLinks(
+		block.RoomPlayerLinks(*room),
+	)
 }
 
 func LeaveRoom(s *Server, _ *block.Block, c *Connection) message.Message {

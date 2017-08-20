@@ -1,6 +1,8 @@
 package block
 
-import "fmt"
+import (
+	"fmt"
+)
 
 type Room struct {
 	Id          uint32
@@ -223,6 +225,11 @@ func (info *Room) RemovePlayer(playerId uint32) error {
 	info.Players = append(info.Players[:i], info.Players[i+1:]...)
 	fmt.Printf("Borro al tío y me queda %v\n", info.Players)
 	return nil
+}
+
+func (info *Room) AddPlayer(player *Player) byte {
+	info.Players = append(info.Players, player)
+	return byte(info.GetNumPlayers() - 1)
 }
 
 func (info *Room) GetNumPlayers() int {

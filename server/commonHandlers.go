@@ -76,6 +76,7 @@ func SelectPlayer(s *Server, b *block.Block, c *Connection) message.Message {
 		return nil
 	}
 	c.Player = players[playerSelected.Position]
+	c.Player.ResetRoomData()
 	return message.NewPlayerExtraSettingsMessage(
 		block.PlayerExtraSettings{
 			PlayerId: c.Player.Id,
