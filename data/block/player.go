@@ -39,7 +39,15 @@ type Player struct {
 	GroupName   string
 	GroupStatus byte
 
+	RoomData *PlayerRoomData
+
 	Link *Link
+}
+
+type PlayerRoomData struct {
+	Team          byte
+	Spectator     byte
+	Participation byte
 }
 
 type Link struct {
@@ -90,5 +98,13 @@ func (info Player) buildInternal() PieceInternal {
 func NewPlayer(name string) *Player {
 	return &Player{
 		Name: name,
+	}
+}
+
+func (info *Player) ResetRoomData() {
+	info.RoomData = &PlayerRoomData{
+		Team:          0xff,
+		Spectator:     0,
+		Participation: 0xff,
 	}
 }

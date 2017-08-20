@@ -1,6 +1,8 @@
 package block
 
 import (
+	"fmt"
+
 	"github.com/pinfake/pes6go/data/types"
 )
 
@@ -29,8 +31,9 @@ func GetRoomsSlice(rooms *types.IdMap) []*Room {
 	return arr
 }
 
-func (l Lobby) RemoveRoom(roomId uint32) {
+func (l *Lobby) RemoveRoom(roomId uint32) {
 	l.Rooms.Delete(roomId)
+	fmt.Printf("lobby Rooms: %v", l.Rooms.Data)
 }
 
 type LobbyInternal struct {

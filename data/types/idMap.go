@@ -1,6 +1,7 @@
 package types
 
 import (
+	"fmt"
 	"sync"
 )
 
@@ -39,6 +40,7 @@ func (m *IdMap) Delete(id uint32) {
 	defer m.mu.Unlock()
 	m.mu.Lock()
 	delete(m.Data, id)
+	fmt.Printf("Y borré %v y dentro me queda %v", id, m.Data)
 }
 
 func NewIdMap() *IdMap {

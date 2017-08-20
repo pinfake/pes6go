@@ -3,6 +3,8 @@ package server
 import (
 	"net"
 
+	"fmt"
+
 	"github.com/pinfake/pes6go/data/block"
 	"github.com/pinfake/pes6go/data/message"
 	"github.com/pinfake/pes6go/data/types"
@@ -75,6 +77,7 @@ func playersInLobby(idmap *types.IdMap, lobbyId byte) []*block.Player {
 func sendToLobby(idmap *types.IdMap, lobbyId byte, m message.Message) {
 	defer idmap.RUnlock()
 	idmap.RLock()
+	fmt.Printf("Sending to lobby %v\n", m)
 	for _, e := range idmap.Data {
 		c := e.(*Connection)
 		if c.LobbyId == lobbyId {

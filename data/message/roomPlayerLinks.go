@@ -7,20 +7,20 @@ import (
 )
 
 type RoomPlayerLinks struct {
-	RoomLinks []block.Piece
+	RoomPlayerLinks []block.Piece
 }
 
 func (r RoomPlayerLinks) GetBlocks() []*block.Block {
 	var blocks []*block.Block
 
 	blocks = append(blocks, block.GetBlocks(0x4346, []block.Piece{block.Uint32{0}})...)
-	blocks = append(blocks, block.GetBlocks(0x4347, r.RoomLinks)...)
+	blocks = append(blocks, block.GetBlocks(0x4347, r.RoomPlayerLinks)...)
 	blocks = append(blocks, block.GetBlocks(0x4348, []block.Piece{block.Uint32{0}})...)
 	return blocks
 }
 
-func NewRoomPlayerLinks(playerLinks []block.RoomPlayerLink) RoomPlayerLinks {
+func NewRoomPlayerLinks(playerLinks block.RoomPlayerLinks) RoomPlayerLinks {
 	return RoomPlayerLinks{
-		RoomLinks: block.GetPieces(reflect.ValueOf(playerLinks)),
+		RoomPlayerLinks: block.GetPieces(reflect.ValueOf(playerLinks)),
 	}
 }

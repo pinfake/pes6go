@@ -28,6 +28,7 @@ var gameHandlers = map[uint16]Handler{
 	0x4210: PlayersInLobby,
 	0x4300: RoomsInLobby,
 	0x4310: CreateRoom,
+	0x432a: LeaveRoom,
 	0x4345: GetRoomPlayerLinks,
 	0x434d: ChangeRoom,
 	0x4350: RoomSettings,
@@ -101,6 +102,8 @@ func ChangeRoom(s *Server, b *block.Block, c *Connection) message.Message {
 // TODO: Prevent creation of rooms with an existing name (in the same lobby)
 func CreateRoom(s *Server, b *block.Block, c *Connection) message.Message {
 	createRoom := block.NewCreateRoom(b)
+	// Should I do this here?, it should be done at joining lobby most probably
+	c.Player.ResetRoomData()
 	s.Log(c, "Create room: %v", createRoom)
 	room := block.Room{
 		Id:          s.Data().(GameServerData).rooms.GetNewId(),
@@ -108,8 +111,8 @@ func CreateRoom(s *Server, b *block.Block, c *Connection) message.Message {
 		Name:        createRoom.Name,
 		HasPassword: createRoom.HasPassword,
 		Password:    createRoom.Password,
-		Players: []*block.RoomPlayer{
-			block.NewRoomPlayer(c.Player),
+		Players: []*block.Player{
+			c.Player,
 		},
 	}
 	s.lobbies[c.LobbyId].Rooms.Add(room.Id, &room)
@@ -128,17 +131,35 @@ func RoomSettings(s *Server, b *block.Block, c *Connection) message.Message {
 }
 
 func GetRoomPlayerLinks(s *Server, b *block.Block, c *Connection) message.Message {
-
+	roomId := block.NewUint32(b)
+	room := s.lobbies[c.LobbyId].Rooms.Get(roomId.Value).(*block.Room)
 	// TODO: Yeah, you're so bright tonight... you forgot about all this
+	// TODO: Pes6j says send room update to lobby,
+	// TODO: sixserver says 0X4330 which never happended on pes6j, but maybe it helps at some bug i can't tell right now
+	//	sendToLobby(s.connections, c.LobbyId, message.NewRoomUpdateMessage(room))
 	return message.NewRoomPlayerLinks(
-		[]block.RoomPlayerLink{
-			{
-				Player:        c.Player,
-				Position:      0,
-				Participation: 0xff,
-			},
-		},
+		block.RoomPlayerLinks(*room),
 	)
+}
+
+func LeaveRoom(s *Server, b *block.Block, c *Connection) message.Message {
+	if c.Player.RoomId != 0 {
+		roomId := c.Player.RoomId
+		lobby := s.lobbies[c.LobbyId]
+		room := lobby.Rooms.Get(c.Player.RoomId).(*block.Room)
+		room.RemovePlayer(c.Player.Id)
+		c.Player.RoomId = 0
+		c.Player.ResetRoomData()
+		sendToLobby(s.connections, c.LobbyId, message.NewPlayerUpdate(*c.Player))
+		sendToLobby(s.connections, c.LobbyId, message.NewRoomUpdateMessage(*room))
+		if !room.HasPlayers() {
+			lobby.RemoveRoom(roomId)
+			sendToLobby(s.connections, c.LobbyId, message.NewRoomDeleted(room.Id))
+		}
+		return message.NewLeaveRoomResponse()
+	}
+	s.Log(c, "The player was not in a room")
+	return nil
 }
 
 func PlayersInLobby(s *Server, _ *block.Block, c *Connection) message.Message {
