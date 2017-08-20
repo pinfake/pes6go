@@ -142,7 +142,7 @@ func GetRoomPlayerLinks(s *Server, b *block.Block, c *Connection) message.Messag
 	)
 }
 
-func LeaveRoom(s *Server, b *block.Block, c *Connection) message.Message {
+func LeaveRoom(s *Server, _ *block.Block, c *Connection) message.Message {
 	if c.Player.RoomId != 0 {
 		roomId := c.Player.RoomId
 		lobby := s.lobbies[c.LobbyId]

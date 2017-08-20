@@ -57,6 +57,7 @@ func (s *Server) handleConnection(conn net.Conn) error {
 	for {
 		b, err := c.readBlock()
 		if err != nil {
+			Disconnect(s, nil, c)
 			s.Log(c, "Cannot read block: %s", err)
 			return fmt.Errorf("Cannot read block: %s", err)
 		}
