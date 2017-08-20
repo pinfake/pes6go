@@ -165,9 +165,9 @@ func (info Room) buildInternal() PieceInternal {
 	return internal
 }
 
-func (info Room) HasPlayers() bool {
+func (info *Room) HasPlayers() bool {
 	fmt.Printf("Pero tengo a gente??? %v\n", info.Players)
-	return len(info.Players) > 0
+	return info.GetNumPlayers() > 0
 }
 
 func (info Room) getPlayerIdx(playerId uint32) (int, error) {
@@ -223,4 +223,8 @@ func (info *Room) RemovePlayer(playerId uint32) error {
 	info.Players = append(info.Players[:i], info.Players[i+1:]...)
 	fmt.Printf("Borro al tío y me queda %v\n", info.Players)
 	return nil
+}
+
+func (info *Room) GetNumPlayers() int {
+	return len(info.Players)
 }

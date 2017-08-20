@@ -28,6 +28,7 @@ var gameHandlers = map[uint16]Handler{
 	0x4210: PlayersInLobby,
 	0x4300: RoomsInLobby,
 	0x4310: CreateRoom,
+	0x4320: JoinRoom,
 	0x432a: LeaveRoom,
 	0x4345: GetRoomPlayerLinks,
 	0x434d: ChangeRoom,
@@ -142,6 +143,29 @@ func GetRoomPlayerLinks(s *Server, b *block.Block, c *Connection) message.Messag
 	)
 }
 
+func getRoom(s *Server, c *Connection, roomId uint32) *block.Room {
+	return s.lobbies[c.LobbyId].Rooms.Get(roomId).(*block.Room)
+}
+
+func JoinRoom(s *Server, b *block.Block, c *Connection) message.Message {
+	joinData := block.NewJoinRoomRequest(b)
+	room := getRoom(s, c, joinData.Id)
+	if room == nil {
+		s.Log(c, "Non existing %d room, cannot join", joinData.Id)
+		return nil
+	}
+
+	if room.GetNumPlayers() == 4 {
+		return message.NewJoinRoomResponse(block.RoomFull, 0)
+	}
+
+	if room.HasPassword == 1 && room.Password != joinData.Password {
+		return message.NewJoinRoomResponse(block.BadPassword, 0)
+	}
+
+	return nil
+}
+
 func LeaveRoom(s *Server, _ *block.Block, c *Connection) message.Message {
 	if c.Player.RoomId != 0 {
 		roomId := c.Player.RoomId
@@ -158,7 +182,6 @@ func LeaveRoom(s *Server, _ *block.Block, c *Connection) message.Message {
 		}
 		return message.NewLeaveRoomResponse()
 	}
-	s.Log(c, "The player was not in a room")
 	return nil
 }
 
@@ -201,7 +224,7 @@ func Chat(s *Server, b *block.Block, c *Connection) message.Message {
 	return nil
 }
 
-func GetPlayerLink(s *Server, b *block.Block, c *Connection) message.Message {
+func GetPlayerLink(s *Server, b *block.Block, _ *Connection) message.Message {
 	playerId := block.NewUint32(b)
 	targetConn := findByPlayerId(s.connections, playerId.Value)
 	if targetConn == nil {

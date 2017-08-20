@@ -11,3 +11,9 @@ func (m JoinLobbyResponse) GetBlocks() []*block.Block {
 		block.Uint32{m.Code},
 	})
 }
+
+func NewJoinLobbyResponse(code uint32) JoinLobbyResponse {
+	return JoinLobbyResponse{
+		Code: code,
+	}
+}

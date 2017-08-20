@@ -84,7 +84,7 @@ func SelectPlayer(s *Server, b *block.Block, c *Connection) message.Message {
 }
 
 func ServerLobbies(s *Server, _ *block.Block, _ *Connection) message.Message {
-	return message.NewLobbiesMessage(
+	return message.NewLobbies(
 		block.Lobbies{s.lobbies},
 	)
 }
@@ -99,7 +99,7 @@ func JoinLobby(s *Server, b *block.Block, c *Connection) message.Message {
 		Port2: joinLobby.Port2,
 	}
 	sendToLobby(s.connections, c.LobbyId, message.NewPlayerJoinedLobbyMessage(*c.Player))
-	return message.JoinLobbyResponse{block.Ok}
+	return message.NewJoinLobbyResponse(block.Ok)
 }
 
 func PlayerFriends(_ *Server, _ *block.Block, _ *Connection) message.Message {

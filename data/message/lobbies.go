@@ -7,19 +7,19 @@ import (
 )
 
 type Lobbies struct {
-	Lobbies []block.Piece
+	pieces []block.Piece
 }
 
 func (r Lobbies) GetBlocks() []*block.Block {
 	var blocks []*block.Block
 
-	blocks = append(blocks, block.GetBlocks(0x4201, r.Lobbies)...)
+	blocks = append(blocks, block.GetBlocks(0x4201, r.pieces)...)
 
 	return blocks
 }
 
-func NewLobbiesMessage(info block.Lobbies) Lobbies {
+func NewLobbies(info block.Lobbies) Lobbies {
 	return Lobbies{
-		Lobbies: block.GetPieces(reflect.ValueOf(info)),
+		pieces: block.GetPieces(reflect.ValueOf(info)),
 	}
 }
