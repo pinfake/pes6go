@@ -77,7 +77,7 @@ func playersInLobby(idmap *types.IdMap, lobbyId byte) []*block.Player {
 func sendToLobby(idmap *types.IdMap, lobbyId byte, m message.Message) {
 	defer idmap.RUnlock()
 	idmap.RLock()
-	fmt.Printf("Sending to lobby %v\n", m)
+	fmt.Printf("Sending to lobby %x\n", m)
 	for _, e := range idmap.Data {
 		c := e.(*Connection)
 		if c.LobbyId == lobbyId {

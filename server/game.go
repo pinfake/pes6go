@@ -163,14 +163,10 @@ func JoinRoom(s *Server, b *block.Block, c *Connection) message.Message {
 		return message.NewJoinRoomResponse(block.BadPassword, 0)
 	}
 	c.Player.RoomId = joinData.Id
-	c.Player.ResetRoomData()
+	//c.Player.ResetRoomData()
 	position := room.AddPlayer(c.Player)
 
-	for _, pl := range room.Players {
-		c.writeMessage(message.NewPlayerUpdate(*pl))
-	}
-	//sendToLobby(s.connections, c.LobbyId, message.NewPlayerUpdate(*c.Player))
-
+	sendToLobby(s.connections, c.LobbyId, message.NewPlayerUpdate(*c.Player))
 	sendToLobby(s.connections, c.LobbyId, message.NewRoomUpdateMessage(*room))
 	// This is what pes6j do, not the other way around, must try this at home.
 
@@ -181,10 +177,13 @@ func JoinRoom(s *Server, b *block.Block, c *Connection) message.Message {
 	//))
 
 	// TODO: Something is wrong here, the other player doesn't get updated!
-
-	return message.NewRoomPlayerLinks(
+	sendToRoom(s.connections, room.Id, message.NewRoomPlayerLinks(
 		block.RoomPlayerLinks(*room),
-	)
+	), nil)
+	return message.NewJoinRoomResponse(block.Ok, position)
+	//return message.NewRoomPlayerLinks(
+	//	block.RoomPlayerLinks(*room),
+	//)
 }
 
 func LeaveRoom(s *Server, _ *block.Block, c *Connection) message.Message {
