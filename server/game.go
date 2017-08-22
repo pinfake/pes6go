@@ -163,10 +163,16 @@ func JoinRoom(s *Server, b *block.Block, c *Connection) message.Message {
 		return message.NewJoinRoomResponse(block.BadPassword, 0)
 	}
 	c.Player.RoomId = joinData.Id
+	c.Player.ResetRoomData()
 	position := room.AddPlayer(c.Player)
 
+	for _, pl := range room.Players {
+		c.writeMessage(message.NewPlayerUpdate(*pl))
+	}
+	//sendToLobby(s.connections, c.LobbyId, message.NewPlayerUpdate(*c.Player))
+
 	sendToLobby(s.connections, c.LobbyId, message.NewRoomUpdateMessage(*room))
-	sendToLobby(s.connections, c.LobbyId, message.NewPlayerUpdate(*c.Player))
+	// This is what pes6j do, not the other way around, must try this at home.
 
 	c.writeMessage(message.NewJoinRoomResponse(block.Ok, position))
 	//
