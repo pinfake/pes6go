@@ -163,7 +163,6 @@ func JoinRoom(s *Server, b *block.Block, c *Connection) message.Message {
 		return message.NewJoinRoomResponse(block.BadPassword, 0)
 	}
 	c.Player.RoomId = joinData.Id
-	//c.Player.ResetRoomData()
 	position := room.AddPlayer(c.Player)
 
 	sendToLobby(s.connections, c.LobbyId, message.NewPlayerUpdate(*c.Player))
@@ -171,19 +170,12 @@ func JoinRoom(s *Server, b *block.Block, c *Connection) message.Message {
 	// This is what pes6j do, not the other way around, must try this at home.
 
 	c.writeMessage(message.NewJoinRoomResponse(block.Ok, position))
-	//
-	//c.writeMessage(message.NewRoomPlayerLinks(
-	//	block.RoomPlayerLinks(*room),
-	//))
 
-	// TODO: Something is wrong here, the other player doesn't get updated!
 	sendToRoom(s.connections, room.Id, message.NewRoomPlayerLinks(
 		block.RoomPlayerLinks(*room),
 	), nil)
 	return message.NewJoinRoomResponse(block.Ok, position)
-	//return message.NewRoomPlayerLinks(
-	//	block.RoomPlayerLinks(*room),
-	//)
+
 }
 
 func LeaveRoom(s *Server, _ *block.Block, c *Connection) message.Message {
@@ -191,11 +183,17 @@ func LeaveRoom(s *Server, _ *block.Block, c *Connection) message.Message {
 		roomId := c.Player.RoomId
 		lobby := s.lobbies[c.LobbyId]
 		room := lobby.Rooms.Get(c.Player.RoomId).(*block.Room)
-		room.RemovePlayer(c.Player.Id)
-		c.Player.RoomId = 0
-		c.Player.ResetRoomData()
+		room.RemovePlayer(c.Player)
 		sendToLobby(s.connections, c.LobbyId, message.NewPlayerUpdate(*c.Player))
 		sendToLobby(s.connections, c.LobbyId, message.NewRoomUpdateMessage(*room))
+
+		// Not always, just on deco or crashing, if the user is just leaving the
+		// room, the other player will generate queries get room link info again,
+		// but if crashing or maybe closing the game, that won't happen so i have
+		// to make sure the room gets updated.
+		sendToRoom(s.connections, room.Id, message.NewRoomPlayerLinks(
+			block.RoomPlayerLinks(*room),
+		), nil)
 		if !room.HasPlayers() {
 			lobby.RemoveRoom(roomId)
 			sendToLobby(s.connections, c.LobbyId, message.NewRoomDeleted(room.Id))

@@ -191,15 +191,17 @@ func (info Room) ToggleParticipation(playerId uint32) (byte, error) {
 		// Set participation
 		info.Players[i].RoomData.Participation = info.getNextAvailableParticipation()
 	} else {
+		info.removeParticipation(info.Players[i].RoomData.Participation)
 		info.Players[i].RoomData.Participation = 0xff
-		info.moveDownParticipations(i)
+
 	}
 	return info.Players[i].RoomData.Participation, nil
 }
 
-func (info Room) moveDownParticipations(i int) {
-	for _, player := range info.Players[i:] {
-		if player.RoomData.Participation != 0xff {
+func (info Room) removeParticipation(participation byte) {
+	for _, player := range info.Players {
+		if player.RoomData.Participation != 0xff &&
+			player.RoomData.Participation > participation {
 			player.RoomData.Participation--
 		}
 	}
@@ -216,13 +218,24 @@ func (info Room) getNextAvailableParticipation() byte {
 	return participation
 }
 
-func (info *Room) RemovePlayer(playerId uint32) error {
-	i, err := info.getPlayerIdx(playerId)
+func (info *Room) RemovePlayer(player *Player) error {
+	index, err := info.getPlayerIdx(player.Id)
+
 	if err != nil {
 		// Log something here, the player wasnt found
 		return err
 	}
-	info.Players = append(info.Players[:i], info.Players[i+1:]...)
+
+	if player.isParticipating() {
+		fmt.Printf("I was participating!\n")
+		info.removeParticipation(player.RoomData.Participation)
+	} else {
+		fmt.Printf("I was not participating!\n")
+	}
+
+	info.Players = append(info.Players[:index], info.Players[index+1:]...)
+	player.RoomId = 0
+	player.ResetRoomData()
 	fmt.Printf("Borro al tío y me queda %v\n", info.Players)
 	return nil
 }

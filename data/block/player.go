@@ -108,3 +108,7 @@ func (info *Player) ResetRoomData() {
 		Participation: 0xff,
 	}
 }
+
+func (info *Player) isParticipating() bool {
+	return info.RoomData.Participation != 0xff
+}
