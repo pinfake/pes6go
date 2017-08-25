@@ -82,7 +82,7 @@ func Participate(s *Server, b *block.Block, c *Connection) message.Message {
 	), nil)
 
 	return message.NewPlayerParticipateResponse(
-		block.PlayerParticipateResponse{
+		&block.PlayerParticipateResponse{
 			Code:          0,
 			Selection:     participation.Value,
 			Participation: newParticipation,
@@ -120,7 +120,7 @@ func CreateRoom(s *Server, b *block.Block, c *Connection) message.Message {
 	c.Player.RoomId = room.Id
 	sendToLobby(s.connections, c.LobbyId, message.NewRoomUpdateMessage(room))
 	// Maybe just to me?, pes6j says to send this info for every player in the room to me when "entering"
-	sendToLobby(s.connections, c.LobbyId, message.NewPlayerUpdate(*c.Player))
+	sendToLobby(s.connections, c.LobbyId, message.NewPlayerUpdate(c.Player))
 	//c.writeMessage(message.NewRoomUpdateMessage(room))
 	//c.writeMessage(message.NewPlayerUpdate(*c.Player))
 	return message.NewCreateRoomResponse()
@@ -165,7 +165,7 @@ func JoinRoom(s *Server, b *block.Block, c *Connection) message.Message {
 	c.Player.RoomId = joinData.Id
 	position := room.AddPlayer(c.Player)
 
-	sendToLobby(s.connections, c.LobbyId, message.NewPlayerUpdate(*c.Player))
+	sendToLobby(s.connections, c.LobbyId, message.NewPlayerUpdate(c.Player))
 	sendToLobby(s.connections, c.LobbyId, message.NewRoomUpdateMessage(*room))
 	// This is what pes6j do, not the other way around, must try this at home.
 
@@ -184,7 +184,7 @@ func LeaveRoom(s *Server, _ *block.Block, c *Connection) message.Message {
 		lobby := s.lobbies[c.LobbyId]
 		room := lobby.Rooms.Get(c.Player.RoomId).(*block.Room)
 		room.RemovePlayer(c.Player)
-		sendToLobby(s.connections, c.LobbyId, message.NewPlayerUpdate(*c.Player))
+		sendToLobby(s.connections, c.LobbyId, message.NewPlayerUpdate(c.Player))
 		sendToLobby(s.connections, c.LobbyId, message.NewRoomUpdateMessage(*room))
 
 		// Not always, just on deco or crashing, if the user is just leaving the

@@ -179,8 +179,8 @@ func (b Bolt) GetGroupInfo(id uint32) *block.GroupInfo {
 	}
 }
 
-func (b Bolt) GetPlayerSettings(id uint32) block.PlayerSettings {
-	return block.PlayerSettings{
+func (b Bolt) GetPlayerSettings(id uint32) *block.PlayerSettings {
+	return &block.PlayerSettings{
 		Settings: DefaultPlayerSettings,
 	}
 }
