@@ -3,21 +3,13 @@ package message
 import "github.com/pinfake/pes6go/data/block"
 
 type PlayerIdResponse struct {
-	PlayerIdResponse []block.Piece
+	PlayerIdResponse *block.PlayerIdResponse
 }
 
-func (m PlayerIdResponse) GetBlocks() []*block.Block {
-	var blocks []*block.Block
-
-	blocks = append(blocks, block.GetBlocksFromPieces(0x3062,
-		m.PlayerIdResponse)...)
-	return blocks
+func (data PlayerIdResponse) GetBlocks() []*block.Block {
+	return block.GetBlocks(0x3062, data.PlayerIdResponse)
 }
 
 func NewPlayerIdResponseMessage() PlayerIdResponse {
-	return PlayerIdResponse{
-		PlayerIdResponse: []block.Piece{
-			block.PlayerIdResponse{},
-		},
-	}
+	return PlayerIdResponse{&block.PlayerIdResponse{}}
 }

@@ -250,7 +250,7 @@ func GetPlayerLink(s *Server, b *block.Block, _ *Connection) message.Message {
 		return nil
 	} else {
 		return message.NewPlayerLinkResponse(
-			block.PlayerLink{
+			&block.PlayerLink{
 				Player: targetConn.Player,
 			},
 		)

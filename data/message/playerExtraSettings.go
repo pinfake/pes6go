@@ -1,25 +1,17 @@
 package message
 
 import (
-	"reflect"
-
 	"github.com/pinfake/pes6go/data/block"
 )
 
 type PlayerExtraSettings struct {
-	PlayerExtraSettings []block.Piece
+	*block.PlayerExtraSettings
 }
 
-func (r PlayerExtraSettings) GetBlocks() []*block.Block {
-	var blocks []*block.Block
-
-	blocks = append(blocks, block.GetBlocksFromPieces(0x4101, r.PlayerExtraSettings)...)
-
-	return blocks
+func (data PlayerExtraSettings) GetBlocks() []*block.Block {
+	return block.GetBlocks(0x4101, data.PlayerExtraSettings)
 }
 
-func NewPlayerExtraSettingsMessage(playerGroup block.PlayerExtraSettings) PlayerExtraSettings {
-	return PlayerExtraSettings{
-		PlayerExtraSettings: block.GetPieces(reflect.ValueOf(playerGroup)),
-	}
+func NewPlayerExtraSettingsMessage(info *block.PlayerExtraSettings) PlayerExtraSettings {
+	return PlayerExtraSettings{info}
 }
