@@ -9,7 +9,7 @@ type PlayerIdResponse struct {
 func (m PlayerIdResponse) GetBlocks() []*block.Block {
 	var blocks []*block.Block
 
-	blocks = append(blocks, block.GetBlocks(0x3062,
+	blocks = append(blocks, block.GetBlocksFromPieces(0x3062,
 		m.PlayerIdResponse)...)
 	return blocks
 }

@@ -13,7 +13,7 @@ type RoomParticipation struct {
 func (r RoomParticipation) GetBlocks() []*block.Block {
 	var blocks []*block.Block
 
-	blocks = append(blocks, block.GetBlocks(0x4365, r.RoomParticipation)...)
+	blocks = append(blocks, block.GetBlocksFromPieces(0x4365, r.RoomParticipation)...)
 
 	return blocks
 }

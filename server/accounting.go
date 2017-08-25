@@ -59,9 +59,7 @@ func CreateProfile(s *Server, b *block.Block, c *Connection) message.Message {
 		responseCode = block.ServiceUnavailableError
 	}
 
-	return message.PlayerCreateResponse{
-		uint32(responseCode),
-	}
+	return message.NewPlayerCreateResponse(uint32(responseCode))
 }
 
 func PlayerSettings(s *Server, b *block.Block, _ *Connection) message.Message {
@@ -103,7 +101,7 @@ func AccountingPlayerInfo(s *Server, b *block.Block, c *Connection) message.Mess
 		return nil
 	}
 	return message.NewAccountingPlayerInfoMessage(
-		block.PlayerExtended{player},
+		&block.PlayerExtended{player},
 	)
 }
 
@@ -119,7 +117,7 @@ func Profiles(s *Server, _ *block.Block, c *Connection) message.Message {
 		return nil
 	}
 	return message.NewAccountProfilesMessage(
-		block.AccountPlayers{
+		&block.AccountPlayers{
 			players,
 		},
 	)

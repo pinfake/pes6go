@@ -13,7 +13,7 @@ type PlayerParticipateResponse struct {
 func (r PlayerParticipateResponse) GetBlocks() []*block.Block {
 	var blocks []*block.Block
 
-	blocks = append(blocks, block.GetBlocks(0x4364, r.Response)...)
+	blocks = append(blocks, block.GetBlocksFromPieces(0x4364, r.Response)...)
 
 	return blocks
 }

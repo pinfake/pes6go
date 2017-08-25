@@ -7,7 +7,7 @@ type RoomDeleted struct {
 }
 
 func (m RoomDeleted) GetBlocks() []*block.Block {
-	return block.GetBlocks(0x4305, []block.Piece{
+	return block.GetBlocksFromPieces(0x4305, []block.Piece{
 		block.Uint32{m.Id},
 	})
 }

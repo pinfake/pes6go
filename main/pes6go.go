@@ -24,7 +24,7 @@ func main() {
 	flag.Usage = func() {
 		fmt.Fprint(os.Stderr, "Usage:\n\n")
 		fmt.Fprintf(os.Stderr, "\t%s command [arguments]\n\n", os.Args[0])
-		fmt.Fprint(os.Stderr, "The commands are:\n\n")
+		fmt.Fprint(os.Stderr, "The command are:\n\n")
 		fmt.Fprint(os.Stderr, "\tadmin          Run the administration server")
 		fmt.Fprint(os.Stderr, "\tdiscovery      Run a discovery server\n")
 		fmt.Fprint(os.Stderr, "\taccounting     Run an accounting server\n")

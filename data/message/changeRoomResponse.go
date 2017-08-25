@@ -6,14 +6,10 @@ type ChangeRoomResponse struct {
 	Code uint32
 }
 
-func (m ChangeRoomResponse) GetBlocks() []*block.Block {
-	return block.GetBlocks(0x434e, []block.Piece{
-		block.Uint32{m.Code},
-	})
+func (data ChangeRoomResponse) GetBlocks() []*block.Block {
+	return block.GetBlocks(0x434e, block.Uint32{data.Code})
 }
 
 func NewChangeRoomResponse(code uint32) ChangeRoomResponse {
-	return ChangeRoomResponse{
-		Code: code,
-	}
+	return ChangeRoomResponse{code}
 }

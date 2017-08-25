@@ -14,11 +14,11 @@ type PlayerSettings struct {
 func (r PlayerSettings) GetBlocks() []*block.Block {
 	var blocks []*block.Block
 
-	blocks = append(blocks, block.GetBlocks(0x3087,
+	blocks = append(blocks, block.GetBlocksFromPieces(0x3087,
 		[]block.Piece{block.PlayerSettingsHeader{r.PlayerId}})...,
 	)
-	blocks = append(blocks, block.GetBlocks(0x3088, r.PlayerSettings)...)
-	blocks = append(blocks, block.GetBlocks(0x3089, []block.Piece{
+	blocks = append(blocks, block.GetBlocksFromPieces(0x3088, r.PlayerSettings)...)
+	blocks = append(blocks, block.GetBlocksFromPieces(0x3089, []block.Piece{
 		block.Uint32{0},
 	})...)
 	return blocks

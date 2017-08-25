@@ -13,7 +13,7 @@ type PlayerJoinedLobby struct {
 func (r PlayerJoinedLobby) GetBlocks() []*block.Block {
 	var blocks []*block.Block
 
-	blocks = append(blocks, block.GetBlocks(0x4220, r.Player)...)
+	blocks = append(blocks, block.GetBlocksFromPieces(0x4220, r.Player)...)
 
 	return blocks
 }

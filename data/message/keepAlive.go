@@ -7,8 +7,6 @@ import (
 type KeepAlive struct {
 }
 
-func (m KeepAlive) GetBlocks() []*block.Block {
-	return block.GetBlocks(0x0005, []block.Piece{
-		block.Void{},
-	})
+func (KeepAlive) GetBlocks() []*block.Block {
+	return block.GetBlocks(0x0005, block.Void{})
 }

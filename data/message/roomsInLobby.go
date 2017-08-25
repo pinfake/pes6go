@@ -13,11 +13,11 @@ type RoomsInLobby struct {
 func (r RoomsInLobby) GetBlocks() []*block.Block {
 	var blocks []*block.Block
 
-	blocks = append(blocks, block.GetBlocks(0x4301, []block.Piece{
+	blocks = append(blocks, block.GetBlocksFromPieces(0x4301, []block.Piece{
 		block.Uint32{0},
 	})...)
-	blocks = append(blocks, block.GetBlocks(0x4302, r.Rooms)...)
-	blocks = append(blocks, block.GetBlocks(0x4303, []block.Piece{
+	blocks = append(blocks, block.GetBlocksFromPieces(0x4302, r.Rooms)...)
+	blocks = append(blocks, block.GetBlocksFromPieces(0x4303, []block.Piece{
 		block.Uint32{0},
 	})...)
 

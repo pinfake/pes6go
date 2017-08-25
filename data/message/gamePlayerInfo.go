@@ -1,25 +1,17 @@
 package message
 
 import (
-	"reflect"
-
 	"github.com/pinfake/pes6go/data/block"
 )
 
 type GamePlayerInfo struct {
-	PlayerGroup []block.Piece
+	*block.PlayerExtended
 }
 
-func (r GamePlayerInfo) GetBlocks() []*block.Block {
-	var blocks []*block.Block
-
-	blocks = append(blocks, block.GetBlocks(0x4103, r.PlayerGroup)...)
-
-	return blocks
+func (data GamePlayerInfo) GetBlocks() []*block.Block {
+	return block.GetBlocks(0x4103, data.PlayerExtended)
 }
 
-func NewGamePlayerInfo(info block.PlayerExtended) GamePlayerInfo {
-	return GamePlayerInfo{
-		PlayerGroup: block.GetPieces(reflect.ValueOf(info)),
-	}
+func NewGamePlayerInfo(info *block.PlayerExtended) GamePlayerInfo {
+	return GamePlayerInfo{info}
 }

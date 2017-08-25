@@ -1,25 +1,17 @@
 package message
 
 import (
-	"reflect"
-
 	"github.com/pinfake/pes6go/data/block"
 )
 
 type GroupInfo struct {
-	GroupInfo []block.Piece
+	*block.GroupInfo
 }
 
-func (r GroupInfo) GetBlocks() []*block.Block {
-	var blocks []*block.Block
-
-	blocks = append(blocks, block.GetBlocks(0x3052, r.GroupInfo)...)
-
-	return blocks
+func (data GroupInfo) GetBlocks() []*block.Block {
+	return block.GetBlocks(0x3052, data.GroupInfo)
 }
 
-func NewGroupInfoMessage(groupInfo block.GroupInfo) GroupInfo {
-	return GroupInfo{
-		GroupInfo: block.GetPieces(reflect.ValueOf(groupInfo)),
-	}
+func NewGroupInfoMessage(info *block.GroupInfo) GroupInfo {
+	return GroupInfo{info}
 }

@@ -13,11 +13,11 @@ type ServerList struct {
 func (r ServerList) GetBlocks() []*block.Block {
 	var blocks []*block.Block
 
-	blocks = append(blocks, block.GetBlocks(0x2002, []block.Piece{
+	blocks = append(blocks, block.GetBlocksFromPieces(0x2002, []block.Piece{
 		block.Void{},
 	})...)
-	blocks = append(blocks, block.GetBlocks(0x2003, r.Servers)...)
-	blocks = append(blocks, block.GetBlocks(0x2004, []block.Piece{
+	blocks = append(blocks, block.GetBlocksFromPieces(0x2003, r.Servers)...)
+	blocks = append(blocks, block.GetBlocksFromPieces(0x2004, []block.Piece{
 		block.Void{},
 	})...)
 

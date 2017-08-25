@@ -1,25 +1,17 @@
 package message
 
 import (
-	"reflect"
-
 	"github.com/pinfake/pes6go/data/block"
 )
 
 type Lobbies struct {
-	pieces []block.Piece
+	*block.Lobbies
 }
 
-func (r Lobbies) GetBlocks() []*block.Block {
-	var blocks []*block.Block
-
-	blocks = append(blocks, block.GetBlocks(0x4201, r.pieces)...)
-
-	return blocks
+func (data Lobbies) GetBlocks() []*block.Block {
+	return block.GetBlocks(0x4201, data.Lobbies)
 }
 
-func NewLobbies(info block.Lobbies) Lobbies {
-	return Lobbies{
-		pieces: block.GetPieces(reflect.ValueOf(info)),
-	}
+func NewLobbies(info *block.Lobbies) Lobbies {
+	return Lobbies{info}
 }

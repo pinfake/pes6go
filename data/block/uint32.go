@@ -16,8 +16,8 @@ func (info Uint32) buildInternal() PieceInternal {
 	return internal
 }
 
-func NewUint32(b *Block) Uint32 {
-	return Uint32{
+func NewUint32(b *Block) *Uint32 {
+	return &Uint32{
 		Value: binary.BigEndian.Uint32(b.Body.GetBytes()),
 	}
 }

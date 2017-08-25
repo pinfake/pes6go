@@ -13,7 +13,7 @@ type PlayerLinkResponse struct {
 func (r PlayerLinkResponse) GetBlocks() []*block.Block {
 	var blocks []*block.Block
 
-	blocks = append(blocks, block.GetBlocks(0x4b01, r.PlayerLink)...)
+	blocks = append(blocks, block.GetBlocksFromPieces(0x4b01, r.PlayerLink)...)
 
 	return blocks
 }

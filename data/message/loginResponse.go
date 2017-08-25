@@ -6,8 +6,10 @@ type LoginResponse struct {
 	Code uint32
 }
 
-func (m LoginResponse) GetBlocks() []*block.Block {
-	return block.GetBlocks(0x3004, []block.Piece{
-		block.Uint32{m.Code},
-	})
+func (data LoginResponse) GetBlocks() []*block.Block {
+	return block.GetBlocks(0x3004, block.Uint32{data.Code})
+}
+
+func NewLoginResponse(code uint32) LoginResponse {
+	return LoginResponse{code}
 }

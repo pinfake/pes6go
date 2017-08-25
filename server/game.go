@@ -223,7 +223,7 @@ func GamePlayerInfo(s *Server, b *block.Block, c *Connection) message.Message {
 		return nil
 	}
 	return message.NewGamePlayerInfo(
-		block.PlayerExtended{player},
+		&block.PlayerExtended{player},
 	)
 }
 

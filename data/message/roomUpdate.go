@@ -13,7 +13,7 @@ type RoomUpdate struct {
 func (r RoomUpdate) GetBlocks() []*block.Block {
 	var blocks []*block.Block
 
-	blocks = append(blocks, block.GetBlocks(0x4306, r.Room)...)
+	blocks = append(blocks, block.GetBlocksFromPieces(0x4306, r.Room)...)
 
 	return blocks
 }

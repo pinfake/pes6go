@@ -18,7 +18,7 @@ type Storage interface {
 	GetServerNews() []block.News
 	GetRankUrls() []block.RankUrl
 	GetAccountPlayers(account *Account) ([3]*block.Player, error)
-	GetGroupInfo(id uint32) block.GroupInfo
+	GetGroupInfo(id uint32) *block.GroupInfo
 	GetPlayerSettings(id uint32) block.PlayerSettings
 	GetPlayer(id uint32) (*block.Player, error)
 	GetLobbies(serverId uint32) []*block.Lobby

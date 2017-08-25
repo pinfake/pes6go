@@ -1,0 +1,28 @@
+{
+  "cdkey": "",
+  "password": "",
+  "server-ip": "",
+  "server-port": "",
+  "profileSelected": 0,
+  "script": [
+    {
+      "command": "joinLobby",
+      "data": {
+        "id": 0
+      }
+    },
+    {
+      "command": "sleep",
+      "data": {
+        "millisecons": 1000
+      }
+    },
+    {
+      "command": "createRoom",
+      "data": {
+        "name": "room#1",
+        "password": ""
+      }
+    }
+  ]
+}

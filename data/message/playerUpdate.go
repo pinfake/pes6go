@@ -13,7 +13,7 @@ type PlayerUpdate struct {
 func (r PlayerUpdate) GetBlocks() []*block.Block {
 	var blocks []*block.Block
 
-	blocks = append(blocks, block.GetBlocks(0x4222, r.Player)...)
+	blocks = append(blocks, block.GetBlocksFromPieces(0x4222, r.Player)...)
 
 	return blocks
 }

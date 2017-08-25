@@ -30,9 +30,9 @@ func (info ChatMessage) buildInternal() PieceInternal {
 	return internal
 }
 
-func NewChatMessage(b *Block, playerName string) ChatMessage {
+func NewChatMessage(b *Block, playerName string) *ChatMessage {
 	body := b.Body.GetBytes()
-	return ChatMessage{
+	return &ChatMessage{
 		Place:      body[0],
 		Channel:    body[1],
 		PlayerName: playerName,

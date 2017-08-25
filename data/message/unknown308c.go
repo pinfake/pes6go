@@ -9,7 +9,7 @@ type Unknown308c struct {
 
 func (r Unknown308c) GetBlocks() []*block.Block {
 	var blocks []*block.Block
-	blocks = append(blocks, block.GetBlocks(0x308d, []block.Piece{
+	blocks = append(blocks, block.GetBlocksFromPieces(0x308d, []block.Piece{
 		block.Uint32{0},
 	})...)
 	return blocks

@@ -173,8 +173,8 @@ func (b Bolt) GetAccountPlayers(account *Account) ([3]*block.Player, error) {
 	return players, err
 }
 
-func (b Bolt) GetGroupInfo(id uint32) block.GroupInfo {
-	return block.GroupInfo{
+func (b Bolt) GetGroupInfo(id uint32) *block.GroupInfo {
+	return &block.GroupInfo{
 		Time: time.Date(2016, 1, 1, 12, 0, 0, 0, time.UTC),
 	}
 }

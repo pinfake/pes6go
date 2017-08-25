@@ -1,25 +1,17 @@
 package message
 
 import (
-	"reflect"
-
 	"github.com/pinfake/pes6go/data/block"
 )
 
 type ChatMessage struct {
-	ChatMessage []block.Piece
+	*block.ChatMessage
 }
 
-func (r ChatMessage) GetBlocks() []*block.Block {
-	var blocks []*block.Block
-
-	blocks = append(blocks, block.GetBlocks(0x4402, r.ChatMessage)...)
-
-	return blocks
+func (data ChatMessage) GetBlocks() []*block.Block {
+	return block.GetBlocks(0x4402, data.ChatMessage)
 }
 
-func NewChatMessage(info block.ChatMessage) ChatMessage {
-	return ChatMessage{
-		ChatMessage: block.GetPieces(reflect.ValueOf(info)),
-	}
+func NewChatMessage(info *block.ChatMessage) ChatMessage {
+	return ChatMessage{info}
 }

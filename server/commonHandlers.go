@@ -20,7 +20,7 @@ var handlers = map[uint16]Handler{
 }
 
 func Init(_ *Server, _ *block.Block, _ *Connection) message.Message {
-	return message.AccountingInit{}
+	return message.NewAccountingInit()
 }
 
 func KeepAlive(_ *Server, _ *block.Block, _ *Connection) message.Message {
@@ -28,7 +28,7 @@ func KeepAlive(_ *Server, _ *block.Block, _ *Connection) message.Message {
 }
 
 func LeaveLobby(s *Server, _ *block.Block, c *Connection) {
-	sendToLobby(s.connections, c.LobbyId, message.LeaveLobby{c.Player.Id})
+	sendToLobby(s.connections, c.LobbyId, message.NewLeaveLobby(c.Player.Id))
 	c.LobbyId = 0xff
 }
 
@@ -63,9 +63,7 @@ func Login(s *Server, b *block.Block, c *Connection) message.Message {
 		c.Account = found
 	}
 
-	return message.LoginResponse{
-		uint32(code),
-	}
+	return message.NewLoginResponse(uint32(code))
 }
 
 func SelectPlayer(s *Server, b *block.Block, c *Connection) message.Message {
@@ -86,7 +84,7 @@ func SelectPlayer(s *Server, b *block.Block, c *Connection) message.Message {
 
 func ServerLobbies(s *Server, _ *block.Block, _ *Connection) message.Message {
 	return message.NewLobbies(
-		block.Lobbies{s.lobbies},
+		&block.Lobbies{s.lobbies},
 	)
 }
 

@@ -63,7 +63,11 @@ func GetBytes(b PieceInternal) []byte {
 	return buf.Bytes()
 }
 
-func GetBlocks(query uint16, pieces []Piece) []*Block {
+func GetBlocks(query uint16, data interface{}) []*Block {
+	return GetBlocksFromPieces(query, GetPieces(reflect.ValueOf(data)))
+}
+
+func GetBlocksFromPieces(query uint16, pieces []Piece) []*Block {
 	var internals []PieceInternal
 	for _, piece := range pieces {
 		internals = append(internals, piece.buildInternal())

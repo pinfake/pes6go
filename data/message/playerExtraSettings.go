@@ -13,7 +13,7 @@ type PlayerExtraSettings struct {
 func (r PlayerExtraSettings) GetBlocks() []*block.Block {
 	var blocks []*block.Block
 
-	blocks = append(blocks, block.GetBlocks(0x4101, r.PlayerExtraSettings)...)
+	blocks = append(blocks, block.GetBlocksFromPieces(0x4101, r.PlayerExtraSettings)...)
 
 	return blocks
 }
