@@ -1,11 +1,9 @@
 package server
 
 import (
-	"github.com/andreburgaud/crypt2go/ecb"
 	"github.com/pinfake/pes6go/data/block"
 	"github.com/pinfake/pes6go/data/message"
 	"github.com/pinfake/pes6go/storage"
-	"golang.org/x/crypto/blowfish"
 )
 
 var handlers = map[uint16]Handler{
@@ -43,12 +41,7 @@ func Disconnect(s *Server, _ *block.Block, c *Connection) message.Message {
 
 func Login(s *Server, b *block.Block, c *Connection) message.Message {
 	auth := block.NewAthentication(b)
-
-	bl, _ := blowfish.NewCipher(BlowfishKey)
-	decrypter := ecb.NewECBDecrypter(bl)
-	dst := make([]byte, len(auth.Key))
-	decrypter.CryptBlocks(dst, auth.Key)
-
+	dst := Decrypt(auth.Key)
 	s.Log(c, "LOGIN -> Key: %s, Pass: %x, Roster: %x", dst, auth.Password, auth.RosterHash)
 	acc := storage.Account{
 		Key:  string(dst[:20]),

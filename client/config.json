@@ -6,6 +6,16 @@
   "profileSelected": 0,
   "script": [
     {
+      "command": "init"
+    },
+    {
+      "command": "login",
+      "data": {
+        "key": "NSTXC54CKP3KLLL26M65",
+        "password": "pin-qwe"
+      }
+    },
+    {
       "command": "joinLobby",
       "data": {
         "id": 0

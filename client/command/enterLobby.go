@@ -11,7 +11,7 @@ type EnterLobby struct {
 
 func (cmd EnterLobby) execute(c *client.Client) {
 	joinLobby := block.JoinLobby{
-		LobbyId: byte(cmd.data["lobbyId"]),
+		LobbyId: cmd.data["lobbyId"].(byte),
 		Ip1:     "127.0.0.1",
 		Port1:   7777,
 		Ip2:     "127.0.0.1",

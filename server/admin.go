@@ -5,13 +5,10 @@ import (
 	"log"
 	"net/http"
 
-	"golang.org/x/crypto/blowfish"
-
 	"bytes"
 
 	"crypto/md5"
 
-	"github.com/andreburgaud/crypt2go/ecb"
 	"github.com/pinfake/pes6go/storage"
 )
 
@@ -35,10 +32,7 @@ func (s AdminServer) account(w http.ResponseWriter, req *http.Request) {
 		var data = buf.Bytes()
 		fmt.Fprintf(w, "% x\n", data)
 		md5sum := md5.Sum(data)
-		block, _ := blowfish.NewCipher(BlowfishKey)
-		encrypter := ecb.NewECBEncrypter(block)
-		dst := make([]byte, len(md5sum))
-		encrypter.CryptBlocks(dst, md5sum[:])
+		dst := Encrypt(md5sum[:])
 		fmt.Fprintf(w, "% x\n", dst)
 
 		id, err := s.storage.CreateAccount(&storage.Account{
