@@ -1,25 +1,17 @@
 package message
 
 import (
-	"reflect"
-
 	"github.com/pinfake/pes6go/data/block"
 )
 
 type RoomUpdate struct {
-	Room []block.Piece
+	*block.Room
 }
 
-func (r RoomUpdate) GetBlocks() []*block.Block {
-	var blocks []*block.Block
-
-	blocks = append(blocks, block.GetBlocksFromPieces(0x4306, r.Room)...)
-
-	return blocks
+func (data RoomUpdate) GetBlocks() []*block.Block {
+	return block.GetBlocks(0x4306, data.Room)
 }
 
-func NewRoomUpdateMessage(room block.Room) RoomUpdate {
-	return RoomUpdate{
-		Room: block.GetPieces(reflect.ValueOf(room)),
-	}
+func NewRoomUpdateMessage(room *block.Room) RoomUpdate {
+	return RoomUpdate{room}
 }

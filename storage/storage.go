@@ -16,7 +16,7 @@ type Storage interface {
 	Login(account *Account) (*Account, error)
 	CreatePlayer(account *Account, position byte, player *block.Player) (uint32, error)
 	GetServerNews() []block.News
-	GetRankUrls() []block.RankUrl
+	GetRankUrls() []*block.RankUrl
 	GetAccountPlayers(account *Account) ([3]*block.Player, error)
 	GetGroupInfo(id uint32) *block.GroupInfo
 	GetPlayerSettings(id uint32) *block.PlayerSettings

@@ -138,8 +138,8 @@ func (b Bolt) GetServerNews() []block.News {
 	}
 }
 
-func (b Bolt) GetRankUrls() []block.RankUrl {
-	return []block.RankUrl{
+func (b Bolt) GetRankUrls() []*block.RankUrl {
+	return []*block.RankUrl{
 		{0, "http://pes6web.winning-eleven.net/pes6e2/ranking/we10getrank.html"},
 		{1, "https://pes6web.winning-eleven.net/pes6e2/ranking/we10getgrprank.html"},
 		{2, "http://pes6web.winning-eleven.net/pes6e2/ranking/we10RankingWeek.html"},

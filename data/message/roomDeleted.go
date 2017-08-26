@@ -6,14 +6,10 @@ type RoomDeleted struct {
 	Id uint32
 }
 
-func (m RoomDeleted) GetBlocks() []*block.Block {
-	return block.GetBlocksFromPieces(0x4305, []block.Piece{
-		block.Uint32{m.Id},
-	})
+func (data RoomDeleted) GetBlocks() []*block.Block {
+	return block.GetBlocks(0x4305, block.Uint32{data.Id})
 }
 
 func NewRoomDeleted(id uint32) RoomDeleted {
-	return RoomDeleted{
-		Id: id,
-	}
+	return RoomDeleted{id}
 }
