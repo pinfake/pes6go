@@ -1,9 +1,6 @@
 {
-  "cdkey": "",
-  "password": "",
   "server-ip": "",
   "server-port": "",
-  "profileSelected": 0,
   "script": [
     {
       "command": "init"

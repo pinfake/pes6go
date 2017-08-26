@@ -9,6 +9,6 @@ type Init struct {
 	Command
 }
 
-func (cmd Init) execute(c *client.Client) {
+func (cmd Init) Execute(c *client.Client) {
 	c.WriteBlock(block.GetBlocks(0x3001, block.Void{})[0])
 }

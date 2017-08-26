@@ -7,8 +7,9 @@ import (
 type Command struct {
 	name string
 	data map[string]interface{}
+	CommandHandler
 }
 
 type CommandHandler interface {
-	execute(*client.Client)
+	Execute(*client.Client)
 }
