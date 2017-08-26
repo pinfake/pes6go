@@ -12,6 +12,6 @@ func (data RoomUpdate) GetBlocks() []*block.Block {
 	return block.GetBlocks(0x4306, data.Room)
 }
 
-func NewRoomUpdateMessage(room *block.Room) RoomUpdate {
+func NewRoomUpdate(room *block.Room) RoomUpdate {
 	return RoomUpdate{room}
 }

@@ -16,6 +16,6 @@ func (PlayerFriends) GetBlocks() []*block.Block {
 	return blocks
 }
 
-func NewPlayerFriendsMessage(info *block.PlayerFriends) PlayerFriends {
+func NewPlayerFriends(info *block.PlayerFriends) PlayerFriends {
 	return PlayerFriends{info}
 }

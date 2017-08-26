@@ -20,6 +20,11 @@ type Room struct {
 
 type RoomParticipation Room
 
+func NewRoomParticipation(room *Room) *RoomParticipation {
+	b := RoomParticipation(*room)
+	return &b
+}
+
 type RoomParticipationInternal struct {
 	Players [4]RoomPlayerParticipationInternal
 }
@@ -56,6 +61,11 @@ type RoomTeam struct {
 }
 
 type RoomPlayerLinks Room
+
+func NewRoomPlayerLinks(room *Room) *RoomPlayerLinks {
+	b := RoomPlayerLinks(*room)
+	return &b
+}
 
 type RoomPlayerLinksInternal struct {
 	Internals []RoomPlayerLinkInternal

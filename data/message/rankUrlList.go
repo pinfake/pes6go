@@ -18,6 +18,6 @@ func (data RankUrlList) GetBlocks() []*block.Block {
 	return blocks
 }
 
-func NewRankUrlListMessage(urls []*block.RankUrl) RankUrlList {
+func NewRankUrlList(urls []*block.RankUrl) RankUrlList {
 	return RankUrlList{urls}
 }

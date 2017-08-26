@@ -12,6 +12,6 @@ func (data ReplayBlock) GetBlocks() []*block.Block {
 	return []*block.Block{data.Block}
 }
 
-func NewReplayBlockMessage(b *block.Block) ReplayBlock {
+func NewReplayBlock(b *block.Block) ReplayBlock {
 	return ReplayBlock{b}
 }

@@ -24,7 +24,7 @@ func Init(_ *Server, _ *block.Block, _ *Connection) message.Message {
 }
 
 func KeepAlive(_ *Server, _ *block.Block, _ *Connection) message.Message {
-	return message.KeepAlive{}
+	return message.NewKeepAlive()
 }
 
 func LeaveLobby(s *Server, _ *block.Block, c *Connection) {
@@ -75,7 +75,7 @@ func SelectPlayer(s *Server, b *block.Block, c *Connection) message.Message {
 	}
 	c.Player = players[playerSelected.Position]
 	c.Player.ResetRoomData()
-	return message.NewPlayerExtraSettingsMessage(
+	return message.NewPlayerExtraSettings(
 		&block.PlayerExtraSettings{
 			PlayerId: c.Player.Id,
 		},
@@ -97,10 +97,10 @@ func JoinLobby(s *Server, b *block.Block, c *Connection) message.Message {
 		Ip2:   joinLobby.Ip2,
 		Port2: joinLobby.Port2,
 	}
-	sendToLobby(s.connections, c.LobbyId, message.NewPlayerJoinedLobbyMessage(c.Player))
+	sendToLobby(s.connections, c.LobbyId, message.NewPlayerJoinedLobby(c.Player))
 	return message.NewJoinLobbyResponse(block.Ok)
 }
 
 func PlayerFriends(_ *Server, _ *block.Block, _ *Connection) message.Message {
-	return message.NewPlayerFriendsMessage(&block.PlayerFriends{})
+	return message.NewPlayerFriends(&block.PlayerFriends{})
 }

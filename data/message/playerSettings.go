@@ -20,7 +20,7 @@ func (data PlayerSettings) GetBlocks() []*block.Block {
 	return blocks
 }
 
-func NewPlayerSettingsMessage(playerId uint32, info *block.PlayerSettings) PlayerSettings {
+func NewPlayerSettings(playerId uint32, info *block.PlayerSettings) PlayerSettings {
 	return PlayerSettings{
 		PlayerId:       playerId,
 		PlayerSettings: info,

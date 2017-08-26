@@ -12,6 +12,6 @@ func (data AccountingPlayerInfo) GetBlocks() []*block.Block {
 	return block.GetBlocks(0x3042, data.PlayerExtended)
 }
 
-func NewAccountingPlayerInfoMessage(info *block.PlayerExtended) AccountingPlayerInfo {
+func NewAccountingPlayerInfo(info *block.PlayerExtended) AccountingPlayerInfo {
 	return AccountingPlayerInfo{info}
 }

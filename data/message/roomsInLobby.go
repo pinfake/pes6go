@@ -18,6 +18,6 @@ func (data RoomsInLobby) GetBlocks() []*block.Block {
 	return blocks
 }
 
-func NewRoomsInLobbyMessage(info []*block.Room) RoomsInLobby {
+func NewRoomsInLobby(info []*block.Room) RoomsInLobby {
 	return RoomsInLobby{info}
 }

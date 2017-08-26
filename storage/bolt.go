@@ -122,8 +122,8 @@ func (b Bolt) GetPlayer(id uint32) (*block.Player, error) {
 	return player, err
 }
 
-func (b Bolt) GetServerNews() []block.News {
-	return []block.News{
+func (b Bolt) GetServerNews() []*block.News {
+	return []*block.News{
 		{
 			Time:  time.Date(2016, 1, 1, 12, 0, 0, 0, time.UTC),
 			Title: "Mariano Speaks!",

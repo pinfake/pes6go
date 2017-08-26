@@ -7,14 +7,10 @@ import (
 type Unknown3100 struct {
 }
 
-func (r Unknown3100) GetBlocks() []*block.Block {
-	var blocks []*block.Block
-	blocks = append(blocks, block.GetBlocksFromPieces(0x3101, []block.Piece{
-		block.Uint32{0},
-	})...)
-	return blocks
+func (Unknown3100) GetBlocks() []*block.Block {
+	return block.GetBlocks(0x3101, block.Uint32{0})
 }
 
-func NewUnknown3100Message() Unknown3100 {
+func NewUnknown3100() Unknown3100 {
 	return Unknown3100{}
 }

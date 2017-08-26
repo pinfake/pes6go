@@ -48,14 +48,14 @@ func (s DiscoveryServer) Data() interface{} {
 }
 
 func DiscoveryInit(s *Server, _ *block.Block, _ *Connection) message.Message {
-	return message.NewServerNewsMessage(
+	return message.NewServerNews(
 		s.Storage().GetServerNews(),
 	)
 }
 
 func Servers(_ *Server, _ *block.Block, _ *Connection) message.Message {
-	return message.NewServerListMessage(
-		[]block.Server{
+	return message.NewServerList(
+		[]*block.Server{
 			{7, "GROUP-SP/", "127.0.0.1", 10887, 0},
 			{6, "SCHE-SP/", "127.0.0.1", 10887, 0},
 			{4, "QUICK0-SP/", "127.0.0.1", 10887, 0},
@@ -70,15 +70,13 @@ func Servers(_ *Server, _ *block.Block, _ *Connection) message.Message {
 }
 
 func RankUrls(s *Server, _ *block.Block, _ *Connection) message.Message {
-	return message.NewRankUrlListMessage(
+	return message.NewRankUrlList(
 		s.Storage().GetRankUrls(),
 	)
 }
 
 func ServerTime(_ *Server, _ *block.Block, _ *Connection) message.Message {
-	return message.ServerTime{
-		ServerTime: block.ServerTime{Time: time.Now()},
-	}
+	return message.NewServerTime(&block.ServerTime{Time: time.Now()})
 }
 
 func StartDiscovery(stor storage.Storage) {

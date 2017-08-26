@@ -64,30 +64,30 @@ func CreateProfile(s *Server, b *block.Block, c *Connection) message.Message {
 
 func PlayerSettings(s *Server, b *block.Block, _ *Connection) message.Message {
 	playerId := block.NewUint32(b)
-	return message.NewPlayerSettingsMessage(
+	return message.NewPlayerSettings(
 		playerId.Value, s.Storage().GetPlayerSettings(playerId.Value),
 	)
 }
 
 func Unknown3120(_ *Server, _ *block.Block, _ *Connection) message.Message {
-	return message.NewUnknown3120Message()
+	return message.NewUnknown3120()
 }
 
 func Unknown3100(_ *Server, _ *block.Block, _ *Connection) message.Message {
-	return message.NewUnknown3100Message()
+	return message.NewUnknown3100()
 }
 
 func Unknown3070(_ *Server, _ *block.Block, _ *Connection) message.Message {
-	return message.NewUnknown3070Message()
+	return message.NewUnknown3070()
 }
 
 func Unknown3090(_ *Server, _ *block.Block, _ *Connection) message.Message {
-	return message.NewUnknown3090Message()
+	return message.NewUnknown3090()
 }
 
 func GroupInfo(s *Server, b *block.Block, _ *Connection) message.Message {
 	groupId := block.NewUint32(b)
-	return message.NewGroupInfoMessage(
+	return message.NewGroupInfo(
 		s.Storage().GetGroupInfo(groupId.Value),
 	)
 }
@@ -100,14 +100,14 @@ func AccountingPlayerInfo(s *Server, b *block.Block, c *Connection) message.Mess
 		s.Log(c, "Unable to get player %d: %s", playerId.Value, err)
 		return nil
 	}
-	return message.NewAccountingPlayerInfoMessage(
+	return message.NewAccountingPlayerInfo(
 		&block.PlayerExtended{player},
 	)
 }
 
 func QueryPlayerId(_ *Server, b *block.Block, _ *Connection) message.Message {
 	_ = block.NewUint32(b)
-	return message.NewPlayerIdResponseMessage()
+	return message.NewPlayerIdResponse()
 }
 
 func Profiles(s *Server, _ *block.Block, c *Connection) message.Message {
@@ -116,7 +116,7 @@ func Profiles(s *Server, _ *block.Block, c *Connection) message.Message {
 		s.Log(c, "Unable to players for account %d: %s", c.Account.Id, err)
 		return nil
 	}
-	return message.NewAccountProfilesMessage(
+	return message.NewAccountProfiles(
 		&block.AccountPlayers{
 			players,
 		},

@@ -10,6 +10,6 @@ func (data PlayerIdResponse) GetBlocks() []*block.Block {
 	return block.GetBlocks(0x3062, data.PlayerIdResponse)
 }
 
-func NewPlayerIdResponseMessage() PlayerIdResponse {
+func NewPlayerIdResponse() PlayerIdResponse {
 	return PlayerIdResponse{&block.PlayerIdResponse{}}
 }

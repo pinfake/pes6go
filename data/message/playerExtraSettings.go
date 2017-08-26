@@ -12,6 +12,6 @@ func (data PlayerExtraSettings) GetBlocks() []*block.Block {
 	return block.GetBlocks(0x4101, data.PlayerExtraSettings)
 }
 
-func NewPlayerExtraSettingsMessage(info *block.PlayerExtraSettings) PlayerExtraSettings {
+func NewPlayerExtraSettings(info *block.PlayerExtraSettings) PlayerExtraSettings {
 	return PlayerExtraSettings{info}
 }

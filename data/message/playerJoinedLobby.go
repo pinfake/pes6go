@@ -12,6 +12,6 @@ func (data PlayerJoinedLobby) GetBlocks() []*block.Block {
 	return block.GetBlocks(0x4220, data.Player)
 }
 
-func NewPlayerJoinedLobbyMessage(info *block.Player) PlayerJoinedLobby {
+func NewPlayerJoinedLobby(info *block.Player) PlayerJoinedLobby {
 	return PlayerJoinedLobby{info}
 }

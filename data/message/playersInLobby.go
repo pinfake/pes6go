@@ -18,6 +18,6 @@ func (data PlayersInLobby) GetBlocks() []*block.Block {
 	return blocks
 }
 
-func NewPlayersInLobbyMessage(players []*block.Player) PlayersInLobby {
+func NewPlayersInLobby(players []*block.Player) PlayersInLobby {
 	return PlayersInLobby{players}
 }

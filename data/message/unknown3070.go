@@ -7,17 +7,13 @@ import (
 type Unknown3070 struct {
 }
 
-func (r Unknown3070) GetBlocks() []*block.Block {
+func (Unknown3070) GetBlocks() []*block.Block {
 	var blocks []*block.Block
-	blocks = append(blocks, block.GetBlocksFromPieces(0x3071, []block.Piece{
-		block.Uint32{0},
-	})...)
-	blocks = append(blocks, block.GetBlocksFromPieces(0x3073, []block.Piece{
-		block.Uint32{0},
-	})...)
+	blocks = append(blocks, block.GetBlocks(0x3071, block.Uint32{0})...)
+	blocks = append(blocks, block.GetBlocks(0x3073, block.Uint32{0})...)
 	return blocks
 }
 
-func NewUnknown3070Message() Unknown3070 {
+func NewUnknown3070() Unknown3070 {
 	return Unknown3070{}
 }

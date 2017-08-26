@@ -12,6 +12,6 @@ func (data GroupInfo) GetBlocks() []*block.Block {
 	return block.GetBlocks(0x3052, data.GroupInfo)
 }
 
-func NewGroupInfoMessage(info *block.GroupInfo) GroupInfo {
+func NewGroupInfo(info *block.GroupInfo) GroupInfo {
 	return GroupInfo{info}
 }

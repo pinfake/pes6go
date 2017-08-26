@@ -77,7 +77,7 @@ func Participate(s *Server, b *block.Block, c *Connection) message.Message {
 	}
 
 	sendToRoom(s.connections, room.Id, message.NewRoomParticipation(
-		&block.RoomParticipation(*room),
+		block.NewRoomParticipation(room),
 	), nil)
 
 	return message.NewPlayerParticipateResponse(
@@ -95,7 +95,7 @@ func ChangeRoom(s *Server, b *block.Block, c *Connection) message.Message {
 	room.HasPassword = changeRoom.HasPassword
 	room.Name = changeRoom.Name
 	room.HasPassword = changeRoom.HasPassword
-	sendToLobby(s.connections, c.LobbyId, message.NewRoomUpdateMessage(room))
+	sendToLobby(s.connections, c.LobbyId, message.NewRoomUpdate(room))
 	return message.NewChangeRoomResponse(0)
 }
 
@@ -117,16 +117,16 @@ func CreateRoom(s *Server, b *block.Block, c *Connection) message.Message {
 	}
 	s.lobbies[c.LobbyId].Rooms.Add(room.Id, room)
 	c.Player.RoomId = room.Id
-	sendToLobby(s.connections, c.LobbyId, message.NewRoomUpdateMessage(room))
+	sendToLobby(s.connections, c.LobbyId, message.NewRoomUpdate(room))
 	// Maybe just to me?, pes6j says to send this info for every player in the room to me when "entering"
 	sendToLobby(s.connections, c.LobbyId, message.NewPlayerUpdate(c.Player))
-	//c.writeMessage(message.NewRoomUpdateMessage(room))
+	//c.writeMessage(message.NewRoomUpdate(room))
 	//c.writeMessage(message.NewPlayerUpdate(*c.Player))
 	return message.NewCreateRoomResponse()
 }
 
 func RoomSettings(s *Server, b *block.Block, c *Connection) message.Message {
-	sendToRoom(s.connections, c.Player.RoomId, message.NewReplayBlockMessage(b), c)
+	sendToRoom(s.connections, c.Player.RoomId, message.NewReplayBlock(b), c)
 	return nil
 }
 
@@ -136,9 +136,10 @@ func GetRoomPlayerLinks(s *Server, b *block.Block, c *Connection) message.Messag
 	// TODO: Yeah, you're so bright tonight... you forgot about all this
 	// TODO: Pes6j says send room update to lobby,
 	// TODO: sixserver says 0X4330 which never happended on pes6j, but maybe it helps at some bug i can't tell right now
-	//	sendToLobby(s.connections, c.LobbyId, message.NewRoomUpdateMessage(room))
+	//	sendToLobby(s.connections, c.LobbyId, message.NewRoomUpdate(room))
+
 	return message.NewRoomPlayerLinks(
-		&block.RoomPlayerLinks(*room),
+		block.NewRoomPlayerLinks(room),
 	)
 }
 
@@ -165,13 +166,13 @@ func JoinRoom(s *Server, b *block.Block, c *Connection) message.Message {
 	position := room.AddPlayer(c.Player)
 
 	sendToLobby(s.connections, c.LobbyId, message.NewPlayerUpdate(c.Player))
-	sendToLobby(s.connections, c.LobbyId, message.NewRoomUpdateMessage(room))
+	sendToLobby(s.connections, c.LobbyId, message.NewRoomUpdate(room))
 	// This is what pes6j do, not the other way around, must try this at home.
 
 	c.writeMessage(message.NewJoinRoomResponse(block.Ok, position))
 
 	sendToRoom(s.connections, room.Id, message.NewRoomPlayerLinks(
-		&block.RoomPlayerLinks(*room),
+		block.NewRoomPlayerLinks(room),
 	), nil)
 	return message.NewJoinRoomResponse(block.Ok, position)
 
@@ -184,14 +185,14 @@ func LeaveRoom(s *Server, _ *block.Block, c *Connection) message.Message {
 		room := lobby.Rooms.Get(c.Player.RoomId).(*block.Room)
 		room.RemovePlayer(c.Player)
 		sendToLobby(s.connections, c.LobbyId, message.NewPlayerUpdate(c.Player))
-		sendToLobby(s.connections, c.LobbyId, message.NewRoomUpdateMessage(room))
+		sendToLobby(s.connections, c.LobbyId, message.NewRoomUpdate(room))
 
 		// Not always, just on deco or crashing, if the user is just leaving the
 		// room, the other player will generate queries get room link info again,
 		// but if crashing or maybe closing the game, that won't happen so i have
 		// to make sure the room gets updated.
 		sendToRoom(s.connections, room.Id, message.NewRoomPlayerLinks(
-			&block.RoomPlayerLinks(*room),
+			block.NewRoomPlayerLinks(room),
 		), nil)
 		if !room.HasPlayers() {
 			lobby.RemoveRoom(roomId)
@@ -203,13 +204,13 @@ func LeaveRoom(s *Server, _ *block.Block, c *Connection) message.Message {
 }
 
 func PlayersInLobby(s *Server, _ *block.Block, c *Connection) message.Message {
-	return message.NewPlayersInLobbyMessage(
+	return message.NewPlayersInLobby(
 		playersInLobby(s.connections, c.LobbyId),
 	)
 }
 
 func RoomsInLobby(s *Server, _ *block.Block, c *Connection) message.Message {
-	return message.NewRoomsInLobbyMessage(
+	return message.NewRoomsInLobby(
 		block.GetRoomsSlice(s.lobbies[c.LobbyId].Rooms),
 	)
 }
@@ -228,7 +229,7 @@ func GamePlayerInfo(s *Server, b *block.Block, c *Connection) message.Message {
 
 func Unknown308c(_ *Server, _ *block.Block, _ *Connection) message.Message {
 	// Contains a byte with a 1 in my records
-	return message.NewUnknown308cMessage()
+	return message.NewUnknown308c()
 }
 
 func Chat(s *Server, b *block.Block, c *Connection) message.Message {

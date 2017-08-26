@@ -5,13 +5,13 @@ import (
 )
 
 type ServerTime struct {
-	ServerTime block.Piece
+	*block.ServerTime
 }
 
 func (r ServerTime) GetBlocks() []*block.Block {
-	var blocks []*block.Block
+	return block.GetBlocks(0x2007, r.ServerTime)
+}
 
-	blocks = append(blocks, block.GetBlocksFromPieces(0x2007, []block.Piece{r.ServerTime})...)
-
-	return blocks
+func NewServerTime(info *block.ServerTime) ServerTime {
+	return ServerTime{info}
 }
