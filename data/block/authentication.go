@@ -41,7 +41,7 @@ func (info Authentication) buildInternal() PieceInternal {
 	return internal
 }
 
-func NewAthentication(b *Block) Authentication {
+func NewAuthentication(b *Block) Authentication {
 	data := b.Body.GetBytes()
 	deciphered := crypt.Decrypt(data)
 

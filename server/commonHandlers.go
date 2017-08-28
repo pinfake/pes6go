@@ -40,7 +40,7 @@ func Disconnect(s *Server, _ *block.Block, c *Connection) message.Message {
 }
 
 func Login(s *Server, b *block.Block, c *Connection) message.Message {
-	auth := block.NewAthentication(b)
+	auth := block.NewAuthentication(b)
 
 	s.Log(c, "LOGIN -> Key: %s, Pass: %x, Roster: %x",
 		auth.Key, auth.PasswordHash, auth.RosterHash,
