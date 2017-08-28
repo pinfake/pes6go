@@ -19,7 +19,7 @@ import (
 	"github.com/pinfake/pes6go/storage"
 )
 
-const port = 19780
+const testServerPort = 19780
 
 var s *Server
 
@@ -51,7 +51,7 @@ func NewEmptyServer() *Server {
 
 func init() {
 	s = NewEmptyServer()
-	go s.Serve(port)
+	go s.Serve(testServerPort)
 }
 
 func getRandom(size int) []byte {
@@ -93,7 +93,7 @@ func assertDisconnected(c *client.Client, t *testing.T) {
 	}
 }
 
-func connect(c *client.Client, t *testing.T) {
+func connect(c *client.Client, port int, t *testing.T) {
 	err := c.Connect("localhost", port)
 	if err != nil {
 		t.Error("Error connecting: ", err)
@@ -103,14 +103,14 @@ func connect(c *client.Client, t *testing.T) {
 func TestConnect(t *testing.T) {
 	t.Run("Should connect", func(t *testing.T) {
 		c := client.NewClient()
-		connect(c, t)
+		connect(c, testServerPort, t)
 		c.Close()
 	})
 }
 
 func TestSendInvalidData(t *testing.T) {
 	c := client.NewClient()
-	connect(c, t)
+	connect(c, testServerPort, t)
 	c.Write([]byte{0x01, 0x02, 0x03})
 	assertDisconnected(c, t)
 	t.Run("Should be kicked out", func(t *testing.T) {
@@ -122,7 +122,7 @@ func TestSendProperHeadLongerBody(t *testing.T) {
 	t.Run("Shouldn't crash", func(t *testing.T) {
 		b := craftBlock(0x3001, 10, getRandom(100))
 		c := client.NewClient()
-		connect(c, t)
+		connect(c, testServerPort, t)
 		c.WriteBlock(b)
 		c.Close()
 	})
@@ -131,7 +131,7 @@ func TestSendProperHeadLongerBody(t *testing.T) {
 func TestSendProperHeadShorterBody(t *testing.T) {
 	b := craftBlock(0x3001, 100, getRandom(10))
 	c := client.NewClient()
-	connect(c, t)
+	connect(c, testServerPort, t)
 	c.WriteBlock(b)
 	t.Run("Should be kicked out", func(t *testing.T) {
 		assertDisconnected(c, t)
@@ -140,7 +140,7 @@ func TestSendProperHeadShorterBody(t *testing.T) {
 
 func TestSendMoreThanReadBuffer(t *testing.T) {
 	c := client.NewClient()
-	connect(c, t)
+	connect(c, testServerPort, t)
 	c.Write(getRandom(10000))
 	t.Run("Should be kicked out", func(t *testing.T) {
 		assertDisconnected(c, t)
@@ -149,7 +149,7 @@ func TestSendMoreThanReadBuffer(t *testing.T) {
 
 func TestSend1Megabyte(t *testing.T) {
 	c := client.NewClient()
-	connect(c, t)
+	connect(c, testServerPort, t)
 	c.Write(getRandom(1 * 1024 * 1024))
 	t.Run("Should be kicked out", func(t *testing.T) {
 		assertDisconnected(c, t)
@@ -159,7 +159,7 @@ func TestSend1Megabyte(t *testing.T) {
 func TestSendUnknownQuery(t *testing.T) {
 	b := craftBlock(0x1234, 100, getRandom(100))
 	c := client.NewClient()
-	connect(c, t)
+	connect(c, testServerPort, t)
 	c.WriteBlock(b)
 	t.Run("Should be kicked out", func(t *testing.T) {
 		assertDisconnected(c, t)
@@ -170,7 +170,7 @@ func Test100Connections(t *testing.T) {
 	for i := 0; i < 100; i++ {
 		go func() {
 			c := client.NewClient()
-			connect(c, t)
+			connect(c, testServerPort, t)
 			select {}
 		}()
 	}

@@ -41,11 +41,13 @@ func Disconnect(s *Server, _ *block.Block, c *Connection) message.Message {
 
 func Login(s *Server, b *block.Block, c *Connection) message.Message {
 	auth := block.NewAthentication(b)
-	dst := Decrypt(auth.Key)
-	s.Log(c, "LOGIN -> Key: %s, Pass: %x, Roster: %x", dst, auth.Password, auth.RosterHash)
+
+	s.Log(c, "LOGIN -> Key: %s, Pass: %x, Roster: %x",
+		auth.Key, auth.PasswordHash, auth.RosterHash,
+	)
 	acc := storage.Account{
-		Key:  string(dst[:20]),
-		Hash: auth.Password,
+		Key:  string(auth.Key),
+		Hash: auth.PasswordHash,
 	}
 	found, err := s.Storage().Login(&acc)
 	code := block.Ok

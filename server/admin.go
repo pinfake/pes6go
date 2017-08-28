@@ -5,10 +5,7 @@ import (
 	"log"
 	"net/http"
 
-	"bytes"
-
-	"crypto/md5"
-
+	"github.com/pinfake/pes6go/data/block"
 	"github.com/pinfake/pes6go/storage"
 )
 
@@ -22,22 +19,19 @@ func (s AdminServer) account(w http.ResponseWriter, req *http.Request) {
 		key := req.FormValue("key")
 		password := req.FormValue("password")
 
-		fmt.Fprintf(w, "%s %s\n", key, password)
+		auth := block.Authentication{
+			Key:      key,
+			Password: password,
+		}
 
-		var keypadded [36]byte
-		copy(keypadded[:], []byte(key))
-		var buf bytes.Buffer
-		buf.Write(keypadded[:])
-		buf.Write([]byte(password))
-		var data = buf.Bytes()
-		fmt.Fprintf(w, "% x\n", data)
-		md5sum := md5.Sum(data)
-		dst := Encrypt(md5sum[:])
-		fmt.Fprintf(w, "% x\n", dst)
+		passwordHash := auth.GetPasswordHash()
+
+		fmt.Fprintf(w, "%s %s\n", key, password)
+		fmt.Fprintf(w, "% x\n", passwordHash)
 
 		id, err := s.storage.CreateAccount(&storage.Account{
 			Key:  key,
-			Hash: dst,
+			Hash: passwordHash,
 		})
 		if err != nil {
 			fmt.Fprintf(w, "Cannot store account: %s", err.Error())

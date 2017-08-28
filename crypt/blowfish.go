@@ -1,4 +1,4 @@
-package server
+package crypt
 
 import (
 	"crypto/cipher"
@@ -23,6 +23,12 @@ func init() {
 	block, _ := blowfish.NewCipher(blowfishKey)
 	encripter = ecb.NewECBEncrypter(block)
 	decripter = ecb.NewECBDecrypter(block)
+}
+
+func PadWithZeros(src []byte, size int) []byte {
+	padded := make([]byte, size)
+	copy(padded[:], src)
+	return padded[:]
 }
 
 func Encrypt(src []byte) []byte {

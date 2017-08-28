@@ -1,18 +1,16 @@
 package client
 
-import "github.com/pinfake/pes6go/client/command"
-
 type Config struct {
 	ip       string
 	port     int
-	commands []command.Command
+	commands []CommandHandler
 }
 
 type AutomatedClient struct {
 	config Config
 }
 
-func (au AutomatedClient) run() {
+func (au AutomatedClient) Run() {
 	c := NewClient()
 	c.Connect(au.config.ip, au.config.port)
 	for _, cmd := range au.config.commands {
@@ -20,7 +18,7 @@ func (au AutomatedClient) run() {
 	}
 }
 
-func NewAutomatedClient(ip string, port int, commands []command.Command) AutomatedClient {
+func NewAutomatedClient(ip string, port int, commands []CommandHandler) AutomatedClient {
 	return AutomatedClient{
 		Config{
 			ip:       ip,
