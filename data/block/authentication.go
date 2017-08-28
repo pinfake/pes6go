@@ -17,7 +17,7 @@ type Authentication struct {
 }
 
 type AuthenticationInternal struct {
-	data [74]byte
+	Data [80]byte
 }
 
 func (info Authentication) GetPasswordHash() []byte {
@@ -32,12 +32,12 @@ func (info Authentication) GetPasswordHash() []byte {
 
 func (info Authentication) buildInternal() PieceInternal {
 	var internal AuthenticationInternal
-	var tmp [74]byte
+	var tmp [80]byte
 
 	copy(tmp[:20], []byte(info.Key))
 	copy(tmp[32:48], info.GetPasswordHash())
 	copy(tmp[58:], info.RosterHash)
-	copy(internal.data[:], crypt.Encrypt(tmp[:]))
+	copy(internal.Data[:], crypt.Encrypt(tmp[:]))
 	return internal
 }
 

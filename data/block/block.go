@@ -18,7 +18,7 @@ type Header struct {
 	Query    uint16
 	Size     uint16
 	Sequence uint32
-	Hash     [16]byte // Sixserver says this is the md5 of data
+	Hash     [16]byte // Sixserver says this is the md5 of Data
 }
 
 type Body interface {
