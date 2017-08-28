@@ -10,7 +10,7 @@ import (
 	"github.com/pinfake/pes6go/storage"
 )
 
-const gsTestPort = 10887
+const gsTestPort = 19887
 
 func init() {
 	stor, err := storage.NewBolt()
