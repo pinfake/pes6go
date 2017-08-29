@@ -21,10 +21,9 @@ type AuthenticationInternal struct {
 }
 
 func (info Authentication) GetPasswordHash() []byte {
-	var keypadded [36]byte
-	copy(keypadded[:], []byte(info.Key))
 	var buf bytes.Buffer
-	buf.Write(keypadded[:])
+	// TODO: Check if this works
+	buf.Write(crypt.PadWithZeros([]byte(info.Key), 36))
 	buf.Write([]byte(info.Password))
 	md5sum := md5.Sum(buf.Bytes())
 	return crypt.Encrypt(md5sum[:])
