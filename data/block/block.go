@@ -38,15 +38,14 @@ func (body GenericBody) GetBytes() []byte {
 	return body.Data
 }
 
-func NewHeader(query uint16, size uint16, hash [16]byte) Header {
-	return Header{Query: query, Size: size, Hash: hash}
+func newHeader(query uint16, size uint16) Header {
+	return Header{Query: query, Size: size}
 }
 
 func NewBlock(query uint16, body Body) *Block {
-	return &Block{NewHeader(
+	return &Block{newHeader(
 		query,
 		uint16(len(body.GetBytes())),
-		md5.Sum(body.GetBytes()),
 	), body}
 }
 
