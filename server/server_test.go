@@ -63,7 +63,7 @@ func getRandom(size int) []byte {
 
 func craftBlock(query uint16, size uint16, data []byte) *block.Block {
 	b := block.Block{
-		Header: block.Header{
+		Header: &block.Header{
 			Query:    query,
 			Size:     size,
 			Sequence: 0,
