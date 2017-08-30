@@ -68,6 +68,11 @@ func (b *Block) hash() [16]byte {
 	return md5.Sum(raw)
 }
 
+func (b *Block) Sign(sequence uint32) {
+	b.Header.Sequence = sequence
+	b.Header.Hash = b.hash()
+}
+
 func ReadBlock(data []byte) (*Block, error) {
 	if len(data) < headerSize {
 		return nil, errors.New("No Header found")

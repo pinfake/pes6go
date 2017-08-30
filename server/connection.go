@@ -41,7 +41,7 @@ func (c *Connection) readBlock() (*block.Block, error) {
 func (c *Connection) writeMessage(message message.Message) {
 	for _, b := range message.GetBlocks() {
 		c.seq++
-		b.Header.Sequence = c.seq
+		b.Sign(c.seq)
 		c.conn.Write(network.Mutate(b.GetBytes()))
 	}
 }
