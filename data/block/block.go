@@ -26,7 +26,7 @@ type Body interface {
 }
 
 type Block struct {
-	Header Header
+	Header *Header
 	Body   Body
 }
 
@@ -38,8 +38,8 @@ func (body GenericBody) GetBytes() []byte {
 	return body.Data
 }
 
-func newHeader(query uint16, size uint16) Header {
-	return Header{Query: query, Size: size}
+func newHeader(query uint16, size uint16) *Header {
+	return &Header{Query: query, Size: size}
 }
 
 func NewBlock(query uint16, body Body) *Block {
@@ -93,7 +93,7 @@ func ReadBlock(data []byte) (*Block, error) {
 	}
 
 	b := Block{
-		header,
+		&header,
 		GenericBody{decoded[headerSize : headerSize+header.Size]},
 	}
 
