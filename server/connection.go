@@ -5,17 +5,19 @@ import (
 
 	"fmt"
 
+	"github.com/pinfake/pes6go/crypt"
 	"github.com/pinfake/pes6go/data/block"
 	"github.com/pinfake/pes6go/data/message"
 	"github.com/pinfake/pes6go/data/types"
-	"github.com/pinfake/pes6go/network"
 	"github.com/pinfake/pes6go/storage"
+	"log"
 )
 
 type Connection struct {
 	id      uint32
 	conn    net.Conn
 	seq     uint32
+	logger  *log.Logger
 	Account *storage.Account
 	LobbyId byte
 	RoomId  uint32
@@ -34,16 +36,22 @@ func (c *Connection) readBlock() (*block.Block, error) {
 	if err != nil {
 		return nil, err
 	}
+	c.log("R <- %v", got)
 
 	return got, nil
 }
 
 func (c *Connection) writeMessage(message message.Message) {
 	for _, b := range message.GetBlocks() {
-		c.seq++
-		b.Sign(c.seq)
-		c.conn.Write(network.Mutate(b.GetBytes()))
+		c.writeBlock(b)
 	}
+}
+
+func (c *Connection) writeBlock(b *block.Block) {
+	c.seq++
+	b.Sign(c.seq)
+	c.log("W -> %v", b)
+	c.conn.Write(crypt.ApplyMask(b.GetBytes()))
 }
 
 func findByPlayerId(idmap *types.IdMap, playerId uint32) *Connection {
@@ -98,4 +106,12 @@ func sendToRoom(idmap *types.IdMap, roomId uint32, m message.Message, me *Connec
 			c.writeMessage(m)
 		}
 	}
+}
+
+func (c *Connection) log(format string, v ...interface{}) {
+	prefix := ""
+	if c != nil {
+		prefix += c.conn.RemoteAddr().String() + " "
+	}
+	c.logger.Printf(prefix+format, v...)
 }

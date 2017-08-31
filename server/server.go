@@ -50,6 +50,7 @@ func (s *Server) handleConnection(conn net.Conn) error {
 		LobbyId: 0xff, // 0xff meaning no lobby
 		seq:     0,
 		conn:    conn,
+		logger:  s.logger,
 	}
 	s.connections.Add(c.id, c)
 	defer s.closeConnection(c)
@@ -61,7 +62,6 @@ func (s *Server) handleConnection(conn net.Conn) error {
 			s.Log(c, "Cannot read block: %s", err)
 			return fmt.Errorf("Cannot read block: %s", err)
 		}
-		s.Log(c, "R <- %v", b)
 		m, err := s.handleBlock(b, c)
 		if err != nil {
 			s.Log(c, "handleConnection: %s", err)
@@ -70,8 +70,6 @@ func (s *Server) handleConnection(conn net.Conn) error {
 		if m == nil {
 			continue
 		}
-		bs := m.GetBlocks()
-		s.Log(c, "W -> %v", bs)
 		c.writeMessage(m)
 	}
 	return nil

@@ -1,4 +1,4 @@
-package network
+package crypt
 
 import (
 	"bytes"
@@ -49,7 +49,7 @@ var mutated = []byte{
 
 func TestMutate(t *testing.T) {
 	t.Run("Should return a mutated byte slice", func(t *testing.T) {
-		mutation := Mutate(clean)
+		mutation := ApplyMask(clean)
 		if !bytes.Equal(mutation, mutated) {
 			t.Error("Mutate(%x) = %x", clean, mutation)
 		}

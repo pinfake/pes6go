@@ -8,7 +8,7 @@ import (
 
 	"crypto/md5"
 
-	"github.com/pinfake/pes6go/network"
+	"github.com/pinfake/pes6go/crypt"
 )
 
 const dtLayout = "2006-01-15 15:04:05"
@@ -60,7 +60,7 @@ func (b *Block) String() string {
 	return fmt.Sprintf("%x %x", b.Header, b.Body)
 }
 
-func (b *Block) hash() [16]byte {
+func (b *Block) getHash() [16]byte {
 	raw := make([]byte, headerSize-16+b.Header.Size)
 	copy(raw[:headerSize-16], b.GetBytes()[:headerSize-16])
 	copy(raw[headerSize-16:], b.GetBytes()[headerSize:])
@@ -69,14 +69,14 @@ func (b *Block) hash() [16]byte {
 
 func (b *Block) Sign(sequence uint32) {
 	b.Header.Sequence = sequence
-	b.Header.Hash = b.hash()
+	b.Header.Hash = b.getHash()
 }
 
 func ReadBlock(data []byte) (*Block, error) {
 	if len(data) < headerSize {
 		return nil, errors.New("No Header found")
 	}
-	decoded := network.Mutate(data)
+	decoded := crypt.ApplyMask(data)
 	var buf = bytes.NewBuffer(decoded[0:headerSize])
 	header := Header{}
 	err := binary.Read(buf, binary.BigEndian, &header)
@@ -97,10 +97,10 @@ func ReadBlock(data []byte) (*Block, error) {
 		GenericBody{decoded[headerSize : headerSize+header.Size]},
 	}
 
-	if b.hash() != header.Hash {
+	if b.getHash() != header.Hash {
 		return nil, fmt.Errorf(
-			"invalid hash, expected: %x got: %x",
-			b.hash(), header.Hash,
+			"invalid getHash, expected: %x got: %x",
+			b.getHash(), header.Hash,
 		)
 	}
 

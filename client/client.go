@@ -6,8 +6,8 @@ import (
 
 	"time"
 
+	"github.com/pinfake/pes6go/crypt"
 	"github.com/pinfake/pes6go/data/block"
-	"github.com/pinfake/pes6go/network"
 )
 
 type Client struct {
@@ -43,9 +43,10 @@ func (c *Client) Read() ([]byte, error) {
 }
 
 func (c *Client) WriteBlock(b *block.Block) {
+
 	c.seq++
-	b.Header.Sequence = c.seq
-	c.conn.Write(network.Mutate(b.GetBytes()))
+	b.Sign(c.seq)
+	c.conn.Write(crypt.ApplyMask(b.GetBytes()))
 }
 
 func (c *Client) Close() {

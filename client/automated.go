@@ -1,5 +1,7 @@
 package client
 
+import "fmt"
+
 type Config struct {
 	ip       string
 	port     int
@@ -14,7 +16,9 @@ func (au AutomatedClient) Run() {
 	c := NewClient()
 	c.Connect(au.config.ip, au.config.port)
 	for _, cmd := range au.config.commands {
+		fmt.Printf("Sending command: %v\n", cmd)
 		cmd.Execute(c)
+		c.Read()
 	}
 }
 
