@@ -40,6 +40,7 @@ func Disconnect(s *Server, _ *block.Block, c *Connection) message.Message {
 }
 
 func Login(s *Server, b *block.Block, c *Connection) message.Message {
+	var code uint32
 	auth := block.NewAuthentication(b)
 
 	s.Log(c, "LOGIN -> Key: %s, Pass: %x, Roster: %x",
@@ -50,7 +51,7 @@ func Login(s *Server, b *block.Block, c *Connection) message.Message {
 		Hash: auth.PasswordHash,
 	}
 	found, err := s.Storage().Login(&acc)
-	code := block.Ok
+	code = block.Ok
 	if err != nil {
 		s.Log(c, "Cannot login: %s", err)
 		code = block.ServiceUnavailableError
@@ -58,7 +59,7 @@ func Login(s *Server, b *block.Block, c *Connection) message.Message {
 		c.Account = found
 	}
 
-	return message.NewLoginResponse(uint32(code))
+	return message.NewLoginResponse(code)
 }
 
 func SelectPlayer(s *Server, b *block.Block, c *Connection) message.Message {

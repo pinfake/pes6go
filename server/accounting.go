@@ -51,15 +51,16 @@ func (s AccountingServer) Data() interface{} {
 }
 
 func CreateProfile(s *Server, b *block.Block, c *Connection) message.Message {
+	var responseCode uint32
 	playerCreate := block.NewPlayerCreate(b)
 	player := block.NewPlayer(playerCreate.Name)
-	responseCode := block.Ok
+	responseCode = block.Ok
 	_, err := s.Storage().CreatePlayer(c.Account, playerCreate.Position, player)
 	if err != nil {
 		responseCode = block.ServiceUnavailableError
 	}
 
-	return message.NewPlayerCreateResponse(uint32(responseCode))
+	return message.NewPlayerCreateResponse(responseCode)
 }
 
 func PlayerSettings(s *Server, b *block.Block, _ *Connection) message.Message {
