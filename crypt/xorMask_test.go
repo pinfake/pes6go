@@ -51,7 +51,7 @@ func TestMutate(t *testing.T) {
 	t.Run("Should return a mutated byte slice", func(t *testing.T) {
 		mutation := ApplyMask(clean)
 		if !bytes.Equal(mutation, mutated) {
-			t.Error("Mutate(%x) = %x", clean, mutation)
+			t.Errorf("Mutate(%x) = %x", clean, mutation)
 		}
 	})
 }
